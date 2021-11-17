@@ -47,6 +47,52 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        public Models.Incidence.Incidence GetIncidenceByIdFn(int id)
+        {
+            try
+            {
+                return SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), id))[0];
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+        public int LastIncidence(IList<string> fields)
+        {
+            try
+            {
+                object con = Select(new Select("parte", fields));
+                using IDataReader reader = this.get_sql.ExecuteReader();
+                reader.Read();
+                return (int)reader.GetValue(0);
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+        public void UpdateIncidenceFn(IDictionary<string, string> args)
+        {
+            try
+            {
+                IDictionary<string, string>  fullArgs = FillArgs(new List<string> { "incidenceId", "userId", "note", "state", "piecesAdded", "piecesDeleted", "close" }, args);
+                Models.Incidence.Incidence incidence = SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), Convert.ToInt16(fullArgs["incidenceId"])))[0];
+                if (incidence.solverId == Convert.ToInt16(fullArgs["userI"]) || incidence.state == 1 || incidence.ownerId == Convert.ToInt16(fullArgs["userId"])) {
+                    UpdateIncidence(fullArgs["state"], fullArgs["incidenceId"], fullArgs["userId"], new Note(fullArgs["note"]), fullArgs["piecesAdded"], fullArgs["piecesDeleted"], fullArgs["close"]);
+                }
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+        public IDictionary<string, string>  FillArgs(IList<string> needed, IDictionary<string, string> args)
+        {
+            foreach (string value in needed)
+            {
+                if (!args.ContainsKey(value)) args.Add(value, null);
+            }
+
+            return args;
+        }
         public IList<Models.Incidence.Incidence> SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
         {
             try

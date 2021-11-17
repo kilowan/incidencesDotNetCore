@@ -9,6 +9,11 @@ namespace MiPrimeraApp.Models.Incidence
     {
         public string noteStr;
 		public DateTime date;
+        public Note(string noteStr)
+        {
+            this.noteStr = noteStr;
+            this.date = new DateTime();
+        }
         public Note(string noteStr, DateTime date)
         {
             this.noteStr = noteStr;
