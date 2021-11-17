@@ -6,6 +6,10 @@ namespace MiPrimeraApp.Models.Incidence
     {
         public IList<Incidence> own;
 		public IList<Incidence> other;
+        public Incidences()
+        {
+            this.own = new List<Incidence>();
+        }
         public Incidences(IList<Incidence> own)
         {
             this.own = own;

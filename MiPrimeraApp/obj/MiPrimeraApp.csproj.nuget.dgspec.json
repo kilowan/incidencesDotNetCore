@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Juan Francisco\\source\\repos\\MiPrimeraApp\\MiPrimeraApp\\MiPrimeraApp.csproj": {}
+    "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\MiPrimeraApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Juan Francisco\\source\\repos\\MiPrimeraApp\\MiPrimeraApp\\MiPrimeraApp.csproj": {
+    "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\MiPrimeraApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Juan Francisco\\source\\repos\\MiPrimeraApp\\MiPrimeraApp\\MiPrimeraApp.csproj",
+        "projectUniqueName": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\MiPrimeraApp.csproj",
         "projectName": "MiPrimeraApp",
-        "projectPath": "C:\\Users\\Juan Francisco\\source\\repos\\MiPrimeraApp\\MiPrimeraApp\\MiPrimeraApp.csproj",
+        "projectPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\MiPrimeraApp.csproj",
         "packagesPath": "C:\\Users\\Juan Francisco\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Juan Francisco\\source\\repos\\MiPrimeraApp\\MiPrimeraApp\\obj\\",
+        "outputPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Juan Francisco\\AppData\\Roaming\\NuGet\\NuGet.Config",

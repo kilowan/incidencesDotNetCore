@@ -1,10 +1,7 @@
 ﻿using MiPrimeraApp.Data.Models;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MiPrimeraApp.Data
 {
@@ -15,51 +12,53 @@ namespace MiPrimeraApp.Data
         private IDataReader reader;
         public IDbCommand get_sql { get; }
         #region string generation
-        public bool Insert(string table, CDictionary<string, string, string> data, IDbCommand conexion = null)
+
+        public bool Insert(string table, CDictionary<string, string> data, IDbCommand conexion = null)
         {
             string text = $"INSERT INTO { table } ({ string.Join(", ", data.Keys) }) VALUES ({ string.Join(", ", data.Values) })";
             return Call(text, conexion);
         }
-        public object select(select $select, mysqli $conexion = null)
+        public object Select(Select select, IDbCommand conexion = null)
         {
-            return call($select->getSentence(), $conexion);
+            return Call(select.GetSentence(), conexion, "");
         }
-        public multiSelectSQL(array $queries, mysqli $conexion = null)
+        public object MultiSelectSQL(IList<Select> queries, IDbCommand conexion = null)
         {
-            $text = '';
-            $sentences = [];
-            foreach ($queries as $query) {
-                array_push($sentences, $query->getSentence());
+            IList<string> sentences = new List<string>();
+            foreach (Select query in queries)
+            {
+                sentences.Add(query.GetSentence());
             }
-            $text = implode(' UNION ALL ', $sentences);
-            return call($text, $conexion);
-            }
-        public where(array $conditions)
-        {
-        $results = [];
-            foreach ($conditions as $condition) {
-                if (!$condition->key) {
-                $result = "$condition->column = '$condition->value'";
-                } else
-                {
-                $result = $condition->column.' '.$condition->key.' '.$condition->value;
-                }
 
-                array_push($results, $result);
-            }
-            return ' WHERE '.implode(' AND ', $results);
+            string text = string.Join(" UNION ALL ", sentences);
+            return Call(text, conexion, "");
         }
-        public update(mysqli $conexion = null, string $table, dictionary $columns, dictionary $conditions)
+        public string Where(CDictionary<string, string> conditions)
         {
-        $conditionsValues = [];
-            foreach ($columns->get() as $data) {
-                array_push($conditionsValues, "$data->column = '$data->value'");
+            IList<string> results = new List<string>();
+            string result = string.Empty;
+            foreach (ColumnKeyValue<string, string> item in conditions.Get())
+            {
+                if (string.IsNullOrEmpty(item.key)) result = $"{ item.column } = { item.value }";
+                else result = $"{ item.column } { item.key } { item.value }";
+
+                results.Add(result);
             }
-        
-        $text = 'UPDATE '.$table.' SET '.implode(', ', $conditionsValues).where($conditions->get());
-            return call($text, $conexion);
+
+            return string.Join(" AND ", results);
         }
-        public void delete()
+        public bool Update(string table, CDictionary<string, string> columns, CDictionary<string, string> conditions, IDbCommand conexion = null)
+        {
+            IList<string> conditionsValues = new List<string>();
+            foreach (ColumnKeyValue<string, string> item in columns.Get())
+            {
+                conditionsValues.Add($"{ item.column } = '{ item.value }'");
+            }
+
+            string text = $"UPDATE { table } SET { string.Join(", ", conditionsValues) } { Where(conditions) }";
+            return Call(text, conexion);
+        }
+        public void Delete()
         {
 
         }
@@ -70,7 +69,7 @@ namespace MiPrimeraApp.Data
         public string InnerJoinSQL(IList<InnerJoin> innerJoin)
         {
 		    int position = 0;
-		    string innerText = '';
+		    string innerText = string.Empty;
             foreach (InnerJoin inner in innerJoin)
             {
                 if (position == 0)
@@ -100,14 +99,16 @@ namespace MiPrimeraApp.Data
             this.connection.Open();
             return this.connection.CreateCommand();
         }
-        public bool Call(string text, IDbCommand conexion = null, string type = null)
+        public object Call(string text, IDbCommand conexion = null, string type = null)
         {
-            if (conexion == null) conexion = ConnectionFn();
+            if (conexion == null) _ = ConnectionFn();
+            get_sql.CommandText = text;
             return get_sql.ExecuteScalar() != null ? true : false;
         }
         public bool Call(string text, IDbCommand conexion = null)
         {
-            if (conexion == null) conexion = ConnectionFn();
+            if (conexion == null) _ = ConnectionFn();
+            get_sql.CommandText = text;
             return get_sql.ExecuteNonQuery() > 0 ? true : false;
         }
 

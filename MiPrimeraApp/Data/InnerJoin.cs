@@ -9,6 +9,6 @@ namespace MiPrimeraApp.Data
     {
         public string tableA;
 		public string tableB;
-		public ColumnKeyValue conditions;
+		public ColumnKeyValue<string, string> conditions;
     }
 }

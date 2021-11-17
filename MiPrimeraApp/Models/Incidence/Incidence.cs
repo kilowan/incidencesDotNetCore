@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MiPrimeraApp.Models.Incidence
 {
@@ -18,16 +16,17 @@ namespace MiPrimeraApp.Models.Incidence
 		public int state;
 		public int id;
 		public DateTime finishDateTime;
-        public Incidence(string owner, int ownerId, DateTime initDateTime, string issueDesc, Piece piece, Note note)
+        public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc)
         {
+            this.id = id;
             this.owner = owner;
             this.ownerId = ownerId;
             this.issueDesc = issueDesc;
             this.initDateTime = initDateTime;
             this.pieces = new List<Piece>();
-            this.pieces.Add(piece);
+            //this.pieces.Add(piece);
             this.notes = new List<Note>();
-            this.notes.Add(note);
+            //this.notes.Add(note);
         }
         public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes)
         {

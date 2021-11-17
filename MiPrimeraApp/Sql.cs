@@ -1,44 +1,17 @@
+using MiPrimeraApp.Data;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Reflection;
 
 namespace MiPrimeraApp
 {
-    public class SQL
+    public class SQL : SqlBase
     {
-        private string stringconnection;
-        private IDbConnection connection;
-        private IDataReader reader;
-        private const string SELECT_PEDIDO = "SELECT * FROM Pedido";
-        private const string SELECT_REGISTRO_STOCK = "SELECT * FROM registro_stock";
-        private const string SELECT_ARTICULO = "SELECT * FROM Articulo";
-        private const string SELECT_CLIENTE = "SELECT * FROM Cliente";
-        private const string INSERT_CLIENTE = "INSERT INTO Cliente";
-        private const string INSERT_ARTICULO = "INSERT INTO Articulo";
-        private const string INSERT_REGISTRO_STOCK = "INSERT INTO registro_stock";
-        private const string INSERT_PEDIDO = "INSERT INTO Pedido";
-        private const string INSERT_ARTICULO_PEDIDO = "INSERT INTO articulo_pedido";
-        private const string UPDATE_ARTICULO = "UPDATE Articulo SET";
-        private const string UPDATE_PEDIDO = "UPDATE Pedido SET";
-        private const string UPDATE_CLIENTE = "UPDATE Cliente SET";
-        private const string DELETE_ARTICULO_PEDIDO = "DELETE FROM articulo_pedido";
-        private const string DELETE_PEDIDO = "DELETE FROM Pedido";
-
         public SQL()
         {
-            string user = "test";
-            string pass = "123456";
-
-            this.stringconnection = $@"Data Source=localhost\SQLEXPRESS;DataBase=Incidences;Persist Security Info=True;USER ID={user};Password={pass};MultipleActiveResultSets=true;";
-            this.connection = new SqlConnection(this.stringconnection);
-            this.connection.Open();
-            this.get_sql = this.connection.CreateCommand();
+            this.ConnectionFn();
         }
-
-        //connection
-        public IDbCommand get_sql { get; }
 
         //check
         public bool check(Articulo articulo)
