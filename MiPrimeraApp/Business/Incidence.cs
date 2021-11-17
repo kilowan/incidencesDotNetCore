@@ -7,39 +7,52 @@ using System.Data;
 
 namespace MiPrimeraApp.Business
 {
-    public class Incidence : SqlBase
+    public class Incidence : BusinessBase
     {
-        public Incidences GetIncidencesByStateTypeFn(string state, string userId, string type)
+        public Incidences GetIncidencesByStateTypeFn(int state, int userId, string type)
         {
             try
             {
-                $own = SelectIncidences(['*'], 
-                whereEmployeeId(
-                    whereIncidenceState(new dictionary(), $state),
-                    $userId)
-                    );
-                $incidences = new incidences($own);
-                if (in_array($type, ['Technician', 'Admin']) && $state !== '4') {
-                    $incidences->other = selectIncidences(['*'], 
-                    whereTechnicianId(
-                        whereIncidenceState(new dictionary(), $state),
-                        $userId)
+                IList<Models.Incidence.Incidence> own = SelectIncidences(
+                    new List<string>('*'), 
+                    WhereEmployeeId(
+                        WhereIncidenceState(
+                            new CDictionary<string, string>(), 
+                            state
+                        ), 
+                        userId
+                    )
+                );
+                Incidences incidences = new Incidences(own);
+                IList<string> list = new List<string>();
+                list.Add("Technician");
+                list.Add("Admin");
+                list.Contains(type);
+                if (list.Contains(type) && state != 4) {
+                    incidences.other = SelectIncidences(
+                        new List<string>('*'), 
+                        WhereTechnicianId(
+                            WhereIncidenceState(
+                                new CDictionary<string, string>(), 
+                                state
+                            ),
+                            userId
+                        )
                     );
                 }
 
-                return $incidences;
-            }
-            catch (Exception $e) {
-                return 'Something fails: '.$e->getMessage();
-            }
+                return incidences;
+            } 
+            catch (Exception e) {
+                throw new Exception(e.Message);
             }
         }
-        public Incidences SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
+        public IList<Models.Incidence.Incidence> SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
         {
             try
             {
                 object con = Select(new Select("FullIncidence", fields, conditions));
-                Incidences incidences = new Incidences();
+                IList<Models.Incidence.Incidence> incidences = new List<Models.Incidence.Incidence>();
                 if (con != null) {
                     using IDataReader reader = this.get_sql.ExecuteReader();
                     while (reader.Read())
@@ -51,20 +64,52 @@ namespace MiPrimeraApp.Business
                             (DateTime)reader.GetValue(6),
                             (string)reader.GetValue(3)
                         );
-                        incidences.own.Add(inc);
+                        incidences.Add(inc);
                     }
                 }
-                foreach (Models.Incidence.Incidence incidence in incidences.own)
+                foreach (Models.Incidence.Incidence incidence in incidences)
                 {
                     IList<string> list = new List<string>();
                     list.Add("*");
-
-                    con = Select(new Select("piece_class", list, conditions));
+                    conditions = WhereIncidenceId(new CDictionary<string, string>(), incidence.id);
+                    con = Select(new Select("incidence_pieces", list, conditions));
+                    if (con != null)
+                    {
+                        IList<Piece> pieces = new List<Piece>();
+                        using IDataReader reader = this.get_sql.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            Piece piece = new Piece(
+                                (string)reader.GetValue(3),
+                                new PieceType(
+                                    (int)reader.GetValue(1),
+                                    (string)reader.GetValue(2),
+                                    (string)reader.GetValue(3)
+                                )
+                            );
+                            pieces.Add(piece);
+                        }
+                    }
+                    conditions = WhereNoteType(conditions, "ownerNote");
+                    con = Select(new Select("incidence_notes", list, conditions));
+                    if (con != null)
+                    {
+                        IList<Note> notes = new List<Note>();
+                        using IDataReader reader = this.get_sql.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            Note note = new Note(
+                                (string)reader.GetValue(1),
+                                (DateTime)reader.GetValue(2)
+                            );
+                            notes.Add(note);
+                        }
+                    }
                 }
-                return $incidences;
-            }
-            catch (Exception $e) {
-                return 'Something fails: '.$e->getMessage();
-            }
+                return incidences;
+            } catch (Exception e) {
+                throw new Exception(e.Message);
             }
         }
+    }
+}

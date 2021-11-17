@@ -11,6 +11,11 @@ namespace MiPrimeraApp.Models.Incidence
 		public string name;
 		public PieceType type;
 		public int? deleted;
+        public Piece(string name)
+        {
+            this.name = name;
+            this.type = new PieceType();
+        }
         public Piece(string name, PieceType type)
         {
             this.name = name;

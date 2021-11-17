@@ -258,13 +258,31 @@ CREATE VIEW incidence_pieces AS
 SELECT 
 ipl.incidenceId AS incidenceId, 
 pc.id AS pieceId, 
-pc.typeId AS 'type', 
-pc.name AS 'name', 
+pc.typeId AS typeId,
+pt.name AS typeName, 
+pt.description AS typeDescription,
+pc.name AS name, 
 pc.deleted AS deleted 
 FROM piece_class pc 
 INNER JOIN incidence_piece_log ipl 
 ON pc.id = ipl.pieceId 
+INNER JOIN piece_type pt
+ON pc.typeId = pt.id
 WHERE ipl.status = 0
+
+GO
+
+CREATE VIEW incidence_notes AS
+SELECT 
+nt.noteStr AS noteStr,
+nt.date as noteDate,
+noty.name AS noteType
+
+FROM Notes nt 
+INNER JOIN incidence inc 
+ON inc.id = nt.incidenceId
+INNER JOIN note_type noty
+ON nt.noteTypeId = noty.id
 
 GO
 

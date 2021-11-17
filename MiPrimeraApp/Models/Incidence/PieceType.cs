@@ -10,6 +10,11 @@ namespace MiPrimeraApp.Models.Incidence
         public string description;
 		public string name;
 		public int? id;
+        public PieceType()
+        {
+            this.name = string.Empty;
+            this.description = string.Empty;
+        }
         public PieceType(string name, string description)
         {
             this.name = name;
