@@ -7,13 +7,21 @@ using System.Data;
 
 namespace MiPrimeraApp.Business
 {
-    public class Incidence : BusinessBase
+    public class IncidenceBz : BusinessBase
     {
+        private NoteBz note;
+        private PieceBz piece;
+
+        public IncidenceBz()
+        {
+            this.note = new NoteBz();
+            this.piece = new PieceBz();
+        }
         public Incidences GetIncidencesByStateTypeFn(int state, int userId, string type)
         {
             try
             {
-                IList<Models.Incidence.Incidence> own = SelectIncidences(
+                IList<Incidence> own = SelectIncidences(
                     new List<string>('*'), 
                     WhereEmployeeId(
                         WhereIncidenceState(
@@ -47,7 +55,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public Models.Incidence.Incidence GetIncidenceByIdFn(int id)
+        public Incidence GetIncidenceByIdFn(int id)
         {
             try
             {
@@ -75,7 +83,7 @@ namespace MiPrimeraApp.Business
             try
             {
                 IDictionary<string, object> fullArgs = FillArgs(new List<string> { "incidenceId", "userId", "note", "state", "piecesAdded", "piecesDeleted", "close" }, args);
-                Models.Incidence.Incidence incidence = SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), Convert.ToInt16(fullArgs["incidenceId"])))[0];
+                Incidence incidence = SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), Convert.ToInt16(fullArgs["incidenceId"])))[0];
                 if (incidence.solverId == Convert.ToInt16(fullArgs["userI"]) || incidence.state == 1 || incidence.ownerId == Convert.ToInt16(fullArgs["userId"]))
                 {
                     UpdateIncidence(Convert.ToInt16(fullArgs["state"]), Convert.ToInt16(fullArgs["incidenceId"]), Convert.ToInt16(fullArgs["userId"]), new Note(fullArgs["note"].ToString()), (List<int>)fullArgs["piecesAdded"], (List<int>)fullArgs["piecesDeleted"], (bool)fullArgs["close"]);
@@ -83,6 +91,45 @@ namespace MiPrimeraApp.Business
             }
             catch (Exception e)
             {
+                throw new Exception(e.Message);
+            }
+        }
+        public void UpdateIncidence(int? state, int incidenceId, int userId, Note note, IList<int> piecesAdded, IList<int> piecesDeleted, bool close)
+        {
+            try
+            {
+                CDictionary<string, string> columns = new CDictionary<string, string>();
+                if (state != null) {
+                    columns.Add("state", null, state.ToString());
+                } else
+                {
+                    columns = new CDictionary<string, string>();
+                    columns.Add("tec_res", null, userId.ToString());
+                    columns.Add("state", null, "2");
+                }
+                if (close) {
+                    columns.Add("fecha_resolucion", null, "CURRENT_DATE()");
+                    columns.Add("hora_resolucion", null, "CURRENT_TIME()");
+                }
+                bool result = Update("parte", columns, WhereId_part(new CDictionary<string, string>(), incidenceId));
+                if (!result) throw new Exception("Parte no actualizado");
+
+                if (note != null) {
+                    result = this.note.InsertNote(userId, incidenceId, note.noteStr, "Technician");
+                    if (!result) throw new Exception("Parte no actualizado");
+                }
+
+                if (piecesAdded != null && piecesAdded.Count > 0) {
+                    result = this.piece.InsertPiecesSql(piecesAdded, incidenceId);
+                    if (!result) throw new Exception("Parte no actualizado");
+                }
+
+                if (piecesDeleted != null && piecesDeleted.Count > 0) {
+                    result = this.piece.DeletePiecesSql(piecesDeleted, incidenceId);
+                    if (!result) new Exception("Parte no actualizado");
+                }
+            }
+            catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
@@ -95,17 +142,17 @@ namespace MiPrimeraApp.Business
 
             return args;
         }
-        public IList<Models.Incidence.Incidence> SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
+        public IList<Incidence> SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
         {
             try
             {
                 object con = Select(new Select("FullIncidence", fields, conditions));
-                IList<Models.Incidence.Incidence> incidences = new List<Models.Incidence.Incidence>();
+                IList<Incidence> incidences = new List<Models.Incidence.Incidence>();
                 if (con != null) {
                     using IDataReader reader = this.get_sql.ExecuteReader();
                     while (reader.Read())
                     {
-                        Models.Incidence.Incidence inc = new Models.Incidence.Incidence(
+                        Incidence inc = new Incidence(
                             (int)reader.GetValue(0),
                             (string)reader.GetValue(2),
                             (int)reader.GetValue(1),
@@ -115,7 +162,7 @@ namespace MiPrimeraApp.Business
                         incidences.Add(inc);
                     }
                 }
-                foreach (Models.Incidence.Incidence incidence in incidences)
+                foreach (Incidence incidence in incidences)
                 {
                     IList<string> list = new List<string>();
                     list.Add("*");
