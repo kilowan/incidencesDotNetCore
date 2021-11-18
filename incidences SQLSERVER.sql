@@ -236,6 +236,19 @@ WHERE inc.state <> 5
 
 GO
 
+CREATE VIEW FullPiece AS
+SELECT TOP (1000) pc.[id],
+pc.[name],
+pc.typeId AS pieceTypeId,
+pt.name As pieceTypeName,
+pt.description AS pieceTypeDescription,
+pc.[deleted]
+FROM [Incidences].[dbo].[piece_class] pc
+INNER JOIN [Incidences].[dbo].[piece_type] pt
+ON pc.typeId = pt.id;
+
+GO
+
 CREATE VIEW completeEmployee AS
 SELECT 
 emp.id, 
@@ -274,10 +287,10 @@ GO
 
 CREATE VIEW incidence_notes AS
 SELECT 
+nt.incidenceId,
 nt.noteStr AS noteStr,
 nt.date as noteDate,
 noty.name AS noteType
-
 FROM Notes nt 
 INNER JOIN incidence inc 
 ON inc.id = nt.incidenceId
