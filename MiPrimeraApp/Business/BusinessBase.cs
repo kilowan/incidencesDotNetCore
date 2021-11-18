@@ -38,7 +38,7 @@ namespace MiPrimeraApp.Business
         {
             return WhereCommon(conditions, "deleted", "<>", $"{ 1 }");
         }
-        public CDictionary<string, string> WherePieceId(CDictionary<string, string> conditions, int[] ids)
+        public CDictionary<string, string> WherePieceId(CDictionary<string, string> conditions, IList<int> ids)
         {
             return WhereCommon(conditions, "id", "IN", string.Join(", ", ids));
         }
