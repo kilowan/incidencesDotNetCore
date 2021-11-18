@@ -7,6 +7,10 @@ namespace MiPrimeraApp.Data
         public Tkey key;
         public Tkey column;
         public TValue value;
+        public ColumnKeyValue()
+        {
+
+        }
         public ColumnKeyValue(Tkey column, Tkey key, TValue value)
         {
 			this.column = column;
