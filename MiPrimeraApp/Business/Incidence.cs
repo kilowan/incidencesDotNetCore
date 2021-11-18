@@ -70,21 +70,23 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public void UpdateIncidenceFn(IDictionary<string, string> args)
+        public void UpdateIncidenceFn(IDictionary<string, object> args)
         {
             try
             {
-                IDictionary<string, string>  fullArgs = FillArgs(new List<string> { "incidenceId", "userId", "note", "state", "piecesAdded", "piecesDeleted", "close" }, args);
+                IDictionary<string, object> fullArgs = FillArgs(new List<string> { "incidenceId", "userId", "note", "state", "piecesAdded", "piecesDeleted", "close" }, args);
                 Models.Incidence.Incidence incidence = SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), Convert.ToInt16(fullArgs["incidenceId"])))[0];
-                if (incidence.solverId == Convert.ToInt16(fullArgs["userI"]) || incidence.state == 1 || incidence.ownerId == Convert.ToInt16(fullArgs["userId"])) {
-                    UpdateIncidence(fullArgs["state"], fullArgs["incidenceId"], fullArgs["userId"], new Note(fullArgs["note"]), fullArgs["piecesAdded"], fullArgs["piecesDeleted"], fullArgs["close"]);
+                if (incidence.solverId == Convert.ToInt16(fullArgs["userI"]) || incidence.state == 1 || incidence.ownerId == Convert.ToInt16(fullArgs["userId"]))
+                {
+                    UpdateIncidence(Convert.ToInt16(fullArgs["state"]), Convert.ToInt16(fullArgs["incidenceId"]), Convert.ToInt16(fullArgs["userId"]), new Note(fullArgs["note"].ToString()), (List<int>)fullArgs["piecesAdded"], (List<int>)fullArgs["piecesDeleted"], (bool)fullArgs["close"]);
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
-        public IDictionary<string, string>  FillArgs(IList<string> needed, IDictionary<string, string> args)
+        public IDictionary<string, object>  FillArgs(IList<string> needed, IDictionary<string, object> args)
         {
             foreach (string value in needed)
             {
