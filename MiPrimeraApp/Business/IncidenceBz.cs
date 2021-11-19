@@ -78,6 +78,20 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        public int LastIncidence()
+        {
+            try
+            {
+                object con = Select(new Select("parte"));
+                using IDataReader reader = this.get_sql.ExecuteReader();
+                reader.Read();
+                return (int)reader.GetValue(0);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public void UpdateIncidenceFn(IDictionary<string, object> args)
         {
             try
@@ -203,6 +217,45 @@ namespace MiPrimeraApp.Business
                 }
                 return incidences;
             } catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+        public bool InsertIncidence(int ownerId, string issueDesc, IList<int> pieces)
+        {
+            try
+            {
+                bool result = Insert("parte", new CDictionary<string, string> { { "emp_crea", null, ownerId.ToString() } });
+                if (!result) throw new Exception("Parte no insertado");
+                
+                int id = LastIncidence();
+
+                result = this.note.InsertNote(ownerId, id, issueDesc, "Employee");
+                if (!result) throw new Exception("Parte no insertado");
+                result = this.piece.InsertPiecesSql(pieces, id);
+                if (!result) throw new Exception("Parte no insertado");
+                return result;
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+        public bool DeleteIncidenceFn(int id_part, int emp_crea)
+        {
+            try
+            {
+                bool result = Update(
+                    "parte", 
+                    new CDictionary<string, string> { 
+                        { "state", null, "5" } 
+                    }, 
+                    new CDictionary<string, string> { 
+                        { "id_part", null, id_part.ToString()}, 
+                        { "emp_crea", null, emp_crea.ToString() }
+                    }
+                );
+                return result;
+            }
+            catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
