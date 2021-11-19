@@ -69,10 +69,14 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                object con = Select(new Select("parte", fields));
-                using IDataReader reader = this.get_sql.ExecuteReader();
-                reader.Read();
-                return (int)reader.GetValue(0);
+                bool result = Select(new Select("parte", fields));
+                if (result)
+                {
+                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    reader.Read();
+                    return (int)reader.GetValue(0);
+                }
+                else throw new Exception("Ningún registro");
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
@@ -82,10 +86,14 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                object con = Select(new Select("parte"));
-                using IDataReader reader = this.get_sql.ExecuteReader();
-                reader.Read();
-                return (int)reader.GetValue(0);
+                bool result = Select(new Select("parte"));
+                if (true)
+                {
+                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    reader.Read();
+                    return (int)reader.GetValue(0);
+                }
+                else throw new Exception("Ningún registro");
             }
             catch (Exception e)
             {
@@ -160,62 +168,68 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                object con = Select(new Select("FullIncidence", fields, conditions));
-                IList<Incidence> incidences = new List<Models.Incidence.Incidence>();
-                if (con != null) {
-                    using IDataReader reader = this.get_sql.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Incidence inc = new Incidence(
-                            (int)reader.GetValue(0),
-                            (string)reader.GetValue(2),
-                            (int)reader.GetValue(1),
-                            (DateTime)reader.GetValue(6),
-                            (string)reader.GetValue(3)
-                        );
-                        incidences.Add(inc);
-                    }
-                }
-                foreach (Incidence incidence in incidences)
+                bool result = Select(new Select("FullIncidence", fields, conditions));
+                IList<Incidence> incidences = new List<Incidence>();
+                if (result) 
                 {
-                    IList<string> list = new List<string>();
-                    list.Add("*");
-                    conditions = WhereIncidenceId(new CDictionary<string, string>(), incidence.id);
-                    con = Select(new Select("incidence_pieces", list, conditions));
-                    if (con != null)
+                    using (IDataReader reader = this.get_sql.ExecuteReader())
                     {
-                        IList<Piece> pieces = new List<Piece>();
-                        using IDataReader reader = this.get_sql.ExecuteReader();
                         while (reader.Read())
                         {
-                            Piece piece = new Piece(
-                                (string)reader.GetValue(3),
-                                new PieceType(
-                                    (int)reader.GetValue(1),
-                                    (string)reader.GetValue(2),
-                                    (string)reader.GetValue(3)
-                                )
+                            Incidence inc = new Incidence(
+                                (int)reader.GetValue(0),
+                                (string)reader.GetValue(2),
+                                (int)reader.GetValue(1),
+                                (DateTime)reader.GetValue(6),
+                                (string)reader.GetValue(3)
                             );
-                            pieces.Add(piece);
+                            incidences.Add(inc);
                         }
                     }
-                    conditions = WhereNoteType(conditions, "ownerNote");
-                    con = Select(new Select("incidence_notes", list, conditions));
-                    if (con != null)
+
+                    foreach (Incidence incidence in incidences)
                     {
-                        IList<Note> notes = new List<Note>();
-                        using IDataReader reader = this.get_sql.ExecuteReader();
-                        while (reader.Read())
+                        IList<string> list = new List<string>
                         {
-                            Note note = new Note(
-                                (string)reader.GetValue(1),
-                                (DateTime)reader.GetValue(2)
-                            );
-                            notes.Add(note);
+                            "*"
+                        };
+                        conditions = WhereIncidenceId(new CDictionary<string, string>(), incidence.id);
+                        result = Select(new Select("incidence_pieces", list, conditions));
+                        if (result)
+                        {
+                            IList<Piece> pieces = new List<Piece>();
+                            using IDataReader reader = this.get_sql.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                Piece piece = new Piece(
+                                    (string)reader.GetValue(3),
+                                    new PieceType(
+                                        (int)reader.GetValue(1),
+                                        (string)reader.GetValue(2),
+                                        (string)reader.GetValue(3)
+                                    )
+                                );
+                                pieces.Add(piece);
+                            }
+                        }
+                        conditions = WhereNoteType(conditions, "ownerNote");
+                        result = Select(new Select("incidence_notes", list, conditions));
+                        if (result)
+                        {
+                            IList<Note> notes = new List<Note>();
+                            using IDataReader reader = this.get_sql.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                Note note = new Note(
+                                    (string)reader.GetValue(1),
+                                    (DateTime)reader.GetValue(2)
+                                );
+                                notes.Add(note);
+                            }
                         }
                     }
-                }
-                return incidences;
+                    return incidences;
+                } else throw new Exception("Ningún registro");
             } catch (Exception e) {
                 throw new Exception(e.Message);
             }

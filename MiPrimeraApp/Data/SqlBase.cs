@@ -18,11 +18,11 @@ namespace MiPrimeraApp.Data
             string text = $"INSERT INTO { table } ({ string.Join(", ", data.Keys) }) VALUES ({ string.Join(", ", data.Values) })";
             return Call(text, conexion);
         }
-        public object Select(Select select, IDbCommand conexion = null)
+        public bool Select(Select select, IDbCommand conexion = null)
         {
             return Call(select.GetSentence(), conexion, "");
         }
-        public object MultiSelectSQL(IList<Select> queries, IDbCommand conexion = null)
+        public bool MultiSelectSQL(IList<Select> queries, IDbCommand conexion = null)
         {
             IList<string> sentences = new List<string>();
             foreach (Select query in queries)
@@ -99,7 +99,7 @@ namespace MiPrimeraApp.Data
             this.connection.Open();
             return this.connection.CreateCommand();
         }
-        public object Call(string text, IDbCommand conexion = null, string type = null)
+        public bool Call(string text, IDbCommand conexion = null, string type = null)
         {
             if (conexion == null) _ = ConnectionFn();
             get_sql.CommandText = text;

@@ -4,8 +4,6 @@ using MiPrimeraApp.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MiPrimeraApp.Business
 {
@@ -128,24 +126,27 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                object con = Select(new Select("FullPiece", new List<string> { "*" }, conditions));
-                IList<Piece> pieces = new List<Piece>();
-                using IDataReader reader = this.get_sql.ExecuteReader();
-                while (reader.Read())
+                bool result = Select(new Select("FullPiece", new List<string> { "*" }, conditions));
+                if (result)
                 {
-                    pieces.Add(new(
-                        (int)reader.GetValue(0),
-                        (string)reader.GetValue(1),
-                        new PieceType(
-                            (int)reader.GetValue(2),
-                            (string)reader.GetValue(3),
-                            (string)reader.GetValue(4)
-                        ),
-                        (int)reader.GetValue(5)
-                    ));
-                }
+                    IList<Piece> pieces = new List<Piece>();
+                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        pieces.Add(new(
+                            (int)reader.GetValue(0),
+                            (string)reader.GetValue(1),
+                            new PieceType(
+                                (int)reader.GetValue(2),
+                                (string)reader.GetValue(3),
+                                (string)reader.GetValue(4)
+                            ),
+                            (int)reader.GetValue(5)
+                        ));
+                    }
 
-                return pieces;
+                    return pieces;
+                } else throw new Exception("Ningún registro");
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
