@@ -87,7 +87,7 @@ namespace MiPrimeraApp.Business
             try
             {
                 bool result = Select(new Select("parte"));
-                if (true)
+                if (result)
                 {
                     using IDataReader reader = this.get_sql.ExecuteReader();
                     reader.Read();
@@ -137,7 +137,7 @@ namespace MiPrimeraApp.Business
                 if (!result) throw new Exception("Parte no actualizado");
 
                 if (note != null) {
-                    result = this.note.InsertNote(userId, incidenceId, note.noteStr, "Technician");
+                    result = this.note.InsertNoteFn(note.noteStr, userId, incidenceId,  "Technician");
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
@@ -243,7 +243,7 @@ namespace MiPrimeraApp.Business
                 
                 int id = LastIncidence();
 
-                result = this.note.InsertNote(ownerId, id, issueDesc, "Employee");
+                result = this.note.InsertNoteFn(issueDesc, ownerId, id,  "Employee");
                 if (!result) throw new Exception("Parte no insertado");
                 result = this.piece.InsertPiecesSql(pieces, id);
                 if (!result) throw new Exception("Parte no insertado");
