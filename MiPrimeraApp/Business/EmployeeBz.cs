@@ -39,7 +39,7 @@ namespace MiPrimeraApp.Business
         }
         public IList<Employee> GetEmployee(string username = null)
         {
-            if (username == "null") {
+            if (username == null) {
                 return SelectActiveEmployee();
             }
             else
@@ -69,7 +69,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Select(new Select("completeEemployee", fields, conditions));
+                bool result = Select(new Select("completeEmployee", fields, conditions));
                 if (result)
                 {
                     IList<Employee> employees = new List<Employee>();
@@ -81,13 +81,13 @@ namespace MiPrimeraApp.Business
                                 (string)reader.GetValue(1),
                                 (string)reader.GetValue(2),
                                 (string)reader.GetValue(3),
-                                (string)reader.GetValue(4),
+                                reader.GetValue(4) != DBNull.Value ? (string)reader.GetValue(4): null,
                                 new TypeRange(
                                     (int)reader.GetValue(7),
                                     (string)reader.GetValue(8)
                                 ),
                                 (int)reader.GetValue(0),
-                                (bool)reader.GetValue(9)
+                                (int)reader.GetValue(9)
                             )
                         );
                     }

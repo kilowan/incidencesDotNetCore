@@ -2,14 +2,14 @@
 {
     public class Employee
     {
-        public string name;
-        public string surname1;
-        public string surname2;
+        public string name { get; set; }
+        public string surname1 { get; set; }
+        public string surname2 { get; set; }
         private string fullName;
-        public string dni;
-        public TypeRange type;
-        public int? id;
-        public bool state;
+        public string dni { get; set; }
+        public TypeRange type { get; set; }
+        public int? id { get; set; }
+        public int state { get; set; }
         public Employee()
         {
 
@@ -29,7 +29,7 @@
             this.surname2 = surname2;
             this.fullName = $"{ name } { surname1 } { surname2 }";
         }
-        public Employee(string dni, string name, string surname1, string surname2, TypeRange type, int id, bool state)
+        public Employee(string dni, string name, string surname1, string surname2, TypeRange type, int id, int state)
         {
             this.dni = dni;
             this.name = name;

@@ -30,7 +30,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public Credentials SelectCredentials(CDictionary<string, string> conditions)
+        private Credentials SelectCredentials(CDictionary<string, string> conditions)
         {
             try
             {

@@ -9,7 +9,7 @@ namespace MiPrimeraApp.Data
     {
         private string stringconnection;
         private IDbConnection connection;
-        private IDataReader reader;
+        //private IDataReader reader;
         public IDbCommand get_sql { get; set; }
         #region string generation
 
@@ -39,7 +39,7 @@ namespace MiPrimeraApp.Data
             foreach (ColumnKeyValue<string, string> item in conditions.Get())
             {
                 string result;
-                if (string.IsNullOrEmpty(item.key)) result = $"{ item.column } = { item.value }";
+                if (string.IsNullOrEmpty(item.key)) result = $"{ item.column } = '{ item.value }'";
                 else result = $"{ item.column } { item.key } { item.value }";
 
                 results.Add(result);
