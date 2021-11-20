@@ -49,6 +49,16 @@ namespace MiPrimeraApp.Data
 			orderBy = null;
 			inner = null;
 		}
+		public Select(string table, IList<string> columns, Order orderBy)
+		{
+			this.tables = new List<string>();
+			this.tables.Add(table);
+			this.columns = columns;
+			this.conditions = null;
+			this.group = null;
+			this.orderBy = orderBy;
+			this.inner = null;
+		}
 		public Select(string table, IList<string> columns, CDictionary<string, string> conditions, IList<string> group, Order orderBy)
 		{
 			tables = new List<string>();
