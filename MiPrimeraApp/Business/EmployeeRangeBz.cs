@@ -25,11 +25,11 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null, IDbCommand conexion = null)
+        public IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null)
             {
                 try
                 {
-                bool result = Select(new Select("employee_range", new List<string> { "*" }, conditions), conexion);
+                bool result = Select(new Select("employee_range", new List<string> { "*" }, conditions));
                 if (result)
                 {
                     IList<TypeRange> ranges = new List<TypeRange>();

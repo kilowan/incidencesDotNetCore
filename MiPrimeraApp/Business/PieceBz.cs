@@ -9,7 +9,7 @@ namespace MiPrimeraApp.Business
 {
     public class PieceBz : BusinessBase
     {
-        public bool InsertPiecesSql(IList<int> pieces, int incidenceId, IDbCommand conexion = null)
+        public bool InsertPiecesSql(IList<int> pieces, int incidenceId)
         {
             try
             {
@@ -20,13 +20,13 @@ namespace MiPrimeraApp.Business
                 }
                 string stringPieces = string.Join(", ", values);
                 string text = $"INSERT INTO incidence_piece_log (piece, incidence) VALUES ({ stringPieces });";
-                return Call(text, conexion);
+                return Call(text);
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
-        public bool DeletePiecesSql(IList<int> pieces, int incidenceId, IDbCommand conexion = null)
+        public bool DeletePiecesSql(IList<int> pieces, int incidenceId)
         {
             try
             {
@@ -47,17 +47,17 @@ namespace MiPrimeraApp.Business
                     text = $"UPDATE incidence_piece_log  SET status = 1 WHERE piece = { piece }";
                 }
 
-                return Call(text, conexion);
+                return Call(text);
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
-        public bool DeletePiece(int id, IDbCommand conexion = null)
+        public bool DeletePiece(int id)
         {
             try
             {
-                return Update("piece_class", new CDictionary<string, string> { { "deleted", null, "1" } }, new CDictionary<string, string> { { "id", null, id.ToString() } }, conexion);
+                return Update("piece_class", new CDictionary<string, string> { { "deleted", null, "1" } }, new CDictionary<string, string> { { "id", null, id.ToString() } });
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
@@ -86,7 +86,7 @@ namespace MiPrimeraApp.Business
                         { "name", null, name },
                         { "deleted", null, deleted.ToString() }
                     },
-                    WherePieceId(new CDictionary<string, string>(), new List<int> { id }));
+                    WherePieceId(new CDictionary<string, string>(),  id ));
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
@@ -102,7 +102,7 @@ namespace MiPrimeraApp.Business
                     }, 
                     WherePieceId(
                         new CDictionary<string, string>(), 
-                        new List<int> { id }
+                        id
                     )
                 );
             }
@@ -111,18 +111,18 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public Piece SelectPieceById(int pieceId)
+        private Piece SelectPieceById(int pieceId)
         {
             try
             {
-                IList<Piece> pieces = SelectPieces(WherePieceId(new CDictionary<string, string>(), new List<int> { pieceId}));
+                IList<Piece> pieces = SelectPieces(WherePieceId(new CDictionary<string, string>(), pieceId));
                 return pieces[0];
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
-        public IList<Piece> SelectPieces(CDictionary<string, string> conditions = null)
+        private IList<Piece> SelectPieces(CDictionary<string, string> conditions = null)
         {
             try
             {
@@ -141,7 +141,7 @@ namespace MiPrimeraApp.Business
                                 (string)reader.GetValue(3),
                                 (string)reader.GetValue(4)
                             ),
-                            (int)reader.GetValue(5)
+                            Convert.ToBoolean(reader.GetValue(5))
                         ));
                     }
 
@@ -161,5 +161,25 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
 }
+        public IList<Piece> GetPieces(int? piece = null)
+        {
+            try
+            {
+                CDictionary<string, string> conditions;
+                if (piece != null)
+                {
+                    conditions = WherePieceId(WhereNotDeleted(new CDictionary<string, string>()), piece);
+                }
+                else
+                {
+                    conditions = WhereNotDeleted(new CDictionary<string, string>());
+                }
+
+                return SelectPieces(conditions);
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
     }
 }
