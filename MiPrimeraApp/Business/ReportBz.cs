@@ -35,7 +35,7 @@ namespace MiPrimeraApp.Business
             return report;
         }
         //new
-        public IList<ReportedPiece> SelectReportedPieces()
+        private IList<ReportedPiece> SelectReportedPieces()
         {
             try
             {
@@ -58,7 +58,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public IList<Statistics> GetGlobalStatistics()
+        private IList<Statistics> GetGlobalStatistics()
             {
             try
             {
@@ -81,7 +81,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
 }
-        public Statistics GetStatisticsFn(int id)
+        private Statistics GetStatisticsFn(int id)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public int SetNumUnitsFn(int seconds)
+        private int SetNumUnitsFn(int seconds)
         {
             return 
                 seconds >= OneMonth ? 6 : 
@@ -122,7 +122,7 @@ namespace MiPrimeraApp.Business
                 seconds >= OneHour ? 3 : 
                 seconds >= OneMinute ? 2 : 1;
         }
-        public string SecondsToTimeFn(int seconds)
+        private string SecondsToTimeFn(int seconds)
     { 
         int num_units = SetNumUnitsFn(seconds);
         decimal mounths = seconds / OneMonth;

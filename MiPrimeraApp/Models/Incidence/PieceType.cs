@@ -7,9 +7,9 @@ namespace MiPrimeraApp.Models.Incidence
 {
     public class PieceType
     {
-        public string description;
-		public string name;
-		public int? id;
+        public string description { get; set; }
+        public string name { get; set; }
+        public int? id { get; set; }
         public PieceType()
         {
             this.name = string.Empty;

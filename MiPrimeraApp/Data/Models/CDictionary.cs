@@ -14,6 +14,14 @@ namespace MiPrimeraApp.Data.Models
         private ICollection<ColumnKeyValue<TKey, TValue>> list;
         private bool readOnly = false;
 
+        public CDictionary()
+        {
+            this.Keys = new List<TKey>();
+            this.Comparers = new List<TKey>();
+            this.Values = new List<TValue>();
+            this.KeysValues = new List<KeyValuePair<TKey, TValue>>();
+            this.list = new List<ColumnKeyValue<TKey, TValue>>();
+        }
         public TValue this[TKey key] 
         { 
             get => KeysValues

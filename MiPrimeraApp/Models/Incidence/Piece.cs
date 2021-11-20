@@ -7,10 +7,10 @@ namespace MiPrimeraApp.Models.Incidence
 {
     public class Piece
     {
-		public int? id;
-		public string name;
-		public PieceType type;
-		public int? deleted;
+		public int? id { get; set; }
+		public string name { get; set; }
+        public PieceType type { get; set; }
+        public bool deleted { get; set; }
         public Piece(string name)
         {
             this.name = name;
@@ -21,7 +21,7 @@ namespace MiPrimeraApp.Models.Incidence
             this.name = name;
             this.type = type;
         }
-        public Piece(int id, string name, PieceType type, int deleted)
+        public Piece(int id, string name, PieceType type, bool deleted)
         {
             this.id = id;
             this.name = name;

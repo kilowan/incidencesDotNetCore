@@ -10,19 +10,19 @@ namespace MiPrimeraApp.Data
         private string stringconnection;
         private IDbConnection connection;
         private IDataReader reader;
-        public IDbCommand get_sql { get; }
+        public IDbCommand get_sql { get; set; }
         #region string generation
 
-        public bool Insert(string table, CDictionary<string, string> data, IDbCommand conexion = null)
+        public bool Insert(string table, CDictionary<string, string> data)
         {
             string text = $"INSERT INTO { table } ({ string.Join(", ", data.Keys) }) VALUES ({ string.Join(", ", data.Values) })";
-            return Call(text, conexion);
+            return Call(text);
         }
-        public bool Select(Select select, IDbCommand conexion = null)
+        public bool Select(Select select)
         {
-            return Call(select.GetSentence(), conexion, "");
+            return Call(select.GetSentence(), "");
         }
-        public bool MultiSelectSQL(IList<Select> queries, IDbCommand conexion = null)
+        public bool MultiSelectSQL(IList<Select> queries)
         {
             IList<string> sentences = new List<string>();
             foreach (Select query in queries)
@@ -31,23 +31,23 @@ namespace MiPrimeraApp.Data
             }
 
             string text = string.Join(" UNION ALL ", sentences);
-            return Call(text, conexion, "");
+            return Call(text, "");
         }
         public string Where(CDictionary<string, string> conditions)
         {
             IList<string> results = new List<string>();
-            string result = string.Empty;
             foreach (ColumnKeyValue<string, string> item in conditions.Get())
             {
+                string result;
                 if (string.IsNullOrEmpty(item.key)) result = $"{ item.column } = { item.value }";
                 else result = $"{ item.column } { item.key } { item.value }";
 
                 results.Add(result);
             }
 
-            return string.Join(" AND ", results);
+            return $"WHERE { string.Join(" AND ", results) }";
         }
-        public bool Update(string table, CDictionary<string, string> columns, CDictionary<string, string> conditions, IDbCommand conexion = null)
+        public bool Update(string table, CDictionary<string, string> columns, CDictionary<string, string> conditions)
         {
             IList<string> conditionsValues = new List<string>();
             foreach (ColumnKeyValue<string, string> item in columns.Get())
@@ -56,7 +56,7 @@ namespace MiPrimeraApp.Data
             }
 
             string text = $"UPDATE { table } SET { string.Join(", ", conditionsValues) } { Where(conditions) }";
-            return Call(text, conexion);
+            return Call(text);
         }
         public void Delete()
         {
@@ -99,17 +99,17 @@ namespace MiPrimeraApp.Data
             this.connection.Open();
             return this.connection.CreateCommand();
         }
-        public bool Call(string text, IDbCommand conexion = null, string type = null)
+        public bool Call(string text, string type = null)
         {
-            if (conexion == null) _ = ConnectionFn();
+            get_sql = ConnectionFn();
             get_sql.CommandText = text;
-            return get_sql.ExecuteScalar() != null ? true : false;
+            return get_sql.ExecuteScalar() != null;
         }
-        public bool Call(string text, IDbCommand conexion = null)
+        public bool Call(string text)
         {
-            if (conexion == null) _ = ConnectionFn();
+            get_sql = ConnectionFn();
             get_sql.CommandText = text;
-            return get_sql.ExecuteNonQuery() > 0 ? true : false;
+            return get_sql.ExecuteNonQuery() > 0;
         }
 
         #endregion
