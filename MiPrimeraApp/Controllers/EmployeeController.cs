@@ -18,7 +18,7 @@ namespace MiPrimeraApp.Controllers
         [HttpGet]
         public IList<Employee> Index()
         {
-            return emp.GetEmployee();
+            return emp.SelectActiveEmployee();
         }
 
         [HttpGet("{username}")]
@@ -31,8 +31,6 @@ namespace MiPrimeraApp.Controllers
         public bool Add(EmployeeDto employee)
         {
             return emp.AddEmployeeFn(
-                employee.username,
-                employee.password,
                 employee.dni,
                 employee.name,
                 employee.surname1,
