@@ -14,16 +14,19 @@ namespace MiPrimeraApp.Controllers
         {
             this.emp = new();
         }
+
         [HttpGet]
         public IList<Employee> Index()
         {
             return emp.GetEmployee();
         }
+
         [HttpGet("{username}")]
         public Employee Details(string username)
         {
             return emp.GetEmployeeByUsernameFn(username)[0];
         }
+
         [HttpPost]
         public bool Add(EmployeeDto employee)
         {
@@ -36,6 +39,27 @@ namespace MiPrimeraApp.Controllers
                 employee.surname2,
                 employee.type
             );
+        }
+        [HttpPut]
+        public bool Update(EmployeeDto employee)
+        {
+            return emp.UpdateEmployee(
+                employee.deleted,
+                employee.dni,
+                employee.name,
+                employee.surname1,
+                employee.surname2,
+                employee.type,
+                employee.id,
+                employee.username,
+                employee.password
+                );
+        }
+
+        [HttpDelete("{id}")]
+        public bool Delete(int id)
+        {
+            return emp.UpdateEmployeeFn(id);
         }
     }
 }
