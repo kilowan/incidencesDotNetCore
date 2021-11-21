@@ -117,7 +117,7 @@ namespace MiPrimeraApp.Business
                     CDictionary<string, string> columns = new CDictionary<string, string>();
                     foreach (string field in fields)
                     {
-                        if (CheckField("Empleados", field)) columns.Add(field, null, values[position]);
+                        if (CheckField("employee", field)) columns.Add(field, null, values[position]);
                         position++;
                     }
                     if (columns.Count > 0) {
@@ -129,24 +129,17 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateEmployee(bool? deleted = null, string dni = null, string name = null, string surname1 = null, string surname2 = null, string typeName = null, int? employeeId = null, string username = null, string password = null)
+        public bool UpdateEmployee(EmployeeDto employee)
         {
             try
             {
-                int? rangeId = typeName!= null?this.range.GetEmployeeRangeIdByName(typeName): null;
+                int? rangeId = employee.type != null?this.range.GetEmployeeRangeIdByName(employee.type) : null;
 
                 bool result = Update(
                     "employee", 
-                    GetUserColumns(
-                        dni, 
-                        name, 
-                        surname1, 
-                        surname2, 
-                        rangeId, 
-                        deleted
-                    ), 
+                    GetUserColumns(employee), 
                     new CDictionary<string, string> { 
-                        { "id", null, employeeId.ToString() } 
+                        { "id", null, employee.id.ToString() } 
                     }
                 );
                 if (!result) throw new Exception("Empleado no actualizado");
@@ -155,15 +148,15 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateEmployeeFn(bool? deleted = null, string dni = null, string name = null, string surname1 = null, string surname2 = null, string typeName = null, int? employeeId = null, string username = null, string password = null)
+        public bool UpdateEmployeeFn(EmployeeDto employee)
         {
-            int rangeId = this.range.GetEmployeeRangeIdByName(typeName);
-            bool result = Update("employee", GetUserColumns(null, name, surname1, surname2, rangeId, deleted), new CDictionary<string, string> { { "id", null, employeeId.ToString() } });
+            int rangeId = this.range.GetEmployeeRangeIdByName(employee.type);
+            bool result = Update("employee", GetUserColumns(employee), new CDictionary<string, string> { { "id", null, employee.id.ToString() } });
             if (!result) throw new Exception("Empleado no actualizado");
 
-            if (username != null || password != null)
+            if (employee.credentials.username != null || employee.credentials.password != null)
             {
-                result = cred.UpdateCredentials(username, password, (int)employeeId);
+                result = cred.UpdateCredentials(employee.credentials);
             }
 
             return result;
@@ -172,35 +165,35 @@ namespace MiPrimeraApp.Business
         #endregion
 
         #region INSERT
-        public bool AddEmployeeFn(string username, string password, string dni, string name, string surname1, string surname2, string type)
+        public bool AddEmployeeFn(EmployeeDto employee)
         {
             try
             {
-                bool result = cred.CheckCredentialsFn(username);
+                bool result = cred.CheckCredentialsFn(employee.credentials.username);
                 if (result) 
                 {
-                    Credentials credentials = cred.SelectCredentialsByUsername(username);
-                    return UpdateEmployee(null, dni, name, surname1, surname2, type, (int)credentials.employeeId, username, password);
+                    Credentials credentials = cred.SelectCredentialsByUsername(employee.credentials.username);
+                    return UpdateEmployee(employee);
                 }
-                else return InsertEmployee(username, password, dni, name, surname1, type, surname2);
+                else return InsertEmployee(employee);
                 } catch (Exception e) {
             throw new Exception(e.Message);
             }
         }
 
-        public bool InsertEmployee(string username, string password, string dni, string name, string surname1, string typeName, string surname2 = null)
+        public bool InsertEmployee(EmployeeDto employee)
         {
             try
             {
-                int rangeId = this.range.GetEmployeeRangeIdByName(typeName);
-                bool result = Insert("employee", GetUserColumns(dni, name, surname1, surname2, rangeId));
+                int rangeId = this.range.GetEmployeeRangeIdByName(employee.type);
+                bool result = Insert("employee", GetUserColumns(employee));
                 if (!result) throw new Exception("Empleado no insertado");
-                IList<Employee> employees = SelectEmployees(new List<string> { "*" }, new CDictionary<string, string> { { "dni", null, dni } });
+                IList<Employee> employees = SelectEmployees(new List<string> { "*" }, new CDictionary<string, string> { { "dni", null, employee.dni } });
                 Employee user = employees[0];
 
                 CDictionary<string, string> columns = new();
-                if (username != null) columns.Add("username", null, $"'{ username }'");
-                if (password != null) columns.Add("password", null, $"'{ GetMD5(password) }'");
+                if (employee.credentials.username != null) columns.Add("username", null, $"'{ employee.credentials.username }'");
+                if (employee.credentials.password != null) columns.Add("password", null, $"'{ GetMD5(employee.credentials.password) }'");
                 if (user.id != null) columns.Add("employeeId", null, user.id.ToString());
                 result = Insert("credentials", columns);
                 if (!result) throw new Exception("Empleado no insertado");
@@ -214,8 +207,10 @@ namespace MiPrimeraApp.Business
         #region DELETE
         public bool UpdateEmployeeFn(int id)
         {
+            EmployeeDto employee = new();
+            employee.deleted = true;
             return Update("employee",
-                GetUserColumns(null, null, null, null, null, true),
+                GetUserColumns(employee),
                 new CDictionary<string, string> {
                     { "id", null, id.ToString() }
                 }
@@ -224,22 +219,22 @@ namespace MiPrimeraApp.Business
         #endregion
 
         #region OTHER
-        public CDictionary<string, string> GetUserColumns(string dni = null, string name = null, string surname1 = null, string surname2 = null, int? type = null, bool? deleted = null) 
+        public CDictionary<string, string> GetUserColumns(EmployeeDto employee) 
         {
             CDictionary<string, string> tmpColumns = new();
-            if (dni != null) tmpColumns.Add("dni", null, $"{ dni }");
-            if(name != null) tmpColumns.Add("name", null, $"{ name }");
-            if (surname1 != null) tmpColumns.Add("surname1", null, $"{ surname1 }");
-            if (surname2 != null) tmpColumns.Add("surname2", null, $"{ surname2 }");
-            if (type != null) tmpColumns.Add("typeId", null, type.ToString());
-            if(deleted != null) tmpColumns.Add("state", null, Convert.ToInt16(deleted).ToString());
+            if (employee.dni != null) tmpColumns.Add("dni", null, $"{ employee.dni }");
+            if(employee.name != null) tmpColumns.Add("name", null, $"{ employee.name }");
+            if (employee.surname1 != null) tmpColumns.Add("surname1", null, $"{ employee.surname1 }");
+            if (employee.surname2 != null) tmpColumns.Add("surname2", null, $"{ employee.surname2 }");
+            if (employee.type != null) tmpColumns.Add("typeId", null, employee.type.ToString());
+            if(employee.deleted != null) tmpColumns.Add("state", null, Convert.ToInt16(employee.deleted).ToString());
             return tmpColumns;
         }
         public bool CheckField(string table, string field) 
         {
             IList<string>fields;
             switch (table) {
-                case "Empleados":
+                case "employee":
                     fields = new List<string> { "name", "surname1", "surname2", "typeId", "deleted" };
                     return fields.Contains(field);
                 default:

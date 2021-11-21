@@ -50,9 +50,7 @@ namespace MiPrimeraApp.Controllers
                 employee.surname1,
                 employee.surname2,
                 employee.type,
-                employee.id,
-                employee.username,
-                employee.password
+                employee.id
                 );
         }
 
