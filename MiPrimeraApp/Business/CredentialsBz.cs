@@ -69,7 +69,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateCredentials(string username, string password, int employeeId, IDbCommand conexion = null)
+        public bool UpdateCredentials(string username, string password, int? employeeId, IDbCommand conexion = null)
         {
             try
             {
