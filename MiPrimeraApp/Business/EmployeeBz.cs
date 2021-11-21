@@ -36,26 +36,26 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return SelectEmployees(new List<string> { "*" }, new CDictionary<string, string> { { "dni", null, dni } })[0];
+                return SelectEmployees(
+                    new List<string> { "*" }, 
+                    new CDictionary<string, string> { 
+                        { "dni", null, dni } 
+                    }
+                )[0];
             } catch (Exception e) {
                 throw new Exception(e.Message);
-            }
-        }
-        public IList<Employee> GetEmployee(string username = null)
-        {
-            if (username == null) {
-                return SelectActiveEmployee();
-            }
-            else
-            {
-                return GetEmployeeByUsernameFn(username);
             }
         }
         public IList<Employee> SelectEmployeeById(int id)
         {
             try
             {
-                return SelectEmployees(new List<string> { "*" }, new CDictionary<string, string> { { "id", null, id.ToString() } });
+                return SelectEmployees(
+                    new List<string> { "*" }, 
+                    new CDictionary<string, string> { 
+                        { "id", null, id.ToString() } 
+                    }
+                );
             } catch (Exception e) {
                 throw new Exception(e.Message);
             }
@@ -64,7 +64,12 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return SelectEmployees(new List<string> { "*" }, new CDictionary<string, string> { { "deleted", null, "0" } });
+                return SelectEmployees(
+                    new List<string> { "*" }, 
+                    new CDictionary<string, string> { 
+                        { "deleted", null, "0" } 
+                    }
+                );
             } catch (Exception e) {
                 throw new Exception(e.Message);
             }
@@ -150,7 +155,7 @@ namespace MiPrimeraApp.Business
         }
         public bool UpdateEmployeeFn(EmployeeDto employee)
         {
-            int rangeId = this.range.GetEmployeeRangeIdByName(employee.type);
+            employee.typeId = this.range.GetEmployeeRangeIdByName(employee.type);
             bool result = Update("employee", GetUserColumns(employee), new CDictionary<string, string> { { "id", null, employee.id.ToString() } });
             if (!result) throw new Exception("Empleado no actualizado");
 
@@ -226,7 +231,7 @@ namespace MiPrimeraApp.Business
             if(employee.name != null) tmpColumns.Add("name", null, $"{ employee.name }");
             if (employee.surname1 != null) tmpColumns.Add("surname1", null, $"{ employee.surname1 }");
             if (employee.surname2 != null) tmpColumns.Add("surname2", null, $"{ employee.surname2 }");
-            if (employee.type != null) tmpColumns.Add("typeId", null, employee.type.ToString());
+            if (employee.type != null) tmpColumns.Add("typeId", null, employee.typeId.ToString());
             if(employee.deleted != null) tmpColumns.Add("state", null, Convert.ToInt16(employee.deleted).ToString());
             return tmpColumns;
         }
