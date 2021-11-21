@@ -93,21 +93,44 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Select(
-                    new Select(
-                        "credentialsmatch",
-                        new List<string> { "*" },
-                        WherePassword(
-                            WhereUsername(new CDictionary<string, string>(),
+                return CheckCredentials(
+                    WherePassword(
+                        WhereUsername(
+                            new CDictionary<string, string>(), 
                             username
-                            ),
-                            password
-                        )
+                        ), 
+                        password
                     )
                 );
             } catch (Exception e) {
-            throw new Exception(e.Message);
+                throw new Exception(e.Message);
             }
+        }
+        public bool CheckCredentialsFn(string username)
+        {
+            try
+            {
+                return CheckCredentials(
+                    WhereUsername(
+                        new CDictionary<string, string>(), 
+                        username
+                    )
+                );
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private bool CheckCredentials(CDictionary<string, string> conditions)
+        {
+            return Select(
+                new Select(
+                    "credentialsmatch",
+                    new List<string> { "*" },
+                    conditions
+                )
+            );
         }
         #endregion
     }

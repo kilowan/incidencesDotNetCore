@@ -25,6 +25,15 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        public int GetEmployeeRangeIdByName(string typeName) 
+        {
+            return (int)SelectRangeList(
+                WhereEmployeeTypeName(
+                    new CDictionary<string, string>(), 
+                    typeName
+                )
+            )[0].id;
+        }
         public IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null)
             {
                 try

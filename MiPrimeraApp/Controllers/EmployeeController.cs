@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Business;
 using MiPrimeraApp.Models.Employee;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MiPrimeraApp.Controllers
 {
@@ -26,6 +23,19 @@ namespace MiPrimeraApp.Controllers
         public Employee Details(string username)
         {
             return emp.GetEmployeeByUsernameFn(username)[0];
+        }
+        [HttpPost]
+        public bool Add(EmployeeDto employee)
+        {
+            return emp.AddEmployeeFn(
+                employee.username,
+                employee.password,
+                employee.dni,
+                employee.name,
+                employee.surname1,
+                employee.surname2,
+                employee.type
+            );
         }
     }
 }

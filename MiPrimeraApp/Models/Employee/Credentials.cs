@@ -8,6 +8,10 @@ namespace MiPrimeraApp.Models.Employee
         public string username;
 		public string password;
 		public int? employeeId;
+        public Credentials()
+        {
+
+        }
         public Credentials(string username, string password, int? employeeId)
         {
 			this.username = username;
