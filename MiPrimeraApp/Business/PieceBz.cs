@@ -30,24 +30,12 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                IList<string> values = new List<string>();
-                string text = string.Empty;
-                foreach (int piece in pieces)
-                {
-                    values.Add($"({piece}, {incidenceId})");
-                }
-                if (pieces.Count > 1)
-                {
-                    string stringPieces = string.Join(", ", values);
-                    text = $"UPDATE incidence_piece_log  SET status = 1 WHERE piece IN ({ stringPieces })";
-                }
-                else
-                {
-                    int piece = pieces[0];
-                    text = $"UPDATE incidence_piece_log  SET status = 1 WHERE piece = { piece }";
-                }
 
-                return Call(text);
+                CDictionary<string, string> conditions;
+                if (pieces.Count > 1) conditions = WherePieceId(new CDictionary<string, string>(), pieces);
+                else conditions = WherePieceId(new CDictionary<string, string>(), pieces[0]);
+
+                return Update("incidence_piece_log", new CDictionary<string, string> { { "status", null, "1" } }, conditions); ;
             }
             catch (Exception e) {
                 throw new Exception(e.Message);

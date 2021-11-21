@@ -275,3 +275,4 @@ G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\s
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\MiPrimeraApp.RazorTargetAssemblyInfo.cache
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\MiPrimeraApp.csproj.CopyComplete
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\MiPrimeraApp.genruntimeconfig.cache
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\MiPrimeraApp.csproj.AssemblyReference.cache

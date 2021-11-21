@@ -8106,9 +8106,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\MiPrimeraApp.csproj",
-      "projectName": "MiPrimeraApp",
-      "projectPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\MiPrimeraApp.csproj",
+      "projectUniqueName": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\Incidences.csproj",
+      "projectName": "Incidences",
+      "projectPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\Incidences.csproj",
       "packagesPath": "C:\\Users\\Juan Francisco\\.nuget\\packages\\",
       "outputPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\obj\\",
       "projectStyle": "PackageReference",

@@ -41,15 +41,19 @@ namespace MiPrimeraApp.Business
             {
                 IList<ReportedPiece> reportedPieces = new List<ReportedPiece>();
                 bool result = Select(new Select("reportedpieces", new List<string> { "*" }));
-                using IDataReader reader = this.get_sql.ExecuteReader();
-                while (reader.Read())
+                if (result)
                 {
-                    reportedPieces.Add(
-                        new ReportedPiece(
-                            (string)reader.GetValue(0), 
-                            (int)reader.GetValue(1)
-                        )
-                    );
+                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        reportedPieces.Add(
+                            new ReportedPiece(
+                                (string)reader.GetValue(0),
+                                (int)reader.GetValue(1)
+                            )
+                        );
+                    }
+
                 }
 
                 return reportedPieces;
@@ -65,18 +69,23 @@ namespace MiPrimeraApp.Business
                 int number = 0;
                 IList<Statistics> globalData = new List<Statistics>();
                 bool result = Select(new Select("Tiempo_resolucion", new List<string> { "ROUND(AVG(Tiempo),0) AS 'tiempo_medio'", "employeeName" }, new Order("solverId")));
-                using IDataReader reader = this.get_sql.ExecuteReader();
+                if (result)
+                {
+                    using IDataReader reader = this.get_sql.ExecuteReader();
 
-                while (reader.Read()) {
+                    while (reader.Read())
+                    {
 
-                    Statistics globalStatistics = new();
-                    globalStatistics.average = SecondsToTimeFn((int)reader.GetValue(0));
-                    globalStatistics.employeeName = (string)reader.GetValue(3);
-                    globalData[number] = globalStatistics;
-                    number++;
+                        Statistics globalStatistics = new();
+                        globalStatistics.average = SecondsToTimeFn((int)reader.GetValue(0));
+                        globalStatistics.employeeName = (string)reader.GetValue(3);
+                        globalData[number] = globalStatistics;
+                        number++;
+                    }
                 }
 
-                    return globalData;
+                return globalData;
+
                 } catch (Exception e) {
                 throw new Exception(e.Message);
             }
@@ -104,10 +113,13 @@ namespace MiPrimeraApp.Business
                     )
                 );
                 Statistics statistics = new Statistics();
-                using IDataReader reader = this.get_sql.ExecuteReader();
-                reader.Read();
-                statistics.average = SecondsToTimeFn((int)reader.GetValue(0));
-                statistics.solvedIncidences = (int)reader.GetValue(1);
+                if (result)
+                {
+                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    reader.Read();
+                    statistics.average = SecondsToTimeFn((int)reader.GetValue(0));
+                    statistics.solvedIncidences = (int)reader.GetValue(1);
+                }
                 return statistics;
             } catch (Exception e) {
                 throw new Exception(e.Message);
