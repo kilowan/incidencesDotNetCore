@@ -42,6 +42,10 @@ namespace MiPrimeraApp.Business
         {
             return WhereCommon(conditions, "id", "=", id.ToString());
         }
+        public CDictionary<string, string> WherePieceId(CDictionary<string, string> conditions, IList<int> ids)
+        {
+            return WhereCommon(conditions, "id", "IN", string.Join(", ", ids));
+        }
         public CDictionary<string, string> WhereUsername(CDictionary<string, string> conditions, string username)
         {
             return WhereCommon(conditions, "username", null, $"{ username }");
