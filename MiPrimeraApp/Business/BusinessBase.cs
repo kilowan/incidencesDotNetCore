@@ -26,6 +26,11 @@ namespace MiPrimeraApp.Business
         {
             return WhereCommon(conditions, "id_part", null, $"{ incidenceId }");
         }
+
+        public CDictionary<string, string> WhereEmployeeTypeName(CDictionary<string, string> conditions, string typeName) 
+        {
+            return WhereCommon(conditions, "name", null, $"{ typeName }");
+        }
         public CDictionary<string, string> WhereIncidence(CDictionary<string, string> conditions, int incidenceId)
         {
             return WhereCommon(conditions, "id", null, $"{ incidenceId }");
