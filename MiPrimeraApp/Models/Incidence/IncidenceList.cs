@@ -2,19 +2,19 @@
 
 namespace MiPrimeraApp.Models.Incidence
 {
-    public class Incidences
+    public class IncidenceList
     {
-        public IList<Incidence> own;
-		public IList<Incidence> other;
-        public Incidences()
+        public IList<Incidence> own { get; set; }
+		public IList<Incidence> other { get; set; }
+        public IncidenceList()
         {
             this.own = new List<Incidence>();
         }
-        public Incidences(IList<Incidence> own)
+        public IncidenceList(IList<Incidence> own)
         {
             this.own = own;
         }
-        public Incidences(IList<Incidence> own, IList<Incidence> other)
+        public IncidenceList(IList<Incidence> own, IList<Incidence> other)
         {
             this.own = own;
             this.other = other;

@@ -4,8 +4,6 @@ using MiPrimeraApp.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace MiPrimeraApp.Business
 {
@@ -134,7 +132,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateEmployee(EmployeeDto employee, int id)
+        public bool UpdateEmployee(EmployeeDto employee, int? id)
         {
             try
             {
@@ -232,16 +230,6 @@ namespace MiPrimeraApp.Business
                 default:
                     return false;
             }
-        }
-        private static string GetMD5(string str)
-        {
-            MD5 md5 = MD5.Create();
-            ASCIIEncoding encoding = new();
-            byte[] stream = null;
-            StringBuilder sb = new();
-            stream = md5.ComputeHash(encoding.GetBytes(str));
-            for (int i = 0; i < stream.Length; i++) sb.AppendFormat("{0:x2}", stream[i]);
-            return sb.ToString();
         }
         #endregion
     }

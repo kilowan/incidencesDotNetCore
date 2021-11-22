@@ -1,4 +1,5 @@
-﻿using MiPrimeraApp.Data;
+﻿using Incidences.Models.Incidence;
+using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Incidence;
 using System;
@@ -68,17 +69,17 @@ namespace MiPrimeraApp.Business
         }
         #endregion
         #region INSERT
-        public bool InsertNoteFn(string NoteDesc, int incidenceId, int userId, string type)
+        public bool InsertNoteFn(NoteDto note, int? userId, int? incidenceId)
         {
             try
             {
-                return InsertNote(userId, incidenceId, NoteDesc, type);
+                return InsertNote(note, userId, incidenceId);
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
-        private bool InsertNote(int ownerId, int incidenceId, string issueDesc, string noteType)
+        private bool InsertNote(NoteDto note, int? ownerId, int? incidenceId)
         {
             try
             {
@@ -88,8 +89,8 @@ namespace MiPrimeraApp.Business
                     {
                         { "employee", null, ownerId.ToString() },
                         { "incidence", null, incidenceId.ToString() },
-                        { "noteType", null, $"'{ noteType }'" },
-                        { "noteStr", null, $"'{ issueDesc }'" }
+                        { "noteTypeId", null, $"'{ note.typeId }'" },
+                        { "noteStr", null, $"'{ note.noteStr }'" }
                     }
                 );
             }

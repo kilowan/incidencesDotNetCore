@@ -7,7 +7,7 @@ namespace MiPrimeraApp.Models.Employee
     {
         public string username;
 		public string password;
-		public int employeeId;
+		public int? employeeId;
         public Credentials()
         {
 
