@@ -1,4 +1,5 @@
-﻿using MiPrimeraApp.Data;
+﻿using Incidences.Models.Incidence;
+using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Incidence;
 using System;
@@ -9,6 +10,31 @@ namespace MiPrimeraApp.Business
 {
     public class PieceBz : BusinessBase
     {
+        public bool InsertPiece(PieceDto piece)
+        {
+            try
+            {
+                return Insert("piece_class", new()
+                {
+                    { "type", null, piece.typeId.ToString() },
+                    { "name", null, piece.name }
+                });
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+        public bool AddPieceFn(PieceDto piece)
+        {
+            try
+            {
+                return InsertPiece(piece);
+            }
+            catch (Exception e) {
+                throw new Exception(e.Message);
+            }
+        }
+
         public bool InsertPiecesSql(IList<int> pieces, int incidenceId)
         {
             try
@@ -62,19 +88,14 @@ namespace MiPrimeraApp.Business
 
             return columns;
         }
-        public bool UpdatePiece(int id, int type, string name, bool deleted = false)
+        public bool UpdatePiece(PieceDto piece, int id)
         {
             try
             {
                 return Update(
                     "piece_class",
-                    new()
-                    {
-                        { "type", null, type.ToString() },
-                        { "name", null, name },
-                        { "deleted", null, deleted.ToString() }
-                    },
-                    WherePieceId(new CDictionary<string, string>(),  id ));
+                    GetPieceColumns(piece),
+                    WherePieceId(new CDictionary<string, string>(), id ));
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
@@ -168,6 +189,14 @@ namespace MiPrimeraApp.Business
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
+        }
+        public CDictionary<string, string> GetPieceColumns(PieceDto piece)
+        {
+            CDictionary<string, string> tmpColumns = new CDictionary<string, string>();
+            if (piece.typeId != null) tmpColumns.Add("type", null, piece.typeId.ToString());
+            if (piece.name != null) tmpColumns.Add("name", null, piece.name);
+            if (piece.deleted != null) tmpColumns.Add("deleted", null, piece.deleted.ToString());
+            return tmpColumns;
         }
     }
 }
