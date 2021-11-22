@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Business;
+using MiPrimeraApp.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,80 +18,17 @@ namespace MiPrimeraApp.Controllers
         {
             this.cred = new();
         }
-        // GET: CredentialsController
-        /*public ActionResult Index()
-        {
-            return View();
-        }*/
 
-        // GET: CredentialsController/Details/5
-        //[HttpGet("username={username} password={password}")]
+        [HttpGet("{username}/{password}")]
         public bool Details(string username, string password)
         {
             return this.cred.CheckCredentialsFn(username, password);
         }
 
-        // GET: CredentialsController/Create
-        /*public ActionResult Create()
+        [HttpPut("{employeeId}")]
+        public bool Update(CredentialsDto credentials, int employeeId)
         {
-            return View();
-        }*/
-
-        // POST: CredentialsController/Create
-        /*[HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }*/
-
-        // GET: CredentialsController/Edit/5
-        /*public ActionResult Edit(int id)
-        {
-            return View();
-        }*/
-
-        // POST: CredentialsController/Edit/5
-        /*[HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }*/
-
-        // GET: CredentialsController/Delete/5
-        /*public ActionResult Delete(int id)
-        {
-            return View();
-        }*/
-
-        // POST: CredentialsController/Delete/5
-        /*[HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }*/
+            return this.cred.UpdateCredentials(credentials, employeeId);
+        }
     }
 }
