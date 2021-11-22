@@ -6,6 +6,8 @@ using MiPrimeraApp.Models.Incidence;
 
 namespace MiPrimeraApp.Controllers
 {
+    [Route("api/Incidence")]
+    [ApiController]
     public class IncidenceController : ControllerBase
     {
         private IncidenceBz inc;
