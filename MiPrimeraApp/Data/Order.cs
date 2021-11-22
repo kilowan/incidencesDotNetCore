@@ -5,7 +5,7 @@ namespace MiPrimeraApp.Data.Models
     public class Order
     {
         public string order;
-		public IList<string> fields;
+        public IList<string> fields;
         public Order(string field)
         {
             this.fields = new List<string> { field };

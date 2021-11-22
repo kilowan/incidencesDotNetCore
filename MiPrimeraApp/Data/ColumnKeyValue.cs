@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace MiPrimeraApp.Data
+﻿namespace MiPrimeraApp.Data
 {
     public class ColumnKeyValue<Tkey, TValue>
     {
@@ -13,9 +11,9 @@ namespace MiPrimeraApp.Data
         }
         public ColumnKeyValue(Tkey column, Tkey key, TValue value)
         {
-			this.column = column;
-			this.key = key;
-			this.value = value;
+            this.column = column;
+            this.key = key;
+            this.value = value;
         }
     }
 }

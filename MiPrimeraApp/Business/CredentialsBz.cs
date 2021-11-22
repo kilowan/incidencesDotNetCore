@@ -1,22 +1,33 @@
-﻿using MiPrimeraApp.Data;
+﻿using Incidences.Business;
+using Incidences.Data;
+using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net;
 
 namespace MiPrimeraApp.Business
 {
-    public class CredentialsBz : BusinessBase
+    public class CredentialsBz : ICredentialsBz
     {
+        private IBusinessBase bisba;
+        private ISqlBase sql;
+        public CredentialsBz(IBusinessBase businessBase, ISqlBase sqlBase)
+        {
+            this.bisba = businessBase;
+            this.sql = sqlBase;
+        }
         #region SELECT
         public Credentials SelectCredentialsByUsername(string username)
         {
             try
             {
-                return SelectCredentials(WhereUsername(new CDictionary<string, string>(), username));
+                return SelectCredentials(this.bisba.WhereUsername(new CDictionary<string, string>(), username));
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -24,9 +35,10 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return SelectCredentials(WhereEmployee(new CDictionary<string, string>(), id));
+                return SelectCredentials(this.bisba.WhereEmployee(new CDictionary<string, string>(), id));
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -34,15 +46,17 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Select(new Select("credentials", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select("credentials", new List<string> { "*" }, conditions));
                 if (result)
                 {
-                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
                     reader.Read();
                     return new Credentials((string)reader.GetValue(1), (string)reader.GetValue(2), (int)reader.GetValue(3));
-                } else throw new Exception("Ningún registro");
+                }
+                else throw new Exception("Ningún registro");
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -53,7 +67,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update("credentials", GetCredentialsColumns(null, password), new CDictionary<string, string> { { "employee", null, employeeId.ToString() } });
+                return this.sql.Update("credentials", GetCredentialsColumns(null, password), new CDictionary<string, string> { { "employee", null, employeeId.ToString() } });
             }
             catch (Exception e)
             {
@@ -64,8 +78,10 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update("credentials", GetCredentialsColumns(username), new CDictionary<string, string> { { "employee", null, employeeId.ToString() } });
-            } catch (Exception e) {
+                return this.sql.Update("credentials", GetCredentialsColumns(username), new CDictionary<string, string> { { "employee", null, employeeId.ToString() } });
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -73,26 +89,28 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update(
-                    "credentials", 
+                return this.sql.Update(
+                    "credentials",
                     GetCredentialsColumns(
-                        credentials.username, 
-                        credentials.password), 
-                    new CDictionary<string, string> { 
-                        { "employee", null, employeeId.ToString() } 
+                        credentials.username,
+                        credentials.password),
+                    new CDictionary<string, string> {
+                        { "employee", null, employeeId.ToString() }
                     }
                 );
-            } catch (Exception e) {
-                    throw new Exception(e.Message);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
         }
         #endregion
 
         #region OTHER
-        public CDictionary<string, string> GetCredentialsColumns(string username = null, string password = null, int? employee = null)
+        private CDictionary<string, string> GetCredentialsColumns(string username = null, string password = null, int? employee = null)
         {
             CDictionary<string, string> tmpColumns = new CDictionary<string, string>();
-            if(username != null) tmpColumns.Add("username", null, username);
+            if (username != null) tmpColumns.Add("username", null, username);
             if (password != null) tmpColumns.Add("password", null, password);
             if (employee != null) tmpColumns.Add("employee", null, employee.ToString());
             return tmpColumns;
@@ -102,15 +120,17 @@ namespace MiPrimeraApp.Business
             try
             {
                 return CheckCredentials(
-                    WherePassword(
-                        WhereUsername(
-                            new CDictionary<string, string>(), 
+                    this.bisba.WherePassword(
+                        this.bisba.WhereUsername(
+                            new CDictionary<string, string>(),
                             username
-                        ), 
+                        ),
                         password
                     )
                 );
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -119,8 +139,8 @@ namespace MiPrimeraApp.Business
             try
             {
                 return CheckCredentials(
-                    WhereUsername(
-                        new CDictionary<string, string>(), 
+                    this.bisba.WhereUsername(
+                        new CDictionary<string, string>(),
                         username
                     )
                 );
@@ -132,7 +152,7 @@ namespace MiPrimeraApp.Business
         }
         private bool CheckCredentials(CDictionary<string, string> conditions)
         {
-            return Select(
+            return this.sql.Select(
                 new Select(
                     "credentialsmatch",
                     new List<string> { "*" },

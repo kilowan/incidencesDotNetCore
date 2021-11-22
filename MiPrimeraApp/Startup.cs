@@ -1,11 +1,13 @@
 // Unused usings removed
+using Incidences.Business;
+using Incidences.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using MiPrimeraApp;
+using MiPrimeraApp.Business;
+using MiPrimeraApp.Data;
 
 namespace TodoApi
 {
@@ -21,6 +23,15 @@ namespace TodoApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddTransient<IIncidenceBz, IncidenceBz>();
+            services.AddTransient<IReportBz, ReportBz>();
+            services.AddTransient<IPieceBz, PieceBz>();
+            services.AddTransient<IEmployeeBz, EmployeeBz>();
+            services.AddTransient<ICredentialsBz, CredentialsBz>();
+            services.AddTransient<IEmployeeRangeBz, EmployeeRangeBz>();
+            services.AddTransient<ISqlBase, SqlBase>();
+            services.AddTransient<IBusinessBase, BusinessBase>();
+            services.AddTransient<INoteBz, NoteBz>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

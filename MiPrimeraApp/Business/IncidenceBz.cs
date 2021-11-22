@@ -1,4 +1,6 @@
-﻿using Incidences.Models.Incidence;
+﻿using Incidences.Business;
+using Incidences.Data;
+using Incidences.Models.Incidence;
 using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Incidence;
@@ -8,41 +10,46 @@ using System.Data;
 
 namespace MiPrimeraApp.Business
 {
-    public class IncidenceBz : BusinessBase
+    public class IncidenceBz : IIncidenceBz
     {
-        private NoteBz note;
-        private PieceBz piece;
+        private INoteBz note;
+        private IPieceBz piece;
+        private IBusinessBase bisba;
+        private ISqlBase sql;
 
-        public IncidenceBz()
+        public IncidenceBz(INoteBz note, IPieceBz piece, IBusinessBase bisba, ISqlBase sql)
         {
-            this.note = new NoteBz();
-            this.piece = new PieceBz();
+            this.note = note;
+            this.piece = piece;
+            this.bisba = bisba;
+            this.sql = sql;
         }
         public IncidenceList GetIncidencesByStateTypeFn(int state, int userId, string type)
         {
             try
             {
                 IList<Incidence> own = SelectIncidences(
-                    new List<string> { "*" }, 
-                    WhereEmployeeId(
-                        WhereIncidenceState(
-                            new CDictionary<string, string>(), 
+                    new List<string> { "*" },
+                    this.bisba.WhereEmployeeId(
+                        this.bisba.WhereIncidenceState(
+                            new CDictionary<string, string>(),
                             state
-                        ), 
+                        ),
                         userId
                     )
                 );
-                IncidenceList incidences = new (own);
+                IncidenceList incidences = new(own);
                 IList<string> list = new List<string>();
                 list.Add("Technician");
                 list.Add("Admin");
                 list.Contains(type);
-                if (list.Contains(type) && state != 4) {
+                if (list.Contains(type) && state != 4)
+                {
                     incidences.other = SelectIncidences(
-                        new List<string> { "*" }, 
-                        WhereTechnicianId(
-                            WhereIncidenceState(
-                                new CDictionary<string, string>(), 
+                        new List<string> { "*" },
+                        this.bisba.WhereTechnicianId(
+                            this.bisba.WhereIncidenceState(
+                                new CDictionary<string, string>(),
                                 state
                             ),
                             userId
@@ -51,8 +58,9 @@ namespace MiPrimeraApp.Business
                 }
 
                 return incidences;
-            } 
-            catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -60,9 +68,10 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), id))[0];
+                return SelectIncidences(new List<string>('*'), this.bisba.WhereIncidence(new CDictionary<string, string>(), id))[0];
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -70,16 +79,17 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Select(new Select("parte", fields));
+                bool result = this.sql.Select(new Select("parte", fields));
                 if (result)
                 {
-                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
                     reader.Read();
                     return (int)reader.GetValue(0);
                 }
                 else throw new Exception("Ningún registro");
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -87,10 +97,10 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Select(new Select("incidence"));
+                bool result = this.sql.Select(new Select("incidence"));
                 if (result)
                 {
-                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
                     reader.Read();
                     return (int)reader.GetValue(0);
                 }
@@ -106,8 +116,8 @@ namespace MiPrimeraApp.Business
             try
             {
                 Incidence incidence = SelectIncidences(
-                    new List<string>('*'), 
-                    WhereIncidence(new CDictionary<string, string>(), 
+                    new List<string>('*'),
+                    this.bisba.WhereIncidence(new CDictionary<string, string>(),
                     incidenceId)
                 )[0];
                 if (incidence.solverId == userId || incidence.state == 1 || incidence.ownerId == userId)
@@ -125,49 +135,56 @@ namespace MiPrimeraApp.Business
             try
             {
                 CDictionary<string, string> columns = new CDictionary<string, string>();
-                if (incidence.state != null) {
+                if (incidence.state != null)
+                {
                     columns.Add("state", null, incidence.state.ToString());
-                } else
+                }
+                else
                 {
                     columns = new CDictionary<string, string>();
                     columns.Add("solverId", null, userId.ToString());
                     columns.Add("state", null, "2");
                 }
-                if (close) {
+                if (close)
+                {
                     columns.Add("close_dateeTime", null, "CURRENT_TIMESTAMP()");
                 }
-                bool result = Update(
-                    "incidence", 
+                bool result = this.sql.Update(
+                    "incidence",
                     columns,
-                    WhereIncidenceId(
-                        new CDictionary<string, string>(), 
+                    this.bisba.WhereIncidenceId(
+                        new CDictionary<string, string>(),
                         incidenceId
                     )
                 );
                 if (!result) throw new Exception("Parte no actualizado");
 
-                if (note != null) {
+                if (note != null)
+                {
 
                     result = this.note.InsertNoteFn(incidence.note, userId, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
-                if (incidence.piecesAdded != null && incidence.piecesAdded.Count > 0) {
+                if (incidence.piecesAdded != null && incidence.piecesAdded.Count > 0)
+                {
                     result = this.piece.InsertPiecesSql(incidence.piecesAdded, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
-                if (incidence.piecesDeleted != null && incidence.piecesDeleted.Count > 0) {
+                if (incidence.piecesDeleted != null && incidence.piecesDeleted.Count > 0)
+                {
                     result = this.piece.DeletePiecesSql(incidence.piecesDeleted, incidenceId);
                     if (!result) new Exception("Parte no actualizado");
                 }
                 return result;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
-        private IDictionary<string, object>  FillArgs(IList<string> needed, IDictionary<string, object> args)
+        private IDictionary<string, object> FillArgs(IList<string> needed, IDictionary<string, object> args)
         {
             foreach (string value in needed)
             {
@@ -180,11 +197,11 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Select(new Select("FullIncidence", fields, conditions));
+                bool result = this.sql.Select(new Select("FullIncidence", fields, conditions));
                 IList<Incidence> incidences = new List<Incidence>();
-                if (result) 
+                if (result)
                 {
-                    using (IDataReader reader = this.get_sql.ExecuteReader())
+                    using (IDataReader reader = this.sql.get_sql.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -205,12 +222,12 @@ namespace MiPrimeraApp.Business
                         {
                             "*"
                         };
-                        conditions = WhereIncidenceId(new CDictionary<string, string>(), incidence.id);
-                        result = Select(new Select("incidence_pieces", list, conditions));
+                        conditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.id);
+                        result = this.sql.Select(new Select("incidence_pieces", list, conditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
-                            using IDataReader reader = this.get_sql.ExecuteReader();
+                            using IDataReader reader = this.sql.get_sql.ExecuteReader();
                             while (reader.Read())
                             {
                                 Piece piece = new Piece(
@@ -224,12 +241,12 @@ namespace MiPrimeraApp.Business
                                 pieces.Add(piece);
                             }
                         }
-                        conditions = WhereNoteType(conditions, "ownerNote");
-                        result = Select(new Select("incidence_notes", list, conditions));
+                        conditions = this.bisba.WhereNoteType(conditions, "ownerNote");
+                        result = this.sql.Select(new Select("incidence_notes", list, conditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();
-                            using IDataReader reader = this.get_sql.ExecuteReader();
+                            using IDataReader reader = this.sql.get_sql.ExecuteReader();
                             while (reader.Read())
                             {
                                 Note note = new Note(
@@ -242,7 +259,9 @@ namespace MiPrimeraApp.Business
                     }
                 }
                 return incidences;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -250,9 +269,9 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Insert(
+                bool result = this.sql.Insert(
                     "incidence",
-                    WhereOwnerId(new CDictionary<string, string>(), incidence.ownerId)
+                    this.bisba.WhereOwnerId(new CDictionary<string, string>(), incidence.ownerId)
                 );
                 if (!result) throw new Exception("Parte no insertado");
                 int id = LastIncidence();
@@ -263,7 +282,8 @@ namespace MiPrimeraApp.Business
                 if (!result) throw new Exception("Parte no insertado");
                 return result;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -271,23 +291,24 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                
-                bool result = Update(
-                    "incidence", 
-                    new CDictionary<string, string> { 
-                        { "state", null, "5" } 
+
+                bool result = this.sql.Update(
+                    "incidence",
+                    new CDictionary<string, string> {
+                        { "state", null, "5" }
                     },
-                    WhereOwnerId(
-                        WhereIncidenceId(
-                            new CDictionary<string, string>(), 
+                    this.bisba.WhereOwnerId(
+                        this.bisba.WhereIncidenceId(
+                            new CDictionary<string, string>(),
                             incidenceId
-                        ), 
+                        ),
                         userId
                     )
                 );
                 return result;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }

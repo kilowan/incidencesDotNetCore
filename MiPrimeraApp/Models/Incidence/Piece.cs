@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace MiPrimeraApp.Models.Incidence
+﻿namespace MiPrimeraApp.Models.Incidence
 {
     public class Piece
     {
         public int? id;
-		public string name;
+        public string name;
         public PieceType type;
         public bool deleted;
         public Piece(string name)

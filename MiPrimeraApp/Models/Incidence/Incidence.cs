@@ -6,16 +6,16 @@ namespace MiPrimeraApp.Models.Incidence
     public class Incidence
     {
         public string owner;
-		public int ownerId;
-		public string solver;
-		public int? solverId;
+        public int ownerId;
+        public string solver;
+        public int? solverId;
         public DateTime initDateTime;
         public string issueDesc;
         public IList<Piece> pieces;
-		public IList<Note> notes;
-		public int state;
-		public int id;
-		public DateTime finishDateTime;
+        public IList<Note> notes;
+        public int state;
+        public int id;
+        public DateTime finishDateTime;
         public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc)
         {
             this.id = id;

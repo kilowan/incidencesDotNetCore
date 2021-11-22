@@ -40,12 +40,13 @@
             this.id = id;
             this.state = state;
         }
-        public void SetType(int id, string name) 
+        public void SetType(int id, string name)
         {
             this.type = new TypeRange(id, name);
         }
-        public string FullName {
-            get 
+        public string FullName
+        {
+            get
             {
                 return this.fullName;
             }

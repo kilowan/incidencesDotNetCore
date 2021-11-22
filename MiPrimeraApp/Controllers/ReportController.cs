@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Incidences.Business;
+using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Business;
 using MiPrimeraApp.Models;
 
@@ -8,12 +9,15 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class ReportController : ControllerBase
     {
-        private ReportBz rep;
+        private IReportBz rep;
+        public ReportController(IReportBz report)
+        {
+            this.rep = report;
+        }
         // GET: ReportController/Details/5
         [HttpGet("{id}")]
         public Report Details(int id)
         {
-            rep = new ReportBz();
             return rep.GetReportFn(id);
         }
     }

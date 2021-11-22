@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Business;
+﻿using Incidences.Business;
+using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Models.Employee;
 using System.Collections.Generic;
 
@@ -9,10 +9,10 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        EmployeeBz emp;
-        public EmployeeController()
+        private IEmployeeBz emp;
+        public EmployeeController(IEmployeeBz employee)
         {
-            this.emp = new();
+            this.emp = employee;
         }
 
         [HttpGet]
