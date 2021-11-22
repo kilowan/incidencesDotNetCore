@@ -1,4 +1,6 @@
-﻿using Incidences.Models.Incidence;
+﻿using Incidences.Business;
+using Incidences.Data;
+using Incidences.Models.Incidence;
 using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Incidence;
@@ -8,8 +10,13 @@ using System.Data;
 
 namespace MiPrimeraApp.Business
 {
-    public class NoteBz : BusinessBase
+    public class NoteBz : INoteBz
     {
+        private ISqlBase sql;
+        public NoteBz(ISqlBase sql)
+        {
+            this.sql = sql;
+        }
         #region SELECT
         public Note SelectEmployeeNoteByIncidenceId(int incidenceId)
         {
@@ -38,13 +45,14 @@ namespace MiPrimeraApp.Business
                     }
                 );
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
-        private IList<Note> GetNotes(CDictionary<string, string> conditions) 
+        private IList<Note> GetNotes(CDictionary<string, string> conditions)
         {
-            bool result = Select(
+            bool result = this.sql.Select(
                 new Select(
                     "incidence_notes",
                     new List<string> {
@@ -57,7 +65,7 @@ namespace MiPrimeraApp.Business
             if (result)
             {
                 IList<Note> notes = new List<Note>();
-                using IDataReader reader = this.get_sql.ExecuteReader();
+                using IDataReader reader = this.sql.get_sql.ExecuteReader();
                 while (reader.Read())
                 {
                     notes.Add(new Note((string)reader.GetValue(1), (DateTime)reader.GetValue(2)));
@@ -75,7 +83,8 @@ namespace MiPrimeraApp.Business
             {
                 return InsertNote(note, userId, incidenceId);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -83,9 +92,9 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                
-                return Insert("notes",
-                    new CDictionary<string, string> 
+
+                return this.sql.Insert("notes",
+                    new CDictionary<string, string>
                     {
                         { "employee", null, ownerId.ToString() },
                         { "incidence", null, incidenceId.ToString() },
@@ -94,7 +103,8 @@ namespace MiPrimeraApp.Business
                     }
                 );
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -104,19 +114,20 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update(
+                return this.sql.Update(
                     "notes",
-                    new CDictionary<string, string> { { "noteStr", null, note } }, 
+                    new CDictionary<string, string> { { "noteStr", null, note } },
                     new CDictionary<string, string>{
                         { "incidence", null, incidenceId.ToString() },
-                        { "employee", null, employeeId.ToString() } 
+                        { "employee", null, employeeId.ToString() }
                     }
                 );
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
-            }
+        }
         #endregion
     }
 }

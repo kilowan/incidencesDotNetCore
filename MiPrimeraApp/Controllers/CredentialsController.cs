@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Business;
 using MiPrimeraApp.Models.Employee;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MiPrimeraApp.Controllers
 {
@@ -13,10 +8,10 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class CredentialsController : ControllerBase
     {
-        private CredentialsBz cred;
-        public CredentialsController()
+        private ICredentialsBz cred;
+        public CredentialsController(ICredentialsBz credentials)
         {
-            this.cred = new();
+            this.cred = credentials;
         }
 
         [HttpGet("{username}/{password}")]

@@ -22,13 +22,13 @@ namespace MiPrimeraApp.Data.Models
             this.KeysValues = new List<KeyValuePair<TKey, TValue>>();
             this.list = new List<ColumnKeyValue<TKey, TValue>>();
         }
-        public TValue this[TKey key] 
-        { 
+        public TValue this[TKey key]
+        {
             get => KeysValues
                 .Where(a => a.Key.Equals(key))
                 .Select(a => a.Value)
-                .Single(); 
-            set => Add(key, value); 
+                .Single();
+            set => Add(key, value);
         }
 
         public int Count => Keys.Count;
@@ -112,7 +112,7 @@ namespace MiPrimeraApp.Data.Models
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             bool contained = Contains(item);
-            if (contained) 
+            if (contained)
             {
                 Values.Remove(item.Value);
                 Keys.Remove(item.Key);
@@ -142,7 +142,7 @@ namespace MiPrimeraApp.Data.Models
             return Keys.GetEnumerator();
         }
 
-        public ICollection<ColumnKeyValue<TKey, TValue>> Get() 
+        public ICollection<ColumnKeyValue<TKey, TValue>> Get()
         {
             return list;
         }

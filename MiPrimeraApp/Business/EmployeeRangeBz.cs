@@ -1,4 +1,6 @@
-﻿using MiPrimeraApp.Data;
+﻿using Incidences.Business;
+using Incidences.Data;
+using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Employee;
 using System;
@@ -7,8 +9,15 @@ using System.Data;
 
 namespace MiPrimeraApp.Business
 {
-    public class EmployeeRangeBz : BusinessBase
+    public class EmployeeRangeBz : IEmployeeRangeBz
     {
+        private IBusinessBase bisba;
+        private ISqlBase sql;
+        public EmployeeRangeBz(IBusinessBase bisba, ISqlBase sql)
+        {
+            this.bisba = bisba;
+            this.sql = sql;
+        }
         #region SELECT
         //new
         public TypeRange SelectRangeById(int id)
@@ -16,46 +25,50 @@ namespace MiPrimeraApp.Business
             try
             {
                 return SelectRangeList(
-                    new CDictionary<string, string> { 
-                        { "id", null, id.ToString() } 
+                    new CDictionary<string, string> {
+                        { "id", null, id.ToString() }
                     }
                 )[0];
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
-        public int GetEmployeeRangeIdByName(string typeName) 
+        public int GetEmployeeRangeIdByName(string typeName)
         {
             return (int)SelectRangeList(
-                WhereEmployeeTypeName(
-                    new CDictionary<string, string>(), 
+                this.bisba.WhereEmployeeTypeName(
+                    new CDictionary<string, string>(),
                     typeName
                 )
             )[0].id;
         }
         public IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null)
+        {
+            try
             {
-                try
-                {
-                bool result = Select(new Select("employee_range", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select("employee_range", new List<string> { "*" }, conditions));
                 if (result)
                 {
                     IList<TypeRange> ranges = new List<TypeRange>();
-                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
                     while (reader.Read())
                     {
                         ranges.Add(
                             new TypeRange(
-                                (int)reader.GetValue(0), 
+                                (int)reader.GetValue(0),
                                 (string)reader.GetValue(1)
                             )
                         );
                     }
 
                     return ranges;
-                } else throw new Exception("Ningún registro");
-            } catch (Exception e) {
+                }
+                else throw new Exception("Ningún registro");
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }

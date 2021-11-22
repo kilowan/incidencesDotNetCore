@@ -3,20 +3,20 @@ using System.Text;
 
 namespace MiPrimeraApp.Models.Employee
 {
-    public class Credentials 
+    public class Credentials
     {
         public string username;
-		public string password;
-		public int? employeeId;
+        public string password;
+        public int? employeeId;
         public Credentials()
         {
 
         }
         public Credentials(string username, string password, int employeeId)
         {
-			this.username = username;
+            this.username = username;
             this.password = GetMD5(password);
-			this.employeeId = employeeId;
+            this.employeeId = employeeId;
         }
 
         private static string GetMD5(string str)

@@ -1,4 +1,6 @@
-﻿using Incidences.Models.Incidence;
+﻿using Incidences.Business;
+using Incidences.Data;
+using Incidences.Models.Incidence;
 using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Incidence;
@@ -8,19 +10,27 @@ using System.Data;
 
 namespace MiPrimeraApp.Business
 {
-    public class PieceBz : BusinessBase
+    public class PieceBz : IPieceBz
     {
+        private IBusinessBase bisba;
+        private ISqlBase sql;
+        public PieceBz(IBusinessBase bisba, ISqlBase sql)
+        {
+            this.bisba = bisba;
+            this.sql = sql;
+        }
         public bool InsertPiece(PieceDto piece)
         {
             try
             {
-                return Insert("piece_class", new()
+                return this.sql.Insert("piece_class", new()
                 {
                     { "type", null, piece.typeId.ToString() },
                     { "name", null, piece.name }
                 });
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -30,11 +40,11 @@ namespace MiPrimeraApp.Business
             {
                 return InsertPiece(piece);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
-
         public bool InsertPiecesSql(IList<int> pieces, int incidenceId)
         {
             try
@@ -46,9 +56,10 @@ namespace MiPrimeraApp.Business
                 }
                 string stringPieces = string.Join(", ", values);
                 string text = $"INSERT INTO incidence_piece_log (piece, incidence) VALUES ({ stringPieces });";
-                return Call(text);
+                return this.sql.Call(text);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -58,12 +69,13 @@ namespace MiPrimeraApp.Business
             {
 
                 CDictionary<string, string> conditions;
-                if (pieces.Count > 1) conditions = WherePieceId(new CDictionary<string, string>(), pieces);
-                else conditions = WherePieceId(new CDictionary<string, string>(), pieces[0]);
+                if (pieces.Count > 1) conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces);
+                else conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces[0]);
 
-                return Update("incidence_piece_log", new CDictionary<string, string> { { "status", null, "1" } }, conditions); ;
+                return this.sql.Update("incidence_piece_log", new CDictionary<string, string> { { "status", null, "1" } }, conditions); ;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -71,9 +83,10 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update("piece_class", new CDictionary<string, string> { { "deleted", null, "1" } }, new CDictionary<string, string> { { "id", null, id.ToString() } });
+                return this.sql.Update("piece_class", new CDictionary<string, string> { { "deleted", null, "1" } }, new CDictionary<string, string> { { "id", null, id.ToString() } });
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -92,12 +105,13 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update(
+                return this.sql.Update(
                     "piece_class",
                     GetPieceColumns(piece),
-                    WherePieceId(new CDictionary<string, string>(), id ));
+                    this.bisba.WherePieceId(new CDictionary<string, string>(), id));
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -105,12 +119,13 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return Update("piece_class", 
-                    new(){
+                return this.sql.Update("piece_class",
+                    new()
+                    {
                         { "deleted", null, deleted.ToString() }
-                    }, 
-                    WherePieceId(
-                        new CDictionary<string, string>(), 
+                    },
+                    this.bisba.WherePieceId(
+                        new CDictionary<string, string>(),
                         id
                     )
                 );
@@ -124,10 +139,11 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                IList<Piece> pieces = SelectPieces(WherePieceId(new CDictionary<string, string>(), pieceId));
+                IList<Piece> pieces = SelectPieces(this.bisba.WherePieceId(new CDictionary<string, string>(), pieceId));
                 return pieces[0];
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -135,11 +151,11 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = Select(new Select("FullPiece", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select("FullPiece", new List<string> { "*" }, conditions));
                 if (result)
                 {
                     IList<Piece> pieces = new List<Piece>();
-                    using IDataReader reader = this.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
                     while (reader.Read())
                     {
                         pieces.Add(new(
@@ -155,9 +171,11 @@ namespace MiPrimeraApp.Business
                     }
 
                     return pieces;
-                } else throw new Exception("Ningún registro");
+                }
+                else throw new Exception("Ningún registro");
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }
@@ -166,10 +184,12 @@ namespace MiPrimeraApp.Business
             try
             {
                 return UpdatePiece(id, true);
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
-}
+        }
         public IList<Piece> GetPieces(int? piece = null)
         {
             try
@@ -177,16 +197,17 @@ namespace MiPrimeraApp.Business
                 CDictionary<string, string> conditions;
                 if (piece != null)
                 {
-                    conditions = WherePieceId(WhereNotDeleted(new CDictionary<string, string>()), piece);
+                    conditions = this.bisba.WherePieceId(this.bisba.WhereNotDeleted(new CDictionary<string, string>()), piece);
                 }
                 else
                 {
-                    conditions = WhereNotDeleted(new CDictionary<string, string>());
+                    conditions = this.bisba.WhereNotDeleted(new CDictionary<string, string>());
                 }
 
                 return SelectPieces(conditions);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 throw new Exception(e.Message);
             }
         }

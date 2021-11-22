@@ -1,28 +1,28 @@
-﻿using MiPrimeraApp.Data.Models;
+﻿using Incidences.Data;
+using MiPrimeraApp.Data.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace MiPrimeraApp.Data
 {
-    public class SqlBase
+    public class SqlBase : ISqlBase
     {
         private string stringconnection;
         private IDbConnection connection;
-        //private IDataReader reader;
-        protected IDbCommand get_sql { get; set; }
+        public IDbCommand get_sql { get; set; }
         #region string generation
 
-        protected bool Insert(string table, CDictionary<string, string> data)
+        public bool Insert(string table, CDictionary<string, string> data)
         {
             string text = $"INSERT INTO { table } ({ string.Join(", ", data.Keys) }) VALUES ({ string.Join(", ", data.Values) })";
             return Call(text);
         }
-        protected bool Select(Select select)
+        public bool Select(Select select)
         {
             return Call(select.GetSentence(), "");
         }
-        protected bool MultiSelectSQL(IList<Select> queries)
+        public bool MultiSelectSQL(IList<Select> queries)
         {
             IList<string> sentences = new List<string>();
             foreach (Select query in queries)
@@ -33,7 +33,7 @@ namespace MiPrimeraApp.Data
             string text = string.Join(" UNION ALL ", sentences);
             return Call(text, "");
         }
-        protected string Where(CDictionary<string, string> conditions)
+        public string Where(CDictionary<string, string> conditions)
         {
             IList<string> results = new List<string>();
             foreach (ColumnKeyValue<string, string> item in conditions.Get())
@@ -47,7 +47,7 @@ namespace MiPrimeraApp.Data
 
             return $"WHERE { string.Join(" AND ", results) }";
         }
-        protected bool Update(string table, CDictionary<string, string> columns, CDictionary<string, string> conditions)
+        public bool Update(string table, CDictionary<string, string> columns, CDictionary<string, string> conditions)
         {
             IList<string> conditionsValues = new List<string>();
             foreach (ColumnKeyValue<string, string> item in columns.Get())
@@ -58,18 +58,18 @@ namespace MiPrimeraApp.Data
             string text = $"UPDATE { table } SET { string.Join(", ", conditionsValues) } { Where(conditions) }";
             return Call(text);
         }
-        protected void Delete()
+        public void Delete()
         {
 
         }
-        protected string GroupBySQL(IList<string> fields)
+        public string GroupBySQL(IList<string> fields)
         {
             return " GROUP BY " + string.Join(", ", fields);
         }
-        protected string InnerJoinSQL(IList<InnerJoin> innerJoin)
+        public string InnerJoinSQL(IList<InnerJoin> innerJoin)
         {
-		    int position = 0;
-		    string innerText = string.Empty;
+            int position = 0;
+            string innerText = string.Empty;
             foreach (InnerJoin inner in innerJoin)
             {
                 if (position == 0)
@@ -81,7 +81,7 @@ namespace MiPrimeraApp.Data
             }
             return innerText;
         }
-        protected string OrderBySQL(Order orderBy)
+        public string OrderBySQL(Order orderBy)
         {
             return $"ORDER BY { string.Join(", ", orderBy.fields) } { orderBy.order }";
         }
@@ -89,7 +89,7 @@ namespace MiPrimeraApp.Data
 
         #region SQLServer
         //CONNECTION
-        protected IDbCommand ConnectionFn()
+        public IDbCommand ConnectionFn()
         {
             string user = "test";
             string pass = "123456";
@@ -99,13 +99,13 @@ namespace MiPrimeraApp.Data
             this.connection.Open();
             return this.connection.CreateCommand();
         }
-        protected bool Call(string text, string type = null)
+        public bool Call(string text, string type = null)
         {
             get_sql = ConnectionFn();
             get_sql.CommandText = text;
             return get_sql.ExecuteScalar() != null;
         }
-        protected bool Call(string text)
+        public bool Call(string text)
         {
             get_sql = ConnectionFn();
             get_sql.CommandText = text;

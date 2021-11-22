@@ -1,5 +1,5 @@
-﻿using Incidences.Models.Incidence;
-using Microsoft.AspNetCore.Http;
+﻿using Incidences.Business;
+using Incidences.Models.Incidence;
 using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Business;
 using MiPrimeraApp.Models.Incidence;
@@ -10,10 +10,10 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class IncidenceController : ControllerBase
     {
-        private IncidenceBz inc;
-        public IncidenceController()
+        private IIncidenceBz inc;
+        public IncidenceController(IIncidenceBz incidence)
         {
-            this.inc = new();
+            this.inc = incidence;
         }
 
         [HttpGet("{id}")]

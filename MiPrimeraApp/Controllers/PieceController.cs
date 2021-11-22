@@ -1,4 +1,5 @@
-﻿using Incidences.Models.Incidence;
+﻿using Incidences.Business;
+using Incidences.Models.Incidence;
 using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Business;
 using MiPrimeraApp.Models.Incidence;
@@ -10,10 +11,10 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class PieceController : ControllerBase
     {
-        private PieceBz piece;
-        public PieceController()
+        private IPieceBz piece;
+        public PieceController(IPieceBz piece)
         {
-            this.piece = new();
+            this.piece = piece;
         }
 
         [HttpGet]
