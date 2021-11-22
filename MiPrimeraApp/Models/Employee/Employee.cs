@@ -2,14 +2,14 @@
 {
     public class Employee
     {
-        public string name { get; set; }
-        public string surname1 { get; set; }
-        public string surname2 { get; set; }
+        public string name;
+        public string surname1;
+        public string surname2;
         private string fullName;
-        public string dni { get; set; }
-        public TypeRange type { get; set; }
-        public int? id { get; set; }
-        public int state { get; set; }
+        public string dni;
+        public TypeRange type;
+        public int? id;
+        public int state;
         public Employee()
         {
 

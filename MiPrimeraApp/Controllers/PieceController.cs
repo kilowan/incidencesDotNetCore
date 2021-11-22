@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Incidences.Models.Incidence;
+using Microsoft.AspNetCore.Mvc;
 using MiPrimeraApp.Business;
 using MiPrimeraApp.Models.Incidence;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ namespace MiPrimeraApp.Controllers
             this.piece = new();
         }
 
-        // GET: PieceController
         [HttpGet]
         public IList<Piece> Index()
         {
@@ -27,68 +27,23 @@ namespace MiPrimeraApp.Controllers
         {
             return this.piece.GetPieces(id);
         }
-        /*
-        // GET: PieceController/Create
-        public ActionResult Create()
+
+        [HttpPut("{id}")]
+        public bool Update(PieceDto piece, int id)
         {
-            return View();
+            return this.piece.UpdatePiece(piece, id);
         }
 
-        // POST: PieceController/Create
+        [HttpDelete("{id}")]
+        public bool Delete(int id)
+        {
+            return this.piece.DeletePieceFn(id);
+        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public bool Create(PieceDto piece)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return this.piece.AddPieceFn(piece);
         }
-
-        // GET: PieceController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: PieceController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: PieceController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: PieceController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }*/
     }
 }
