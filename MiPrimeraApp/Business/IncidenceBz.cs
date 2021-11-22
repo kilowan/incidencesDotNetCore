@@ -1,4 +1,5 @@
-﻿using MiPrimeraApp.Data;
+﻿using Incidences.Models.Incidence;
+using MiPrimeraApp.Data;
 using MiPrimeraApp.Data.Models;
 using MiPrimeraApp.Models.Incidence;
 using System;
@@ -17,7 +18,7 @@ namespace MiPrimeraApp.Business
             this.note = new NoteBz();
             this.piece = new PieceBz();
         }
-        public Incidences GetIncidencesByStateTypeFn(int state, int userId, string type)
+        public IncidenceList GetIncidencesByStateTypeFn(int state, int userId, string type)
         {
             try
             {
@@ -31,7 +32,7 @@ namespace MiPrimeraApp.Business
                         userId
                     )
                 );
-                Incidences incidences = new Incidences(own);
+                IncidenceList incidences = new (own);
                 IList<string> list = new List<string>();
                 list.Add("Technician");
                 list.Add("Admin");
@@ -65,7 +66,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public int LastIncidence(IList<string> fields)
+        private int LastIncidence(IList<string> fields)
         {
             try
             {
@@ -82,11 +83,11 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public int LastIncidence()
+        private int LastIncidence()
         {
             try
             {
-                bool result = Select(new Select("parte"));
+                bool result = Select(new Select("incidence"));
                 if (result)
                 {
                     using IDataReader reader = this.get_sql.ExecuteReader();
@@ -100,15 +101,18 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public void UpdateIncidenceFn(IDictionary<string, object> args)
+        public void UpdateIncidenceFn(IncidenceDto incidenceDto, int incidenceId, int userId, bool close)
         {
             try
             {
-                IDictionary<string, object> fullArgs = FillArgs(new List<string> { "incidenceId", "userId", "note", "state", "piecesAdded", "piecesDeleted", "close" }, args);
-                Incidence incidence = SelectIncidences(new List<string>('*'), WhereIncidence(new CDictionary<string, string>(), Convert.ToInt16(fullArgs["incidenceId"])))[0];
-                if (incidence.solverId == Convert.ToInt16(fullArgs["userI"]) || incidence.state == 1 || incidence.ownerId == Convert.ToInt16(fullArgs["userId"]))
+                Incidence incidence = SelectIncidences(
+                    new List<string>('*'), 
+                    WhereIncidence(new CDictionary<string, string>(), 
+                    incidenceId)
+                )[0];
+                if (incidence.solverId == userId || incidence.state == 1 || incidence.ownerId == userId)
                 {
-                    UpdateIncidence(Convert.ToInt16(fullArgs["state"]), Convert.ToInt16(fullArgs["incidenceId"]), Convert.ToInt16(fullArgs["userId"]), new Note(fullArgs["note"].ToString()), (List<int>)fullArgs["piecesAdded"], (List<int>)fullArgs["piecesDeleted"], (bool)fullArgs["close"]);
+                    UpdateIncidence(incidenceDto, incidenceId, userId, close);
                 }
             }
             catch (Exception e)
@@ -116,46 +120,54 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public void UpdateIncidence(int? state, int incidenceId, int userId, Note note, IList<int> piecesAdded, IList<int> piecesDeleted, bool close)
+        public bool UpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false)
         {
             try
             {
                 CDictionary<string, string> columns = new CDictionary<string, string>();
-                if (state != null) {
-                    columns.Add("state", null, state.ToString());
+                if (incidence.state != null) {
+                    columns.Add("state", null, incidence.state.ToString());
                 } else
                 {
                     columns = new CDictionary<string, string>();
-                    columns.Add("tec_res", null, userId.ToString());
+                    columns.Add("solverId", null, userId.ToString());
                     columns.Add("state", null, "2");
                 }
                 if (close) {
-                    columns.Add("fecha_resolucion", null, "CURRENT_DATE()");
-                    columns.Add("hora_resolucion", null, "CURRENT_TIME()");
+                    columns.Add("close_dateeTime", null, "CURRENT_TIMESTAMP()");
                 }
-                bool result = Update("parte", columns, WhereId_part(new CDictionary<string, string>(), incidenceId));
+                bool result = Update(
+                    "incidence", 
+                    columns,
+                    WhereIncidenceId(
+                        new CDictionary<string, string>(), 
+                        incidenceId
+                    )
+                );
                 if (!result) throw new Exception("Parte no actualizado");
 
                 if (note != null) {
-                    result = this.note.InsertNoteFn(note.noteStr, userId, incidenceId,  "Technician");
+
+                    result = this.note.InsertNoteFn(incidence.note, userId, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
-                if (piecesAdded != null && piecesAdded.Count > 0) {
-                    result = this.piece.InsertPiecesSql(piecesAdded, incidenceId);
+                if (incidence.piecesAdded != null && incidence.piecesAdded.Count > 0) {
+                    result = this.piece.InsertPiecesSql(incidence.piecesAdded, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
-                if (piecesDeleted != null && piecesDeleted.Count > 0) {
-                    result = this.piece.DeletePiecesSql(piecesDeleted, incidenceId);
+                if (incidence.piecesDeleted != null && incidence.piecesDeleted.Count > 0) {
+                    result = this.piece.DeletePiecesSql(incidence.piecesDeleted, incidenceId);
                     if (!result) new Exception("Parte no actualizado");
                 }
+                return result;
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
         }
-        public IDictionary<string, object>  FillArgs(IList<string> needed, IDictionary<string, object> args)
+        private IDictionary<string, object>  FillArgs(IList<string> needed, IDictionary<string, object> args)
         {
             foreach (string value in needed)
             {
@@ -234,18 +246,20 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool InsertIncidence(int ownerId, string issueDesc, IList<int> pieces)
+        public bool InsertIncidence(IncidenceDto incidence)
         {
             try
             {
-                bool result = Insert("parte", new CDictionary<string, string> { { "emp_crea", null, ownerId.ToString() } });
+                bool result = Insert(
+                    "incidence",
+                    WhereOwnerId(new CDictionary<string, string>(), incidence.ownerId)
+                );
                 if (!result) throw new Exception("Parte no insertado");
-                
                 int id = LastIncidence();
 
-                result = this.note.InsertNoteFn(issueDesc, ownerId, id,  "Employee");
+                result = this.note.InsertNoteFn(incidence.note, incidence.ownerId, id);
                 if (!result) throw new Exception("Parte no insertado");
-                result = this.piece.InsertPiecesSql(pieces, id);
+                result = this.piece.InsertPiecesSql(incidence.piecesAdded, id);
                 if (!result) throw new Exception("Parte no insertado");
                 return result;
             }
@@ -253,19 +267,23 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool DeleteIncidenceFn(int id_part, int emp_crea)
+        public bool DeleteIncidenceFn(int incidenceId, int userId)
         {
             try
             {
+                
                 bool result = Update(
-                    "parte", 
+                    "incidence", 
                     new CDictionary<string, string> { 
                         { "state", null, "5" } 
-                    }, 
-                    new CDictionary<string, string> { 
-                        { "id_part", null, id_part.ToString()}, 
-                        { "emp_crea", null, emp_crea.ToString() }
-                    }
+                    },
+                    WhereOwnerId(
+                        WhereIncidenceId(
+                            new CDictionary<string, string>(), 
+                            incidenceId
+                        ), 
+                        userId
+                    )
                 );
                 return result;
             }
