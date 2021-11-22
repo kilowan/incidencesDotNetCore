@@ -134,7 +134,7 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateEmployee(EmployeeDto employee)
+        public bool UpdateEmployee(EmployeeDto employee, int id)
         {
             try
             {
@@ -144,7 +144,7 @@ namespace MiPrimeraApp.Business
                     "employee", 
                     GetUserColumns(employee), 
                     new CDictionary<string, string> { 
-                        { "id", null, employee.id.ToString() } 
+                        { "id", null, id.ToString() } 
                     }
                 );
                 if (!result) throw new Exception("Empleado no actualizado");
@@ -152,19 +152,6 @@ namespace MiPrimeraApp.Business
             } catch (Exception e) {
                 throw new Exception(e.Message);
             }
-        }
-        public bool UpdateEmployeeFn(EmployeeDto employee)
-        {
-            employee.typeId = this.range.GetEmployeeRangeIdByName(employee.type);
-            bool result = Update("employee", GetUserColumns(employee), new CDictionary<string, string> { { "id", null, employee.id.ToString() } });
-            if (!result) throw new Exception("Empleado no actualizado");
-
-            if (employee.credentials.username != null || employee.credentials.password != null)
-            {
-                result = cred.UpdateCredentials(employee.credentials);
-            }
-
-            return result;
         }
 
         #endregion
@@ -178,7 +165,7 @@ namespace MiPrimeraApp.Business
                 if (result) 
                 {
                     Credentials credentials = cred.SelectCredentialsByUsername(employee.credentials.username);
-                    return UpdateEmployee(employee);
+                    return UpdateEmployee(employee, credentials.employeeId);
                 }
                 else return InsertEmployee(employee);
                 } catch (Exception e) {

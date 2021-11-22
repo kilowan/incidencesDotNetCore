@@ -69,11 +69,19 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateCredentials(CredentialsDto credentials, IDbCommand conexion = null)
+        public bool UpdateCredentials(CredentialsDto credentials, int employeeId)
         {
             try
             {
-                return Update("credentials", GetCredentialsColumns(credentials.username, credentials.password), new CDictionary<string, string> { { "employee", null, credentials.employeeId.ToString() } });
+                return Update(
+                    "credentials", 
+                    GetCredentialsColumns(
+                        credentials.username, 
+                        credentials.password), 
+                    new CDictionary<string, string> { 
+                        { "employee", null, employeeId.ToString() } 
+                    }
+                );
             } catch (Exception e) {
                     throw new Exception(e.Message);
             }

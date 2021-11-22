@@ -30,26 +30,12 @@ namespace MiPrimeraApp.Controllers
         [HttpPost]
         public bool Add(EmployeeDto employee)
         {
-            return emp.AddEmployeeFn(
-                employee.dni,
-                employee.name,
-                employee.surname1,
-                employee.surname2,
-                employee.type
-            );
+            return emp.AddEmployeeFn(employee);
         }
-        [HttpPut]
-        public bool Update(EmployeeDto employee)
+        [HttpPut("{id}")]
+        public bool Update(EmployeeDto employee, int id)
         {
-            return emp.UpdateEmployee(
-                employee.deleted,
-                employee.dni,
-                employee.name,
-                employee.surname1,
-                employee.surname2,
-                employee.type,
-                employee.id
-                );
+            return emp.UpdateEmployee(employee, id);
         }
 
         [HttpDelete("{id}")]
