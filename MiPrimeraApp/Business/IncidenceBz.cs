@@ -23,7 +23,7 @@ namespace MiPrimeraApp.Business
             try
             {
                 IList<Incidence> own = SelectIncidences(
-                    new List<string>('*'), 
+                    new List<string> { "*" }, 
                     WhereEmployeeId(
                         WhereIncidenceState(
                             new CDictionary<string, string>(), 
@@ -39,7 +39,7 @@ namespace MiPrimeraApp.Business
                 list.Contains(type);
                 if (list.Contains(type) && state != 4) {
                     incidences.other = SelectIncidences(
-                        new List<string>('*'), 
+                        new List<string> { "*" }, 
                         WhereTechnicianId(
                             WhereIncidenceState(
                                 new CDictionary<string, string>(), 
@@ -240,8 +240,8 @@ namespace MiPrimeraApp.Business
                             }
                         }
                     }
-                    return incidences;
-                } else throw new Exception("Ningún registro");
+                }
+                return incidences;
             } catch (Exception e) {
                 throw new Exception(e.Message);
             }
