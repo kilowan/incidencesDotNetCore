@@ -139,3 +139,4 @@ G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\I
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\ref\Incidences.dll
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\Incidences.pdb
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\Incidences.genruntimeconfig.cache
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\MiPrimeraApp\obj\Debug\net5.0\Incidences.csproj.AssemblyReference.cache
