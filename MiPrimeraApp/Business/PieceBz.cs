@@ -72,7 +72,16 @@ namespace MiPrimeraApp.Business
                 if (pieces.Count > 1) conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces);
                 else conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces[0]);
 
-                return this.sql.Update("incidence_piece_log", new CDictionary<string, string> { { "status", null, "1" } }, conditions); ;
+                bool result = this.sql.Update(
+                    "incidence_piece_log", 
+                    new CDictionary<string, string> { 
+                        { "status", null, "1" } 
+                    }, 
+                    conditions
+                );
+
+                this.sql.Close();
+                return result;
             }
             catch (Exception e)
             {
@@ -119,7 +128,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return this.sql.Update("piece_class",
+                bool result = this.sql.Update("piece_class",
                     new()
                     {
                         { "deleted", null, deleted.ToString() }
@@ -129,6 +138,9 @@ namespace MiPrimeraApp.Business
                         id
                     )
                 );
+
+                this.sql.Close();
+                return result;
             }
             catch (Exception e)
             {
@@ -155,7 +167,7 @@ namespace MiPrimeraApp.Business
                 if (result)
                 {
                     IList<Piece> pieces = new List<Piece>();
-                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.GetReader();
                     while (reader.Read())
                     {
                         pieces.Add(new(
@@ -170,6 +182,7 @@ namespace MiPrimeraApp.Business
                         ));
                     }
 
+                    this.sql.Close();
                     return pieces;
                 }
                 else throw new Exception("Ningún registro");

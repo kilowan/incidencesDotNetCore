@@ -62,7 +62,7 @@ namespace MiPrimeraApp.Business
         {
             return WhereCommon(conditions, "employee", null, $"{ employee }");
         }
-        public CDictionary<string, string> WhereEmployeeId(CDictionary<string, string> conditions, int employeeId)
+        public CDictionary<string, string> WhereEmployeeId(CDictionary<string, string> conditions, int? employeeId)
         {
             return WhereCommon(conditions, "employeeId", null, $"{ employeeId }");
         }
@@ -73,6 +73,10 @@ namespace MiPrimeraApp.Business
         public CDictionary<string, string> WherePassword(CDictionary<string, string> conditions, string password)
         {
             return WhereCommon(conditions, "password", null, GetMD5(password));
+        }
+        public CDictionary<string, string> WhereId(CDictionary<string, string> conditions, int? id)
+        {
+            return WhereCommon(conditions, "id", null, id.ToString());
         }
         public static CDictionary<string, string> WhereCommon(CDictionary<string, string> conditions, string column, string key, string value)
         {

@@ -24,10 +24,9 @@ namespace MiPrimeraApp.Business
         {
             try
             {
+                
                 return SelectRangeList(
-                    new CDictionary<string, string> {
-                        { "id", null, id.ToString() }
-                    }
+                    this.bisba.WhereId(new CDictionary<string, string>(), id)
                 )[0];
             }
             catch (Exception e)
@@ -52,7 +51,7 @@ namespace MiPrimeraApp.Business
                 if (result)
                 {
                     IList<TypeRange> ranges = new List<TypeRange>();
-                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.GetReader();
                     while (reader.Read())
                     {
                         ranges.Add(
@@ -62,7 +61,7 @@ namespace MiPrimeraApp.Business
                             )
                         );
                     }
-
+                    this.sql.Close();
                     return ranges;
                 }
                 else throw new Exception("Ningún registro");

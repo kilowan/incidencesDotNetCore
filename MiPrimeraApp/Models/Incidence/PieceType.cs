@@ -2,9 +2,44 @@
 {
     public class PieceType
     {
-        public string description { get; set; }
-        public string name { get; set; }
-        public int? id { get; set; }
+        private string description;
+        private string name;
+        private int? id;
+
+        public string Description 
+        {
+            get 
+            {
+                return description;
+            }
+            set 
+            {
+                description = value;
+            } 
+        }
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+            }
+        }
+        public int? Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                id = value;
+            }
+        }
+
         public PieceType()
         {
             this.name = string.Empty;

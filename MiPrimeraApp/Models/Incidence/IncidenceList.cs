@@ -4,8 +4,31 @@ namespace MiPrimeraApp.Models.Incidence
 {
     public class IncidenceList
     {
-        public IList<Incidence> own { get; set; }
-        public IList<Incidence> other { get; set; }
+        private IList<Incidence> own;
+        private IList<Incidence> other;
+
+        public IList<Incidence> Own 
+        {
+            get 
+            { 
+                return own; 
+            }
+            set 
+            { 
+                own = value; 
+            }
+        }
+        public IList<Incidence> Other
+        {
+            get
+            {
+                return other;
+            }
+            set
+            {
+                other = value;
+            }
+        }
         public IncidenceList()
         {
             this.own = new List<Incidence>();

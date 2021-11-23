@@ -5,9 +5,44 @@ namespace MiPrimeraApp.Models
 {
     public class Report
     {
-        public IList<ReportedPiece> reported;
-        public IList<Statistics> global;
-        public Statistics statistics;
+        private IList<ReportedPiece> reported;
+        private IList<Statistics> global;
+        private Statistics statistics;
+
+        public IList<ReportedPiece> Reported 
+        {
+            get 
+            { 
+                return reported; 
+            }
+            set 
+            { 
+                reported = value; 
+            }
+        }
+        public IList<Statistics> Global
+        {
+            get
+            {
+                return global;
+            }
+            set
+            {
+                global = value;
+            }
+        }
+        public Statistics Statistics
+        {
+            get
+            {
+                return statistics;
+            }
+            set
+            {
+                statistics = value;
+            }
+        }
+
         public Report(IList<ReportedPiece> reported, Statistics statistics)
         {
             this.reported = reported;

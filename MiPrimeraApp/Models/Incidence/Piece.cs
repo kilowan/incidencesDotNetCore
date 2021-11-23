@@ -2,10 +2,56 @@
 {
     public class Piece
     {
-        public int? id;
-        public string name;
-        public PieceType type;
-        public bool deleted;
+        private int? id;
+        private string name;
+        private PieceType type;
+        private bool deleted;
+
+        public int? Id 
+        {
+            get 
+            { 
+                return id; 
+            } 
+            set 
+            { 
+                id = value; 
+            } 
+        }
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+            }
+        }
+        public PieceType Type
+        {
+            get
+            {
+                return type;
+            }
+            set
+            {
+                type = value;
+            }
+        }
+        public bool Deleted
+        {
+            get
+            {
+                return deleted;
+            }
+            set
+            {
+                deleted = value;
+            }
+        }
+
         public Piece(string name)
         {
             this.name = name;

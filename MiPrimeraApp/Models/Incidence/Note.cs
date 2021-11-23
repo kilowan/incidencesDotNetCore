@@ -4,9 +4,44 @@ namespace MiPrimeraApp.Models.Incidence
 {
     public class Note
     {
-        public string noteStr;
-        public DateTime date;
-        public NoteType type;
+        private string noteStr;
+        private DateTime date;
+        private NoteType type;
+
+        public string NoteStr 
+        {
+            get 
+            { 
+                return noteStr; 
+            }
+            set 
+            {
+                noteStr = value;
+            } 
+        }
+        public DateTime Date
+        {
+            get
+            {
+                return date;
+            }
+            set
+            {
+                date = value;
+            }
+        }
+        public NoteType Type
+        {
+            get
+            {
+                return type;
+            }
+            set
+            {
+                type = value;
+            }
+        }
+
         public Note(string noteStr)
         {
             this.noteStr = noteStr;

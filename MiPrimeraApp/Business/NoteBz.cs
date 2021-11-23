@@ -65,11 +65,12 @@ namespace MiPrimeraApp.Business
             if (result)
             {
                 IList<Note> notes = new List<Note>();
-                using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                using IDataReader reader = this.sql.GetReader();
                 while (reader.Read())
                 {
                     notes.Add(new Note((string)reader.GetValue(1), (DateTime)reader.GetValue(2)));
                 }
+                this.sql.Close();
 
                 return notes;
             }
@@ -93,7 +94,7 @@ namespace MiPrimeraApp.Business
             try
             {
 
-                return this.sql.Insert("notes",
+                bool result = this.sql.Insert("notes",
                     new CDictionary<string, string>
                     {
                         { "employee", null, ownerId.ToString() },
@@ -102,6 +103,9 @@ namespace MiPrimeraApp.Business
                         { "noteStr", null, $"'{ note.noteStr }'" }
                     }
                 );
+
+                this.sql.Close();
+                return result;
             }
             catch (Exception e)
             {
@@ -114,7 +118,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return this.sql.Update(
+                bool result = this.sql.Update(
                     "notes",
                     new CDictionary<string, string> { { "noteStr", null, note } },
                     new CDictionary<string, string>{
@@ -122,6 +126,9 @@ namespace MiPrimeraApp.Business
                         { "employee", null, employeeId.ToString() }
                     }
                 );
+
+                this.sql.Close();
+                return result;
             }
             catch (Exception e)
             {
