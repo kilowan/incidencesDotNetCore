@@ -10,7 +10,7 @@ namespace MiPrimeraApp.Data
     {
         private string stringconnection;
         private IDbConnection connection;
-        public IDbCommand get_sql { get; set; }
+        private IDbCommand get_sql;
         #region string generation
 
         public bool Insert(string table, CDictionary<string, string> data)
@@ -89,25 +89,43 @@ namespace MiPrimeraApp.Data
 
         #region SQLServer
         //CONNECTION
-        public IDbCommand ConnectionFn()
+        public void ConnectionFn()
         {
             string user = "test";
             string pass = "123456";
 
             this.stringconnection = $@"Data Source=localhost\SQLEXPRESS;DataBase=Incidences;Persist Security Info=True;USER ID={user};Password={pass};MultipleActiveResultSets=true;";
             this.connection = new SqlConnection(this.stringconnection);
+        }
+        public IDbCommand command {
+            get { return get_sql; }
+            set { get_sql = value; }
+        }
+        public IDataReader GetReader() 
+        {
+            return get_sql.ExecuteReader();
+        }
+        public void Open() 
+        {
             this.connection.Open();
-            return this.connection.CreateCommand();
+        }
+        public void Close()
+        {
+            this.connection.Close();
         }
         public bool Call(string text, string type = null)
         {
-            get_sql = ConnectionFn();
+            ConnectionFn();
+            Open();
+            get_sql = connection.CreateCommand();
             get_sql.CommandText = text;
             return get_sql.ExecuteScalar() != null;
         }
         public bool Call(string text)
         {
-            get_sql = ConnectionFn();
+            ConnectionFn();
+            Open();
+            get_sql = connection.CreateCommand();
             get_sql.CommandText = text;
             return get_sql.ExecuteNonQuery() > 0;
         }

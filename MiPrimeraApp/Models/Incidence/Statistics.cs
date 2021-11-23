@@ -2,8 +2,42 @@
 {
     public class Statistics
     {
-        public string employeeName;
-        public string average;
-        public int solvedIncidences;
+        private string employeeName;
+        private string average;
+        private int solvedIncidences;
+
+        public string EmployeeName 
+        {
+            get 
+            { 
+                return employeeName; 
+            }
+            set 
+            { 
+                employeeName = value; 
+            }
+        }
+        public string Average
+        {
+            get
+            {
+                return average;
+            }
+            set
+            {
+                average = value;
+            }
+        }
+        public int SolvedIncidences
+        {
+            get
+            {
+                return solvedIncidences;
+            }
+            set
+            {
+                solvedIncidences = value;
+            }
+        }
     }
 }

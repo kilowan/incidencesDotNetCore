@@ -20,9 +20,10 @@ namespace Incidences.Business
         public CDictionary<string, string> WherePieceId(CDictionary<string, string> conditions, IList<int> ids);
         public CDictionary<string, string> WhereUsername(CDictionary<string, string> conditions, string username);
         public CDictionary<string, string> WhereEmployee(CDictionary<string, string> conditions, int employee);
-        public CDictionary<string, string> WhereEmployeeId(CDictionary<string, string> conditions, int employeeId);
+        public CDictionary<string, string> WhereEmployeeId(CDictionary<string, string> conditions, int? employeeId);
         public CDictionary<string, string> WhereTechnicianId(CDictionary<string, string> conditions, int technicianId);
         public CDictionary<string, string> WherePassword(CDictionary<string, string> conditions, string password);
+        public CDictionary<string, string> WhereId(CDictionary<string, string> conditions, int? id);
         public string GetMD5(string str);
     }
 }

@@ -93,7 +93,7 @@ namespace MiPrimeraApp.Business
                 if (result)
                 {
                     IList<Employee> employees = new List<Employee>();
-                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.GetReader();
                     while (reader.Read())
                     {
                         employees.Add(
@@ -111,6 +111,7 @@ namespace MiPrimeraApp.Business
                             )
                         );
                     }
+                    this.sql.Close();
                     return employees;
                 }
                 else throw new Exception("Ningún registro");
@@ -143,7 +144,9 @@ namespace MiPrimeraApp.Business
                     }
                     if (columns.Count > 0)
                     {
-                        return this.sql.Update("employee", columns, new CDictionary<string, string> { { "dni", null, dni } });
+                        bool result = this.sql.Update("employee", columns, new CDictionary<string, string> { { "dni", null, dni } });
+                        this.sql.Close();
+                        return result;
                     }
                     else return false;
                 }
@@ -158,14 +161,14 @@ namespace MiPrimeraApp.Business
             try
             {
                 int? rangeId = employee.type != null ? this.range.GetEmployeeRangeIdByName(employee.type) : null;
+                this.sql.Close();
 
                 bool result = this.sql.Update(
                     "employee",
                     GetUserColumns(employee),
-                    new CDictionary<string, string> {
-                        { "id", null, id.ToString() }
-                    }
+                    bisba.WhereEmployeeId(new CDictionary<string, string>(), id)
                 );
+                this.sql.Close();
                 if (!result) throw new Exception("Empleado no actualizado");
                 return result;
             }
@@ -183,12 +186,15 @@ namespace MiPrimeraApp.Business
             try
             {
                 bool result = cred.CheckCredentialsFn(employee.credentials.username);
+                this.sql.Close();
                 if (result)
                 {
                     Credentials credentials = cred.SelectCredentialsByUsername(employee.credentials.username);
-                    return UpdateEmployee(employee, credentials.employeeId);
+                    result = UpdateEmployee(employee, credentials.employeeId);
                 }
-                else return InsertEmployee(employee);
+                else result = InsertEmployee(employee);
+                this.sql.Close();
+                return result;
             }
             catch (Exception e)
             {
@@ -211,6 +217,7 @@ namespace MiPrimeraApp.Business
                 if (employee.credentials.password != null) columns.Add("password", null, $"'{ this.bisba.GetMD5(employee.credentials.password) }'");
                 if (user.id != null) columns.Add("employeeId", null, user.id.ToString());
                 result = this.sql.Insert("credentials", columns);
+                this.sql.Close();
                 if (!result) throw new Exception("Empleado no insertado");
                 return result;
             }

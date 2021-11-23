@@ -7,7 +7,7 @@ namespace Incidences.Data
 {
     public interface ISqlBase
     {
-        public IDbCommand get_sql { get; set; }
+        public IDbCommand command { get; set; }
 
         /// <summary>
         /// Makes Insert string
@@ -66,10 +66,9 @@ namespace Incidences.Data
         public string OrderBySQL(Order orderBy);
 
         /// <summary>
-        /// Gets the IDBCommand Connection
+        /// Sets the IDBCommand Connection
         /// </summary>
-        /// <returns>Returns the IDBCommand Connection</returns>
-        public IDbCommand ConnectionFn();
+        public void ConnectionFn();
         /// <summary>
         /// Launch Call to the SQLServer
         /// </summary>
@@ -83,6 +82,18 @@ namespace Incidences.Data
         /// <param name="text">The query string</param>
         /// <returns>Returns true or false</returns>
         public bool Call(string text);
-
+        /// <summary>
+        /// Gets the reader
+        /// </summary>
+        /// <returns>Returns Reader</returns>
+        public IDataReader GetReader();
+        /// <summary>
+        /// Opens the connection
+        /// </summary>
+        public void Open();
+        /// <summary>
+        /// Closes the connection
+        /// </summary>
+        public void Close();
     }
 }

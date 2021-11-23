@@ -45,7 +45,7 @@ namespace MiPrimeraApp.Business
                 list.Contains(type);
                 if (list.Contains(type) && state != 4)
                 {
-                    incidences.other = SelectIncidences(
+                    incidences.Other = SelectIncidences(
                         new List<string> { "*" },
                         this.bisba.WhereTechnicianId(
                             this.bisba.WhereIncidenceState(
@@ -82,9 +82,10 @@ namespace MiPrimeraApp.Business
                 bool result = this.sql.Select(new Select("parte", fields));
                 if (result)
                 {
-                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
-                    reader.Read();
-                    return (int)reader.GetValue(0);
+                    using IDataReader reader = this.sql.GetReader(); reader.Read();
+                    int id = (int)reader.GetValue(0);
+                    this.sql.Close();
+                    return id;
                 }
                 else throw new Exception("Ningún registro");
             }
@@ -100,9 +101,11 @@ namespace MiPrimeraApp.Business
                 bool result = this.sql.Select(new Select("incidence"));
                 if (result)
                 {
-                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.GetReader();
                     reader.Read();
-                    return (int)reader.GetValue(0);
+                    int id = (int)reader.GetValue(0);
+                    this.sql.Close();
+                    return id;
                 }
                 else throw new Exception("Ningún registro");
             }
@@ -120,7 +123,7 @@ namespace MiPrimeraApp.Business
                     this.bisba.WhereIncidence(new CDictionary<string, string>(),
                     incidenceId)
                 )[0];
-                if (incidence.solverId == userId || incidence.state == 1 || incidence.ownerId == userId)
+                if (incidence.SolverId == userId || incidence.State == 1 || incidence.OwnerId == userId)
                 {
                     UpdateIncidence(incidenceDto, incidenceId, userId, close);
                 }
@@ -157,11 +160,11 @@ namespace MiPrimeraApp.Business
                         incidenceId
                     )
                 );
+                this.sql.Close();
                 if (!result) throw new Exception("Parte no actualizado");
 
                 if (note != null)
                 {
-
                     result = this.note.InsertNoteFn(incidence.note, userId, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
@@ -175,7 +178,7 @@ namespace MiPrimeraApp.Business
                 if (incidence.piecesDeleted != null && incidence.piecesDeleted.Count > 0)
                 {
                     result = this.piece.DeletePiecesSql(incidence.piecesDeleted, incidenceId);
-                    if (!result) new Exception("Parte no actualizado");
+                    if (!result) _ = new Exception("Parte no actualizado");
                 }
                 return result;
             }
@@ -183,15 +186,6 @@ namespace MiPrimeraApp.Business
             {
                 throw new Exception(e.Message);
             }
-        }
-        private IDictionary<string, object> FillArgs(IList<string> needed, IDictionary<string, object> args)
-        {
-            foreach (string value in needed)
-            {
-                if (!args.ContainsKey(value)) args.Add(value, null);
-            }
-
-            return args;
         }
         public IList<Incidence> SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
         {
@@ -201,11 +195,11 @@ namespace MiPrimeraApp.Business
                 IList<Incidence> incidences = new List<Incidence>();
                 if (result)
                 {
-                    using (IDataReader reader = this.sql.get_sql.ExecuteReader())
+                    using (IDataReader reader = this.sql.GetReader())
                     {
                         while (reader.Read())
                         {
-                            Incidence inc = new Incidence(
+                            Incidence inc = new(
                                 (int)reader.GetValue(0),
                                 (string)reader.GetValue(2),
                                 (int)reader.GetValue(1),
@@ -214,6 +208,7 @@ namespace MiPrimeraApp.Business
                             );
                             incidences.Add(inc);
                         }
+                        this.sql.Close();
                     }
 
                     foreach (Incidence incidence in incidences)
@@ -222,12 +217,12 @@ namespace MiPrimeraApp.Business
                         {
                             "*"
                         };
-                        conditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.id);
+                        conditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
                         result = this.sql.Select(new Select("incidence_pieces", list, conditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
-                            using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                            using IDataReader reader = this.sql.GetReader();
                             while (reader.Read())
                             {
                                 Piece piece = new Piece(
@@ -240,21 +235,23 @@ namespace MiPrimeraApp.Business
                                 );
                                 pieces.Add(piece);
                             }
+                            this.sql.Close();
                         }
                         conditions = this.bisba.WhereNoteType(conditions, "ownerNote");
                         result = this.sql.Select(new Select("incidence_notes", list, conditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();
-                            using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                            using IDataReader reader = this.sql.GetReader();
                             while (reader.Read())
                             {
-                                Note note = new Note(
+                                Note note = new(
                                     (string)reader.GetValue(1),
                                     (DateTime)reader.GetValue(2)
                                 );
                                 notes.Add(note);
                             }
+                            this.sql.Close();
                         }
                     }
                 }

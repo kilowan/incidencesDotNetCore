@@ -49,9 +49,11 @@ namespace MiPrimeraApp.Business
                 bool result = this.sql.Select(new Select("credentials", new List<string> { "*" }, conditions));
                 if (result)
                 {
-                    using IDataReader reader = this.sql.get_sql.ExecuteReader();
+                    using IDataReader reader = this.sql.GetReader();
                     reader.Read();
-                    return new Credentials((string)reader.GetValue(1), (string)reader.GetValue(2), (int)reader.GetValue(3));
+                    Credentials cred = new((string)reader.GetValue(1), (string)reader.GetValue(2), (int)reader.GetValue(3));
+                    this.sql.Close();
+                    return cred;
                 }
                 else throw new Exception("Ningún registro");
             }

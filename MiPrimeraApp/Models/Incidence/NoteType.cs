@@ -2,8 +2,32 @@
 {
     public class NoteType
     {
-        public int? id;
-        public string name;
+        private int? id;
+        private string name;
+
+        public int? Id 
+        {
+            get 
+            {
+                return id;
+            }
+            set 
+            {
+                id = value;
+            } 
+        }
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+            }
+        }
+
         public NoteType(int id, string name)
         {
             this.id = id;
