@@ -14,22 +14,58 @@ namespace MiPrimeraApp.Business
     public class ReportBz : IReportBz
     {
         #region CONST
+        /// <summary>
+        /// One mounth in seconds
+        /// </summary>
         public const int OneMonth = 2592000;
+        /// <summary>
+        /// One week in seconds
+        /// </summary>
         public const int OneWeek = 604800;
+        /// <summary>
+        /// One day in seconds
+        /// </summary>
         public const int OneDay = 86400;
+        /// <summary>
+        /// One hour in seconds
+        /// </summary>
         public const int OneHour = 3600;
+        /// <summary>
+        /// One minute in seconds
+        /// </summary>
         public const int OneMinute = 60;
         #endregion
+
+        #region private properties
+        /// <summary>
+        /// Employee dependency
+        /// </summary>
         private IEmployeeBz emp;
-        private IBusinessBase bisba;
+        /// <summary>
+        /// SqlBase dependency
+        /// </summary>
         private ISqlBase sql;
-        public ReportBz(IBusinessBase bisnessbase, IEmployeeBz employee, ISqlBase sqlbase)
+        #endregion
+
+        #region constructors
+        /// <summary>
+        /// Report constructor
+        /// </summary>
+        /// <param name="employee">employee class</param>
+        /// <param name="sqlbase">sqlBase class</param>
+        public ReportBz(IEmployeeBz employee, ISqlBase sqlbase)
         {
             this.emp = employee;
-            this.bisba = bisnessbase;
             this.sql = sqlbase;
         }
-        #region SELECT
+        #endregion
+
+        #region public methods
+        /// <summary>
+        /// Gets the report
+        /// </summary>
+        /// <param name="userId">Id param</param>
+        /// <returns>Returns report</returns>
         public Report GetReportFn(int userId)
         {
             Employee user = this.emp.SelectEmployeeById(userId)[0];
@@ -40,12 +76,24 @@ namespace MiPrimeraApp.Business
             }
             return report;
         }
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Gets the reported pieces
+        /// </summary>
+        /// <returns>Returns pieces reported</returns>
         private IList<ReportedPiece> SelectReportedPieces()
         {
             try
             {
                 IList<ReportedPiece> reportedPieces = new List<ReportedPiece>();
-                bool result = this.sql.Select(new Select("reportedpieces", new List<string> { "*" }));
+                bool result = this.sql.Select(
+                    new Select(
+                        "reportedpieces",
+                        new List<string> { "*" }
+                    )
+                );
                 if (result)
                 {
                     using IDataReader reader = this.sql.get_sql.ExecuteReader();
@@ -68,25 +116,36 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        /// <summary>
+        /// Gets global statistics
+        /// </summary>
+        /// <returns>Returns global statistics</returns>
         private IList<Statistics> GetGlobalStatistics()
         {
             try
             {
-                int number = 0;
                 IList<Statistics> globalData = new List<Statistics>();
-                bool result = this.sql.Select(new Select("Tiempo_resolucion", new List<string> { "ROUND(AVG(Tiempo),0) AS 'tiempo_medio'", "employeeName" }, new Order("solverId")));
+                bool result = this.sql.Select(
+                    new Select(
+                        "Tiempo_resolucion",
+                        new List<string> {
+                            "ROUND(AVG(Tiempo),0) AS 'tiempo_medio'",
+                            "employeeName"
+                        },
+                        new List<string> { "employeeName" },
+                        new Order("solverId")
+                    )
+                );
                 if (result)
                 {
                     using IDataReader reader = this.sql.get_sql.ExecuteReader();
 
                     while (reader.Read())
                     {
-
                         Statistics globalStatistics = new();
                         globalStatistics.average = SecondsToTimeFn((int)reader.GetValue(0));
                         globalStatistics.employeeName = (string)reader.GetValue(3);
-                        globalData[number] = globalStatistics;
-                        number++;
+                        globalData.Add(globalStatistics);
                     }
                 }
 
@@ -98,11 +157,15 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        /// <summary>
+        /// Gets the own statistics
+        /// </summary>
+        /// <param name="id">own employeeId</param>
+        /// <returns>Returns own statistics</returns>
         private Statistics GetStatisticsFn(int id)
         {
             try
             {
-                Order orderBy = new Order("ROUND(AVG(Tiempo),0)", "DESC");
                 bool result = this.sql.Select(
                     new Select(
                         "Tiempo_resolucion",
@@ -117,7 +180,10 @@ namespace MiPrimeraApp.Business
                         new List<string> {
                             "employeeName"
                         },
-                        orderBy
+                        new Order(
+                            "ROUND(AVG(Tiempo),0)",
+                            "DESC"
+                        )
                     )
                 );
                 Statistics statistics = new Statistics();
@@ -135,7 +201,12 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        private int SetNumUnitsFn(int seconds)
+        /// <summary>
+        /// Gets unit's number
+        /// </summary>
+        /// <param name="seconds">seconds param</param>
+        /// <returns>Returns number</returns>
+        private static int SetNumUnitsFn(int seconds)
         {
             return
                 seconds >= OneMonth ? 6 :
@@ -144,7 +215,12 @@ namespace MiPrimeraApp.Business
                 seconds >= OneHour ? 3 :
                 seconds >= OneMinute ? 2 : 1;
         }
-        private string SecondsToTimeFn(int seconds)
+        /// <summary>
+        /// Gets the time in string
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <returns>Returns string time</returns>
+        private static string SecondsToTimeFn(int seconds)
         {
             int num_units = SetNumUnitsFn(seconds);
             decimal mounths = seconds / OneMonth;
