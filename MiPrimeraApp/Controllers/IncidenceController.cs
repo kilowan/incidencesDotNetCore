@@ -49,7 +49,7 @@ namespace MiPrimeraApp.Controllers
         [HttpPut("{incidenceId}/{userId}")]
         public bool Update(IncidenceDto incidence, int incidenceId, int userId)
         {
-            return inc.UpdateIncidence(incidence, incidenceId, userId);
+            return inc.NewUpdateIncidence(incidence, incidenceId, userId);
         }
 
         [HttpDelete("{incidenceId}/{userId}")]

@@ -6,14 +6,14 @@ namespace MiPrimeraApp.Models.Incidence
     public class Incidence
     {
         private string owner;
-        private int ownerId;
+        private int? ownerId;
         private string solver;
         private int? solverId;
-        private DateTime initDateTime;
+        private DateTime? initDateTime;
         private string issueDesc;
         private IList<Piece> pieces;
         private IList<Note> notes;
-        private int state;
+        private int? state;
         private int id;
         private DateTime? finishDateTime;
 
@@ -28,7 +28,7 @@ namespace MiPrimeraApp.Models.Incidence
                 owner = value;
             } 
         }
-        public int OwnerId
+        public int? OwnerId
         {
             get
             {
@@ -61,7 +61,7 @@ namespace MiPrimeraApp.Models.Incidence
                 solverId = value;
             }
         }
-        public DateTime InitDateTime
+        public DateTime? InitDateTime
         {
             get
             {
@@ -105,7 +105,7 @@ namespace MiPrimeraApp.Models.Incidence
                 notes = value;
             }
         }
-        public int State
+        public int? State
         {
             get
             {
@@ -139,7 +139,7 @@ namespace MiPrimeraApp.Models.Incidence
             }
         }
 
-        public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc, int state)
+        public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc, int state, string solver, int? solverId, DateTime? FinishDateTime)
         {
             this.id = id;
             this.owner = owner;
@@ -152,6 +152,9 @@ namespace MiPrimeraApp.Models.Incidence
             //this.notes.Add(note);
             this.finishDateTime = null;
             this.state = state;
+            this.solver = solver;
+            this.solverId = solverId;
+            this.finishDateTime = FinishDateTime;
         }
         public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes)
         {
