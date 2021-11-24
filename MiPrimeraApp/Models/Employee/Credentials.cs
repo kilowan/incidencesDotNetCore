@@ -5,9 +5,43 @@ namespace MiPrimeraApp.Models.Employee
 {
     public class Credentials
     {
-        public string username;
-        public string password;
-        public int? employeeId;
+        private string username;
+        private string password;
+        private int? employeeId;
+
+        public string Username 
+        {
+            get 
+            { 
+                return username; 
+            }
+            set 
+            { 
+                username = value; 
+            }
+        }
+        public string Password
+        {
+            get
+            {
+                return password;
+            }
+            set
+            {
+                password = GetMD5(value);
+            }
+        }
+        public int? EmployeeId
+        {
+            get
+            {
+                return employeeId;
+            }
+            set
+            {
+                employeeId = value;
+            }
+        }
         public Credentials()
         {
 

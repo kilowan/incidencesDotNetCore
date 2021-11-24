@@ -9,7 +9,7 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private IEmployeeBz emp;
+        private readonly IEmployeeBz emp;
         public EmployeeController(IEmployeeBz employee)
         {
             this.emp = employee;

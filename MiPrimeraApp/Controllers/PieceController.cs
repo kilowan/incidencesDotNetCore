@@ -11,7 +11,7 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class PieceController : ControllerBase
     {
-        private IPieceBz piece;
+        private readonly IPieceBz piece;
         public PieceController(IPieceBz piece)
         {
             this.piece = piece;

@@ -31,6 +31,7 @@ namespace TodoApi
             services.AddTransient<IEmployeeRangeBz, EmployeeRangeBz>();
             services.AddTransient<ISqlBase, SqlBase>();
             services.AddTransient<IBusinessBase, BusinessBase>();
+            services.AddTransient<IPieceTypeBz, PieceTypeBz>();
             services.AddTransient<INoteBz, NoteBz>();
         }
 

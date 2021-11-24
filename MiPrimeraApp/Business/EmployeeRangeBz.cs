@@ -19,7 +19,18 @@ namespace MiPrimeraApp.Business
             this.sql = sql;
         }
         #region SELECT
-        //new
+        public IList<TypeRange> GetEmployeeTypes()
+        {
+            try
+            {
+                return SelectRangeList(
+                );
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public TypeRange SelectRangeById(int id)
         {
             try
@@ -41,9 +52,9 @@ namespace MiPrimeraApp.Business
                     new CDictionary<string, string>(),
                     typeName
                 )
-            )[0].id;
+            )[0].Id;
         }
-        public IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null)
+        private IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null)
         {
             try
             {

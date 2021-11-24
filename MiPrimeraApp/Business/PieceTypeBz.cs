@@ -1,0 +1,72 @@
+﻿using Incidences.Data;
+using MiPrimeraApp.Data;
+using MiPrimeraApp.Data.Models;
+using MiPrimeraApp.Models.Incidence;
+using System;
+using System.Collections.Generic;
+using System.Data;
+
+namespace Incidences.Business
+{
+    public class PieceTypeBz : IPieceTypeBz
+    {
+        private readonly ISqlBase sql;
+        private readonly IBusinessBase bisba;
+        public PieceTypeBz(ISqlBase sql, IBusinessBase bisba)
+        {
+            this.sql = sql;
+            this.bisba = bisba;
+        }
+        public PieceType SelectPieceTypeById(int pieceTypeId)
+        {
+            try
+            {
+                return SelectPieceType(
+                    this.bisba.WhereId(new CDictionary<string, string>(), pieceTypeId)
+                )[0];
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private IList<PieceType> SelectPieceType(CDictionary<string, string> conditions = null)
+        {
+            try
+            {
+                bool result = this.sql.Select(new Select("piece_type", new List<string> { "*" }, conditions));
+                IList<PieceType> pieceTypes = new List<PieceType>();
+                using IDataReader reader = this.sql.GetReader();
+
+                while (reader.Read())
+                {
+                    pieceTypes.Add(
+                        new PieceType(
+                            (int)reader.GetValue(0),
+                            (string)reader.GetValue(1),
+                            (string)reader.GetValue(2)
+                        )
+                    );
+                }
+
+                this.sql.Close();
+                return pieceTypes;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public IList<PieceType> SelectPieceTypeList()
+        {
+            try
+            {
+                return SelectPieceType();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+    }
+}

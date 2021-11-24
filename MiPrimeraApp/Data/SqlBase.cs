@@ -3,6 +3,7 @@ using MiPrimeraApp.Data.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 
 namespace MiPrimeraApp.Data
 {
@@ -11,6 +12,7 @@ namespace MiPrimeraApp.Data
         private string stringconnection;
         private IDbConnection connection;
         private IDbCommand get_sql;
+
         #region string generation
 
         public bool Insert(string table, CDictionary<string, string> data)
@@ -21,6 +23,25 @@ namespace MiPrimeraApp.Data
         public bool Select(Select select)
         {
             return Call(select.GetSentence(), "");
+        }
+        public bool Select(string query) 
+        {
+            return Call(query, "");
+        }
+        public bool MultiSelect(IList<string> queries) 
+        {
+            return Call(string.Join(" UNION ALL ", queries), "");
+        }
+        public string GetSentence(int state, string column, int userId) 
+        {
+            if (column == "ownerId")
+            {
+                return $"SELECT COUNT(*) AS counter FROM incidence WHERE state = '{ state }' AND { column } = '{ userId }'";
+            }
+            else 
+            {
+                return $"SELECT COUNT(*) AS counter FROM incidence WHERE state = '{ state }' AND ({ column } = '{ userId }' OR { column } IS NULL)";
+            }
         }
         public bool MultiSelectSQL(IList<Select> queries)
         {
@@ -84,6 +105,57 @@ namespace MiPrimeraApp.Data
         public string OrderBySQL(Order orderBy)
         {
             return $"ORDER BY { string.Join(", ", orderBy.fields) } { orderBy.order }";
+        }
+
+        private static Select GetCountSentence(int state, string column, int userId)
+        {
+            return new Select(
+                "incidence",
+                new List<string> { "COUNT(*) AS counter" },
+                new CDictionary<string, string> {
+                 { "state", null, state.ToString() },
+                 { column, null, userId.ToString() }
+                }
+               );
+        }
+        public IList<Select> GetArray(int iterations, string field, int value)
+        {
+            IList<Select> sentences = new List<Select>();
+            for (int i = 1; i <= iterations; i++)
+            {
+                sentences.Add(GetCountSentence(i, field, value));
+            }
+
+            return sentences;
+        }
+        public IList<string> GetStringArray(int iterations, string field, int value)
+        {
+            IList<string> sentences = new List<string>();
+            for (int i = 1; i <= iterations; i++)
+            {
+                sentences.Add(GetSentence(i, field, value));
+            }
+
+            return sentences;
+        }
+        public IDictionary<string, int> GetCounters(bool result, IDictionary<string, int> counters)
+        {
+            if (result)
+            {
+                string[] names = new string[] { "new", "old", "closed", "hidden" };
+                int counter = 0;
+                using IDataReader reader = this.get_sql.ExecuteReader();
+                while (reader.Read())
+                {
+                    counters[names[counter]] += (int)reader.GetValue(0);
+                    counters["total"] += (int)reader.GetValue(0);
+                    counter++;
+                }
+
+                this.Close();
+            }
+
+            return counters;
         }
         #endregion
 

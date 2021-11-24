@@ -78,29 +78,29 @@ namespace MiPrimeraApp.Business
         }
         #endregion
         #region INSERT
-        public bool InsertNoteFn(NoteDto note, int? userId, int? incidenceId)
+        public bool InsertNoteFn(string note, int noteTypeId, int? userId, int? incidenceId)
         {
             try
             {
-                return InsertNote(note, userId, incidenceId);
+                return InsertNote(note, noteTypeId, userId, incidenceId);
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        private bool InsertNote(NoteDto note, int? ownerId, int? incidenceId)
+        private bool InsertNote(string note, int noteTypeId, int? ownerId, int? incidenceId)
         {
             try
             {
 
-                bool result = this.sql.Insert("notes",
+                bool result = this.sql.Insert("Notes",
                     new CDictionary<string, string>
                     {
-                        { "employee", null, ownerId.ToString() },
-                        { "incidence", null, incidenceId.ToString() },
-                        { "noteTypeId", null, $"'{ note.typeId }'" },
-                        { "noteStr", null, $"'{ note.noteStr }'" }
+                        { "employeeId", null, ownerId.ToString() },
+                        { "incidenceId", null, incidenceId.ToString() },
+                        { "noteTypeId", null, $"'{ noteTypeId }'" },
+                        { "noteStr", null, $"'{ note }'" }
                     }
                 );
 

@@ -8,7 +8,7 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class CredentialsController : ControllerBase
     {
-        private ICredentialsBz cred;
+        private readonly ICredentialsBz cred;
         public CredentialsController(ICredentialsBz credentials)
         {
             this.cred = credentials;
@@ -18,6 +18,12 @@ namespace MiPrimeraApp.Controllers
         public bool Details(string username, string password)
         {
             return this.cred.CheckCredentialsFn(username, password);
+        }
+
+        [HttpGet("{username}")]
+        public Credentials Get(string username)
+        {
+            return this.cred.SelectCredentialsByUsername(username);
         }
 
         [HttpPut("{employeeId}")]

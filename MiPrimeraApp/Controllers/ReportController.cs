@@ -9,7 +9,7 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class ReportController : ControllerBase
     {
-        private IReportBz rep;
+        private readonly IReportBz rep;
         public ReportController(IReportBz report)
         {
             this.rep = report;

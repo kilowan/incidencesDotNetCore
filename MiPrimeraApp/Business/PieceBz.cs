@@ -12,8 +12,8 @@ namespace MiPrimeraApp.Business
 {
     public class PieceBz : IPieceBz
     {
-        private IBusinessBase bisba;
-        private ISqlBase sql;
+        private readonly IBusinessBase bisba;
+        private readonly ISqlBase sql;
         public PieceBz(IBusinessBase bisba, ISqlBase sql)
         {
             this.bisba = bisba;
@@ -52,10 +52,10 @@ namespace MiPrimeraApp.Business
                 IList<string> values = new List<string>();
                 foreach (int piece in pieces)
                 {
-                    values.Add($"({piece}, {incidenceId})");
+                    values.Add($"{piece}, {incidenceId}");
                 }
                 string stringPieces = string.Join(", ", values);
-                string text = $"INSERT INTO incidence_piece_log (piece, incidence) VALUES ({ stringPieces });";
+                string text = $"INSERT INTO incidence_piece_log (pieceId, incidenceId) VALUES ({ stringPieces });";
                 return this.sql.Call(text);
             }
             catch (Exception e)

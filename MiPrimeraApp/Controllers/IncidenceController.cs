@@ -1,8 +1,8 @@
 ﻿using Incidences.Business;
 using Incidences.Models.Incidence;
 using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Business;
 using MiPrimeraApp.Models.Incidence;
+using System.Collections.Generic;
 
 namespace MiPrimeraApp.Controllers
 {
@@ -10,7 +10,7 @@ namespace MiPrimeraApp.Controllers
     [ApiController]
     public class IncidenceController : ControllerBase
     {
-        private IIncidenceBz inc;
+        private readonly IIncidenceBz inc;
         public IncidenceController(IIncidenceBz incidence)
         {
             this.inc = incidence;
@@ -20,6 +20,12 @@ namespace MiPrimeraApp.Controllers
         public Incidence Details(int id)
         {
             return inc.GetIncidenceByIdFn(id);
+        }
+
+        [HttpGet("{userId}/{type}")]
+        public IDictionary<string, int> Counters(int userId, string type)
+        {
+            return inc.GetIncidencesCounters(userId, type);
         }
 
         [HttpGet("{state}/{userId}/{Type}")]

@@ -2,14 +2,100 @@
 {
     public class Employee
     {
-        public string name;
-        public string surname1;
-        public string surname2;
+        private string name;
+        private string surname1;
+        private string surname2;
         private string fullName;
-        public string dni;
-        public TypeRange type;
-        public int? id;
-        public int state;
+        private string dni;
+        private TypeRange type;
+        private int? id;
+        private int state;
+
+        public string FullName
+        {
+            get
+            {
+                return this.fullName;
+            }
+        }
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            set 
+            { 
+                name = value; 
+            }
+        }
+        public string Surname1
+        {
+            get
+            {
+                return surname1;
+            }
+            set
+            {
+                surname1 = value;
+            }
+        }
+        public string Surname2
+        {
+            get
+            {
+                return surname2;
+            }
+            set
+            {
+                surname2 = value;
+            }
+        }
+        public string Dni
+        {
+            get
+            {
+                return dni;
+            }
+            set
+            {
+                dni = value;
+            }
+        }
+        public TypeRange Type
+        {
+            get
+            {
+                return type;
+            }
+            set
+            {
+                type = value;
+            }
+        }
+        public int? Id
+        {
+            get
+            {
+                return id;
+            }
+            set
+            {
+                id = value;
+            }
+        }
+        public int State
+        {
+            get
+            {
+                return state;
+            }
+            set
+            {
+                state = value;
+            }
+        }
+
         public Employee()
         {
 
@@ -43,13 +129,6 @@
         public void SetType(int id, string name)
         {
             this.type = new TypeRange(id, name);
-        }
-        public string FullName
-        {
-            get
-            {
-                return this.fullName;
-            }
         }
     }
 }
