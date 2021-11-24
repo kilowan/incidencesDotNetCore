@@ -13,6 +13,7 @@ namespace Incidences.Business
         public Incidence GetIncidenceByIdFn(int id);
         public void UpdateIncidenceFn(IncidenceDto incidenceDto, int incidenceId, int userId, bool close);
         public bool UpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false);
+        public bool NewUpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false);
         public bool InsertIncidence(IncidenceDto incidence);
         public bool DeleteIncidenceFn(int incidenceId, int userId);
         public IDictionary<string, int> GetIncidencesCounters(int userId, string type);

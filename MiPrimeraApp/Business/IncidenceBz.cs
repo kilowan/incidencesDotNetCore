@@ -116,6 +116,65 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        public bool NewUpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false)
+        {
+            try
+            {
+                if (close)
+                {
+                    return CloseIncidence(incidence, incidenceId, userId);
+                }
+                else if (incidence.state == 2)
+                {
+                    return AttendIncidence(incidence, incidenceId, userId);
+                }
+                else if (incidence.state == 3)
+                {
+                    return CloseIncidence(incidence, incidenceId, userId);
+                }
+                else 
+                {
+                    CDictionary<string, string> columns = new CDictionary<string, string>();
+                    if (incidence.state != null)
+                    {
+                        columns.Add("state", null, incidence.state.ToString());
+                    }
+                    bool result = this.sql.Update(
+                        "incidence",
+                        columns,
+                        this.bisba.WhereIncidenceId(
+                            new CDictionary<string, string>(),
+                            incidenceId
+                        )
+                    );
+                    this.sql.Close();
+                    if (!result) throw new Exception("Parte no actualizado");
+
+                    if (note != null)
+                    {
+                        result = this.note.InsertNoteFn(incidence.note, 2, userId, incidenceId);
+                        if (!result) throw new Exception("Parte no actualizado");
+                    }
+
+                    if (incidence.piecesAdded != null && incidence.piecesAdded.Count > 0)
+                    {
+                        result = this.piece.InsertPiecesSql(incidence.piecesAdded, incidenceId);
+                        if (!result) throw new Exception("Parte no actualizado");
+                    }
+
+                    if (incidence.piecesDeleted != null && incidence.piecesDeleted.Count > 0)
+                    {
+                        result = this.piece.DeletePiecesSql(incidence.piecesDeleted, incidenceId);
+                        if (!result) _ = new Exception("Parte no actualizado");
+                    }
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public bool UpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false)
         {
             try
@@ -170,6 +229,74 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
+        //changeState 1-2
+        public bool AttendIncidence(IncidenceDto incidence, int incidenceId, int solverID) 
+        {
+            try
+            {
+                bool result = this.sql.Update(
+                    "incidence",
+                    new CDictionary<string, string>
+                    {
+                        { "solverId", null, solverID.ToString() },
+                        { "state", null, "2" }
+                    },
+                    this.bisba.WhereId(
+                        new CDictionary<string, string>(),
+                        incidenceId
+                    )
+                );
+                this.sql.Close();
+                if (!result) throw new Exception("Parte no actualizado");
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        //changeState 2-3
+        public bool CloseIncidence(IncidenceDto incidence, int incidenceId, int userId) 
+        {
+            try
+            {
+                bool result = this.sql.Update(
+                    "incidence",
+                    new()
+                    {
+                        { "state", null, "3" },
+                        { "close_dateeTime", null, "CURRENT_TIMESTAMP()" }
+                    },
+                    this.bisba.WhereIncidenceId(
+                        new CDictionary<string, string>(),
+                        incidenceId
+                    )
+                );
+                this.sql.Close();
+                if (!result) throw new Exception("Parte no actualizado");
+                result = this.note.InsertNoteFn(incidence.note, 2, userId, incidenceId);
+                if (!result) throw new Exception("Parte no actualizado");
+
+                if (incidence.piecesAdded != null && incidence.piecesAdded.Count > 0)
+                {
+                    result = this.piece.InsertPiecesSql(incidence.piecesAdded, incidenceId);
+                    if (!result) throw new Exception("Parte no actualizado");
+                }
+
+                if (incidence.piecesDeleted != null && incidence.piecesDeleted.Count > 0)
+                {
+                    result = this.piece.DeletePiecesSql(incidence.piecesDeleted, incidenceId);
+                    if (!result) _ = new Exception("Parte no actualizado");
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public IList<Incidence> SelectIncidences(IList<string> fields, CDictionary<string, string> conditions = null)
         {
             try
@@ -188,7 +315,10 @@ namespace MiPrimeraApp.Business
                                 (int)reader.GetValue(1),
                                 (DateTime)reader.GetValue(6),
                                 (string)reader.GetValue(3),
-                                (int)reader.GetValue(8)
+                                (int)reader.GetValue(8),
+                                reader.GetValue(5) != DBNull.Value ? (string)reader.GetValue(5) : null,
+                                reader.GetValue(4) != DBNull.Value ? (int?)reader.GetValue(4) : null,
+                                reader.GetValue(7) != DBNull.Value ? (DateTime?)reader.GetValue(7) : null
                             );
                             incidences.Add(inc);
                         }
@@ -271,7 +401,10 @@ namespace MiPrimeraApp.Business
                                 (int)reader.GetValue(1),
                                 (DateTime)reader.GetValue(6),
                                 (string)reader.GetValue(3),
-                                (int)reader.GetValue(8)
+                                (int)reader.GetValue(8),
+                                reader.GetValue(5) != DBNull.Value ? (string)reader.GetValue(5) : null,
+                                reader.GetValue(4) != DBNull.Value ? (int?)reader.GetValue(4) : null,
+                                reader.GetValue(7) != DBNull.Value ? (DateTime?)reader.GetValue(7) : null
                             );
                             incidences.Add(inc);
                         }
