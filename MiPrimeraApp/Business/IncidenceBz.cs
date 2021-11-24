@@ -45,16 +45,8 @@ namespace MiPrimeraApp.Business
                 list.Contains(type);
                 if (list.Contains(type) && state != 4)
                 {
-                    incidences.Other = SelectIncidences(
-                        new List<string> { "*" },
-                        this.bisba.WhereTechnicianId(
-                            this.bisba.WhereIncidenceState(
-                                new CDictionary<string, string>(),
-                                state
-                            ),
-                            userId
-                        )
-                    );
+                    string query = $"SELECT * FROM FullIncidence WHERE state = { state } AND (TechnicianId = {userId} OR TechnicianId IS NULL)";
+                    incidences.Other = SelectIncidences(query);
                 }
 
                 return incidences;
@@ -68,7 +60,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return SelectIncidences(new List<string>('*'), this.bisba.WhereIncidence(new CDictionary<string, string>(), id))[0];
+                return SelectIncidences(new List<string> { "*" }, this.bisba.WhereIncidence(new CDictionary<string, string>(), id))[0];
             }
             catch (Exception e)
             {
@@ -79,7 +71,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("parte", fields));
+                bool result = this.sql.Select(new Select("incidence", fields));
                 if (result)
                 {
                     using IDataReader reader = this.sql.GetReader(); reader.Read();
@@ -98,16 +90,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("incidence"));
-                if (result)
-                {
-                    using IDataReader reader = this.sql.GetReader();
-                    reader.Read();
-                    int id = (int)reader.GetValue(0);
-                    this.sql.Close();
-                    return id;
-                }
-                else throw new Exception("Ningún registro");
+                return LastIncidence(new List<string> { "MAX(id)" });
             }
             catch (Exception e)
             {
@@ -165,7 +148,7 @@ namespace MiPrimeraApp.Business
 
                 if (note != null)
                 {
-                    result = this.note.InsertNoteFn(incidence.note, userId, incidenceId);
+                    result = this.note.InsertNoteFn(incidence.note, 2, userId, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
@@ -204,7 +187,8 @@ namespace MiPrimeraApp.Business
                                 (string)reader.GetValue(2),
                                 (int)reader.GetValue(1),
                                 (DateTime)reader.GetValue(6),
-                                (string)reader.GetValue(3)
+                                (string)reader.GetValue(3),
+                                (int)reader.GetValue(8)
                             );
                             incidences.Add(inc);
                         }
@@ -222,22 +206,27 @@ namespace MiPrimeraApp.Business
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
-                            using IDataReader reader = this.sql.GetReader();
-                            while (reader.Read())
+                            using (IDataReader reader = this.sql.GetReader())
                             {
-                                Piece piece = new Piece(
-                                    (string)reader.GetValue(3),
-                                    new PieceType(
+                                while (reader.Read())
+                                {
+                                    Piece piece = new(
                                         (int)reader.GetValue(1),
-                                        (string)reader.GetValue(2),
-                                        (string)reader.GetValue(3)
-                                    )
-                                );
-                                pieces.Add(piece);
+                                        (string)reader.GetValue(5),
+                                        new PieceType(
+                                            (int)reader.GetValue(2),
+                                            (string)reader.GetValue(3),
+                                            (string)reader.GetValue(4)
+                                        ),
+                                        Convert.ToBoolean(reader.GetValue(6))
+                                    );
+                                    pieces.Add(piece);
+                                }
+                                this.sql.Close();
                             }
-                            this.sql.Close();
+                            incidence.Pieces = pieces;
                         }
-                        conditions = this.bisba.WhereNoteType(conditions, "ownerNote");
+                        conditions = this.bisba.WhereNoteType(conditions, "solverNote");
                         result = this.sql.Select(new Select("incidence_notes", list, conditions));
                         if (result)
                         {
@@ -251,7 +240,92 @@ namespace MiPrimeraApp.Business
                                 );
                                 notes.Add(note);
                             }
+
                             this.sql.Close();
+                            incidence.Notes = notes;
+                        }
+                    }
+                }
+                return incidences;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private IList<Incidence> SelectIncidences(string query)
+        {
+            try
+            {
+                bool result = this.sql.Select(query);
+                IList<Incidence> incidences = new List<Incidence>();
+                if (result)
+                {
+                    using (IDataReader reader = this.sql.GetReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Incidence inc = new(
+                                (int)reader.GetValue(0),
+                                (string)reader.GetValue(2),
+                                (int)reader.GetValue(1),
+                                (DateTime)reader.GetValue(6),
+                                (string)reader.GetValue(3),
+                                (int)reader.GetValue(8)
+                            );
+                            incidences.Add(inc);
+                        }
+                        this.sql.Close();
+                    }
+                    CDictionary<string, string> conditions;
+                    foreach (Incidence incidence in incidences)
+                    {
+                        IList<string> list = new List<string>
+                        {
+                            "*"
+                        };
+                        conditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
+                        result = this.sql.Select(new Select("incidence_pieces", list, conditions));
+                        if (result)
+                        {
+                            IList<Piece> pieces = new List<Piece>();
+                            using (IDataReader reader = this.sql.GetReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    Piece piece = new(
+                                        (int)reader.GetValue(1),
+                                        (string)reader.GetValue(5),
+                                        new PieceType(
+                                            (int)reader.GetValue(2),
+                                            (string)reader.GetValue(3),
+                                            (string)reader.GetValue(4)
+                                        ),
+                                        Convert.ToBoolean(reader.GetValue(6))
+                                    );
+                                    pieces.Add(piece);
+                                }
+                                this.sql.Close();
+                            }
+                            incidence.Pieces = pieces;
+                        }
+                        conditions = this.bisba.WhereNoteType(conditions, "solverNote");
+                        result = this.sql.Select(new Select("incidence_notes", list, conditions));
+                        if (result)
+                        {
+                            IList<Note> notes = new List<Note>();
+                            using IDataReader reader = this.sql.GetReader();
+                            while (reader.Read())
+                            {
+                                Note note = new(
+                                    (string)reader.GetValue(1),
+                                    (DateTime)reader.GetValue(2)
+                                );
+                                notes.Add(note);
+                            }
+
+                            this.sql.Close();
+                            incidence.Notes = notes;
                         }
                     }
                 }
@@ -273,7 +347,7 @@ namespace MiPrimeraApp.Business
                 if (!result) throw new Exception("Parte no insertado");
                 int id = LastIncidence();
 
-                result = this.note.InsertNoteFn(incidence.note, incidence.ownerId, id);
+                result = this.note.InsertNoteFn(incidence.note, 1, incidence.ownerId, id);
                 if (!result) throw new Exception("Parte no insertado");
                 result = this.piece.InsertPiecesSql(incidence.piecesAdded, id);
                 if (!result) throw new Exception("Parte no insertado");
@@ -308,6 +382,34 @@ namespace MiPrimeraApp.Business
             {
                 throw new Exception(e.Message);
             }
+        }
+        public IDictionary<string, int> GetIncidencesCounters(int userId, string type)
+        {
+            IDictionary<string, int> counters = new Dictionary<string, int>
+            {
+                { "new", 0 },
+                { "old", 0 },
+                { "closed", 0 },
+                { "hidden", 0 },
+                { "total", 0 }
+            };
+            IList<string> types = new List<string> { "Technician", "Admin" };
+            if (types.Contains(type))
+            {
+                //Technician or Admin
+                counters = this.sql.GetCounters(this.sql.MultiSelect(this.sql.GetStringArray(3, "solverId", userId)), counters);
+            }
+
+            counters = this.sql.GetCounters(
+                this.sql.MultiSelect(
+                    this.sql.GetStringArray(
+                        4, 
+                        "ownerId", 
+                        userId
+                    )
+                ), counters
+            );
+            return counters;
         }
     }
 }

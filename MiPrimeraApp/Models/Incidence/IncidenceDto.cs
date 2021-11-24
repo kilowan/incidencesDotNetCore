@@ -13,7 +13,7 @@ namespace Incidences.Models.Incidence
         public DateTime? finishDateTime { get; set; }
         public IList<int> piecesAdded { get; set; }
         public IList<int> piecesDeleted { get; set; }
-        public NoteDto note { get; set; }
+        public string note { get; set; }
         public int? state { get; set; }
     }
 }

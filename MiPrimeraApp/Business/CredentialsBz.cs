@@ -24,7 +24,12 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                return SelectCredentials(this.bisba.WhereUsername(new CDictionary<string, string>(), username));
+                return SelectCredentials(
+                    this.bisba.WhereUsername(
+                        new CDictionary<string, string>(), 
+                        username
+                    )
+                );
             }
             catch (Exception e)
             {
@@ -51,7 +56,11 @@ namespace MiPrimeraApp.Business
                 {
                     using IDataReader reader = this.sql.GetReader();
                     reader.Read();
-                    Credentials cred = new((string)reader.GetValue(1), (string)reader.GetValue(2), (int)reader.GetValue(3));
+                    Credentials cred = new(
+                        (string)reader.GetValue(1), 
+                        (string)reader.GetValue(2), 
+                        (int)reader.GetValue(3)
+                    );
                     this.sql.Close();
                     return cred;
                 }

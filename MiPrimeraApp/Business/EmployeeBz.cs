@@ -29,7 +29,7 @@ namespace MiPrimeraApp.Business
             try
             {
                 Credentials credentials = cred.SelectCredentialsByUsername(username);
-                if (credentials.employeeId != null) return SelectEmployeeById((int)credentials.employeeId);
+                if (credentials.EmployeeId != null) return SelectEmployeeById((int)credentials.EmployeeId);
                 else return new List<Employee>();
             }
             catch (Exception e)
@@ -161,12 +161,11 @@ namespace MiPrimeraApp.Business
             try
             {
                 int? rangeId = employee.type != null ? this.range.GetEmployeeRangeIdByName(employee.type) : null;
-                this.sql.Close();
 
                 bool result = this.sql.Update(
                     "employee",
                     GetUserColumns(employee),
-                    bisba.WhereEmployeeId(new CDictionary<string, string>(), id)
+                    bisba.WhereId(new CDictionary<string, string>(), id)
                 );
                 this.sql.Close();
                 if (!result) throw new Exception("Empleado no actualizado");
@@ -190,7 +189,7 @@ namespace MiPrimeraApp.Business
                 if (result)
                 {
                     Credentials credentials = cred.SelectCredentialsByUsername(employee.credentials.username);
-                    result = UpdateEmployee(employee, credentials.employeeId);
+                    result = UpdateEmployee(employee, credentials.EmployeeId);
                 }
                 else result = InsertEmployee(employee);
                 this.sql.Close();
@@ -215,7 +214,7 @@ namespace MiPrimeraApp.Business
                 CDictionary<string, string> columns = new();
                 if (employee.credentials.username != null) columns.Add("username", null, $"'{ employee.credentials.username }'");
                 if (employee.credentials.password != null) columns.Add("password", null, $"'{ this.bisba.GetMD5(employee.credentials.password) }'");
-                if (user.id != null) columns.Add("employeeId", null, user.id.ToString());
+                if (user.Id != null) columns.Add("employeeId", null, user.Id.ToString());
                 result = this.sql.Insert("credentials", columns);
                 this.sql.Close();
                 if (!result) throw new Exception("Empleado no insertado");

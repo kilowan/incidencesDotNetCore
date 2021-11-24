@@ -15,7 +15,7 @@ namespace MiPrimeraApp.Models.Incidence
         private IList<Note> notes;
         private int state;
         private int id;
-        private DateTime finishDateTime;
+        private DateTime? finishDateTime;
 
         public string Owner 
         {
@@ -127,7 +127,7 @@ namespace MiPrimeraApp.Models.Incidence
                 id = value;
             }
         }
-        public DateTime FinishDateTime
+        public DateTime? FinishDateTime
         {
             get
             {
@@ -139,7 +139,7 @@ namespace MiPrimeraApp.Models.Incidence
             }
         }
 
-        public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc)
+        public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc, int state)
         {
             this.id = id;
             this.owner = owner;
@@ -150,6 +150,8 @@ namespace MiPrimeraApp.Models.Incidence
             //this.pieces.Add(piece);
             this.notes = new List<Note>();
             //this.notes.Add(note);
+            this.finishDateTime = null;
+            this.state = state;
         }
         public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes)
         {

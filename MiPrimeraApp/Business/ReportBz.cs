@@ -70,7 +70,7 @@ namespace MiPrimeraApp.Business
         {
             Employee user = this.emp.SelectEmployeeById(userId)[0];
             Report report = new(SelectReportedPieces(), GetStatisticsFn(userId));
-            if (user.type.id == 3)
+            if (user.Type.Id == 3)
             {
                 report.Global = GetGlobalStatistics();
             }
@@ -187,7 +187,7 @@ namespace MiPrimeraApp.Business
                         )
                     )
                 );
-                Statistics statistics = new Statistics();
+                Statistics statistics = new();
                 if (result)
                 {
                     using IDataReader reader = this.sql.GetReader();
