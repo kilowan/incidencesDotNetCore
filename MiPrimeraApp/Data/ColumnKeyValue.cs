@@ -1,10 +1,10 @@
-﻿namespace MiPrimeraApp.Data
+﻿namespace Incidences.Data
 {
     public class ColumnKeyValue<Tkey, TValue>
     {
-        public Tkey key;
-        public Tkey column;
-        public TValue value;
+        public Tkey key { get; set; }
+        public Tkey column { get; set; }
+        public TValue value { get; set; }
         public ColumnKeyValue()
         {
 

@@ -1,4 +1,4 @@
-﻿namespace MiPrimeraApp.Models.Incidence
+﻿namespace Incidences.Models.Incidence
 {
     public class Statistics
     {
@@ -6,15 +6,15 @@
         private string average;
         private int solvedIncidences;
 
-        public string EmployeeName 
+        public string EmployeeName
         {
-            get 
-            { 
-                return employeeName; 
+            get
+            {
+                return employeeName;
             }
-            set 
-            { 
-                employeeName = value; 
+            set
+            {
+                employeeName = value;
             }
         }
         public string Average

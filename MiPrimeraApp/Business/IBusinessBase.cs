@@ -1,5 +1,5 @@
-﻿using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
+﻿using Incidences.Data;
+using Incidences.Data.Models;
 using System.Collections.Generic;
 
 namespace Incidences.Business

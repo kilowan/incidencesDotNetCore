@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "MiPrimeraApp": {
+    "Incidences": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

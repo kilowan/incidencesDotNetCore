@@ -1,4 +1,4 @@
-﻿namespace MiPrimeraApp.Data
+﻿namespace Incidences.Data
 {
     public class InnerJoin
     {

@@ -1,20 +1,20 @@
-﻿namespace MiPrimeraApp.Models.Incidence
+﻿namespace Incidences.Models.Incidence
 {
     public class NoteType
     {
         private int? id;
         private string name;
 
-        public int? Id 
+        public int? Id
         {
-            get 
+            get
             {
                 return id;
             }
-            set 
+            set
             {
                 id = value;
-            } 
+            }
         }
         public string Name
         {

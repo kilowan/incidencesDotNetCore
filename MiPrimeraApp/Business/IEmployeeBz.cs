@@ -1,9 +1,5 @@
-﻿using MiPrimeraApp.Data.Models;
-using MiPrimeraApp.Models.Employee;
-using System;
+﻿using Incidences.Models.Employee;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Incidences.Business
 {

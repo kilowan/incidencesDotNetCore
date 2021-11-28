@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace MiPrimeraApp.Models.Employee
+namespace Incidences.Models.Employee
 {
     public class Credentials
     {
@@ -9,15 +9,15 @@ namespace MiPrimeraApp.Models.Employee
         private string password;
         private int? employeeId;
 
-        public string Username 
+        public string Username
         {
-            get 
-            { 
-                return username; 
+            get
+            {
+                return username;
             }
-            set 
-            { 
-                username = value; 
+            set
+            {
+                username = value;
             }
         }
         public string Password

@@ -1,11 +1,9 @@
 ﻿using Incidences.Business;
 using Incidences.Models.Incidence;
 using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Business;
-using MiPrimeraApp.Models.Incidence;
 using System.Collections.Generic;
 
-namespace MiPrimeraApp.Controllers
+namespace Incidences.Controllers
 {
     [Route("api/Piece")]
     [ApiController]

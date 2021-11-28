@@ -1,4 +1,3 @@
-// Unused usings removed
 using Incidences.Business;
 using Incidences.Data;
 using Microsoft.AspNetCore.Builder;
@@ -6,10 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MiPrimeraApp.Business;
-using MiPrimeraApp.Data;
 
-namespace TodoApi
+namespace Incidences
 {
     public class Startup
     {

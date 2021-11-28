@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MiPrimeraApp.Models.Incidence
+namespace Incidences.Models.Incidence
 {
     public class Note
     {
@@ -8,16 +8,16 @@ namespace MiPrimeraApp.Models.Incidence
         private DateTime date;
         private NoteType type;
 
-        public string NoteStr 
+        public string NoteStr
         {
-            get 
-            { 
-                return noteStr; 
+            get
+            {
+                return noteStr;
             }
-            set 
+            set
             {
                 noteStr = value;
-            } 
+            }
         }
         public DateTime Date
         {

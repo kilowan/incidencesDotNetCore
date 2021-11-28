@@ -1,6 +1,6 @@
 ﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Models.Incidence;
+using Incidences.Models.Incidence;
 using System.Collections.Generic;
 
 namespace Incidences.Controllers

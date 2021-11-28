@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace MiPrimeraApp.Data.Models
+namespace Incidences.Data.Models
 {
     public class CDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {

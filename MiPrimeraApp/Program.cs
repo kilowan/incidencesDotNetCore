@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using TodoApi;
 
-namespace MiPrimeraApp
+namespace Incidences
 {
     public class Program
     {

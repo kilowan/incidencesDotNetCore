@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Incidences.Models.Incidence
+﻿namespace Incidences.Models.Incidence
 {
     public class IncidencesCounters
     {
@@ -13,16 +8,16 @@ namespace Incidences.Models.Incidence
         private int hiddenIncidences;
         private int totalIncidences;
 
-        public int NewIncidences 
+        public int NewIncidences
         {
-            get 
-            { 
-                return newIncidences; 
+            get
+            {
+                return newIncidences;
             }
-            set 
-            { 
-                newIncidences = value; 
-            } 
+            set
+            {
+                newIncidences = value;
+            }
         }
         public int OldIncidences
         {

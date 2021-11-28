@@ -1,14 +1,11 @@
-﻿using Incidences.Business;
-using Incidences.Data;
+﻿using Incidences.Data;
 using Incidences.Models.Incidence;
-using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
-using MiPrimeraApp.Models.Incidence;
+using Incidences.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace MiPrimeraApp.Business
+namespace Incidences.Business
 {
     public class IncidenceBz : IIncidenceBz
     {
@@ -45,8 +42,26 @@ namespace MiPrimeraApp.Business
                 list.Contains(type);
                 if (list.Contains(type) && state != 4)
                 {
-                    string query = $"SELECT * FROM FullIncidence WHERE state = { state } AND (TechnicianId = {userId} OR TechnicianId IS NULL)";
-                    incidences.Other = SelectIncidences(query);
+                    incidences.Other = SelectIncidences(
+                        new List<string> { "*" },
+                        new ColumnsKeysValues<string, string>
+                        {
+                            KeyValue = new List<ColumnKeyValue<string, string>>
+                            {
+                                new ColumnKeyValue<string, string>( "state", "=", state.ToString() )
+                            },
+                            Connector = "AND",
+                            Children = new ColumnsKeysValues<string, string>
+                            {
+                                KeyValue = new List<ColumnKeyValue<string, string>>
+                                {
+                                    new ColumnKeyValue<string, string>("TechnicianId", "=", userId.ToString()),
+                                    new ColumnKeyValue<string, string>( "TechnicianId", "IS", "NULL" )
+                                },
+                                Connector = "OR"
+                            }
+                        }
+                    );
                 }
 
                 return incidences;
@@ -132,7 +147,7 @@ namespace MiPrimeraApp.Business
                 {
                     return CloseIncidence(incidence, incidenceId, userId);
                 }
-                else 
+                else
                 {
                     CDictionary<string, string> columns = new CDictionary<string, string>();
                     if (incidence.state != null)
@@ -230,7 +245,7 @@ namespace MiPrimeraApp.Business
             }
         }
         //changeState 1-2
-        public bool AttendIncidence(IncidenceDto incidence, int incidenceId, int solverID) 
+        public bool AttendIncidence(IncidenceDto incidence, int incidenceId, int solverID)
         {
             try
             {
@@ -257,7 +272,7 @@ namespace MiPrimeraApp.Business
         }
 
         //changeState 2-3
-        public bool CloseIncidence(IncidenceDto incidence, int incidenceId, int userId) 
+        public bool CloseIncidence(IncidenceDto incidence, int incidenceId, int userId)
         {
             try
             {
@@ -383,11 +398,11 @@ namespace MiPrimeraApp.Business
                 throw new Exception(e.Message);
             }
         }
-        private IList<Incidence> SelectIncidences(string query)
+        public IList<Incidence> SelectIncidences(IList<string> fields, ColumnsKeysValues<string, string> conditions = null)
         {
             try
             {
-                bool result = this.sql.Select(query);
+                bool result = this.sql.Select(new Select("FullIncidence", fields, conditions));
                 IList<Incidence> incidences = new List<Incidence>();
                 if (result)
                 {
@@ -410,15 +425,15 @@ namespace MiPrimeraApp.Business
                         }
                         this.sql.Close();
                     }
-                    CDictionary<string, string> conditions;
+
                     foreach (Incidence incidence in incidences)
                     {
                         IList<string> list = new List<string>
                         {
                             "*"
                         };
-                        conditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
-                        result = this.sql.Select(new Select("incidence_pieces", list, conditions));
+                        CDictionary<string, string> oldConditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
+                        result = this.sql.Select(new Select("incidence_pieces", list, oldConditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
@@ -442,7 +457,7 @@ namespace MiPrimeraApp.Business
                             }
                             incidence.Pieces = pieces;
                         }
-                        conditions = this.bisba.WhereNoteType(conditions, "solverNote");
+                        oldConditions = this.bisba.WhereNoteType(oldConditions, "solverNote");
                         result = this.sql.Select(new Select("incidence_notes", list, conditions));
                         if (result)
                         {
@@ -530,14 +545,19 @@ namespace MiPrimeraApp.Business
             if (types.Contains(type))
             {
                 //Technician or Admin
-                counters = this.sql.GetCounters(this.sql.MultiSelect(this.sql.GetStringArray(3, "solverId", userId)), counters);
+                counters = this.sql.GetCounters(
+                    this.sql.MultiSelectSQL(
+                        this.sql.GetArray(3, "solverId", userId)
+                    ),
+                    counters
+                );
             }
 
             counters = this.sql.GetCounters(
-                this.sql.MultiSelect(
-                    this.sql.GetStringArray(
-                        4, 
-                        "ownerId", 
+                this.sql.MultiSelectSQL(
+                    this.sql.GetArray(
+                        4,
+                        "ownerId",
                         userId
                     )
                 ), counters

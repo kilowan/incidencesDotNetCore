@@ -1,11 +1,10 @@
-﻿using Incidences.Business;
-using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
+﻿using Incidences.Data;
+using Incidences.Data.Models;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MiPrimeraApp.Business
+namespace Incidences.Business
 {
     public class BusinessBase : IBusinessBase
     {

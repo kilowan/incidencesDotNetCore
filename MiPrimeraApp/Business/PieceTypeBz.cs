@@ -1,7 +1,6 @@
 ﻿using Incidences.Data;
-using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
-using MiPrimeraApp.Models.Incidence;
+using Incidences.Data.Models;
+using Incidences.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;

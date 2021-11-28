@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MiPrimeraApp.Data.Models
+namespace Incidences.Data.Models
 {
     public class Order
     {
