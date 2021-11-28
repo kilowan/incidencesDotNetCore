@@ -55,8 +55,8 @@ namespace Incidences.Business
                             {
                                 KeyValue = new List<ColumnKeyValue<string, string>>
                                 {
-                                    new ColumnKeyValue<string, string>("TechnicianId", "=", userId.ToString()),
-                                    new ColumnKeyValue<string, string>( "TechnicianId", "IS", "NULL" )
+                                    new ColumnKeyValue<string, string>("technicianId", "=", userId.ToString()),
+                                    new ColumnKeyValue<string, string>( "technicianId", "IS", "NULL" )
                                 },
                                 Connector = "OR"
                             }
@@ -458,7 +458,7 @@ namespace Incidences.Business
                             incidence.Pieces = pieces;
                         }
                         oldConditions = this.bisba.WhereNoteType(oldConditions, "solverNote");
-                        result = this.sql.Select(new Select("incidence_notes", list, conditions));
+                        result = this.sql.Select(new Select("incidence_notes", list, oldConditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();

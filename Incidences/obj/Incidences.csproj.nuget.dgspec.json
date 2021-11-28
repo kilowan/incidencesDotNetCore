@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\Incidences.csproj": {}
+    "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\Incidences\\Incidences.csproj": {}
   },
   "projects": {
-    "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\Incidences.csproj": {
+    "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\Incidences\\Incidences.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\Incidences.csproj",
+        "projectUniqueName": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\Incidences\\Incidences.csproj",
         "projectName": "Incidences",
-        "projectPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\Incidences.csproj",
+        "projectPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\Incidences\\Incidences.csproj",
         "packagesPath": "C:\\Users\\Juan Francisco\\.nuget\\packages\\",
-        "outputPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\MiPrimeraApp\\obj\\",
+        "outputPath": "G:\\Usuarios\\Juan\\Documentos\\incidencesDotNetCore\\Incidences\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Juan Francisco\\AppData\\Roaming\\NuGet\\NuGet.Config",
