@@ -1,11 +1,9 @@
-﻿using Incidences.Data;
-using MiPrimeraApp.Data.Models;
+﻿using Incidences.Data.Models;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
-namespace MiPrimeraApp.Data
+namespace Incidences.Data
 {
     public class SqlBase : ISqlBase
     {
@@ -24,21 +22,13 @@ namespace MiPrimeraApp.Data
         {
             return Call(select.GetSentence(), "");
         }
-        public bool Select(string query) 
-        {
-            return Call(query, "");
-        }
-        public bool MultiSelect(IList<string> queries) 
-        {
-            return Call(string.Join(" UNION ALL ", queries), "");
-        }
-        public string GetSentence(int state, string column, int userId) 
+        public string GetSentence(int state, string column, int userId)
         {
             if (column == "ownerId")
             {
                 return $"SELECT COUNT(*) AS counter FROM incidence WHERE state = '{ state }' AND { column } = '{ userId }'";
             }
-            else 
+            else
             {
                 return $"SELECT COUNT(*) AS counter FROM incidence WHERE state = '{ state }' AND ({ column } = '{ userId }' OR { column } IS NULL)";
             }
@@ -67,6 +57,19 @@ namespace MiPrimeraApp.Data
             }
 
             return $"WHERE { string.Join(" AND ", results) }";
+        }
+        public string Where(ColumnsKeysValues<string, string> data)
+        {
+            IList<string> strings = new List<string>();
+            foreach (ColumnKeyValue<string, string> value in data.KeyValue)
+            {
+                if (value.key == "IS") strings.Add($"{ value.column } { value.key } { $"{ value.value }" }");
+                else strings.Add($"{ value.column } { value.key } { $"'{ value.value }'" }");
+            }
+
+            if (data.Children != null) strings.Add($"({ Where(data.Children) })");
+
+            return string.Join($" {data.Connector} ", strings);
         }
         public bool Update(string table, CDictionary<string, string> columns, CDictionary<string, string> conditions)
         {
@@ -109,12 +112,46 @@ namespace MiPrimeraApp.Data
 
         private static Select GetCountSentence(int state, string column, int userId)
         {
-            return new Select(
-                "incidence",
-                new List<string> { "COUNT(*) AS counter" },
+            string field = "incidence";
+            IList<string> columns = new List<string> { "COUNT(*) AS counter" };
+            if (column == "ownerId")
+                return new Select(
+                field,
+                columns,
                 new CDictionary<string, string> {
                  { "state", null, state.ToString() },
                  { column, null, userId.ToString() }
+                }
+               );
+            else
+                return new Select(
+                field,
+                columns,
+                new ColumnsKeysValues<string, string>
+                {
+                    KeyValue = new List<ColumnKeyValue<string, string>>
+                    {
+                        new ColumnKeyValue<string, string>
+                        (
+                            "state", "=", state.ToString()
+                        )
+                    },
+                    Connector = "AND",
+                    Children = new ColumnsKeysValues<string, string>
+                    {
+                        KeyValue = new List<ColumnKeyValue<string, string>>
+                        {
+                            new ColumnKeyValue<string, string>
+                            (
+                                column, "=", userId.ToString()
+                            ),
+                            new ColumnKeyValue<string, string>
+                            (
+                                column, "IS", "NULL"
+                            )
+                        },
+                        Connector = "OR",
+                    }
                 }
                );
         }
@@ -124,16 +161,6 @@ namespace MiPrimeraApp.Data
             for (int i = 1; i <= iterations; i++)
             {
                 sentences.Add(GetCountSentence(i, field, value));
-            }
-
-            return sentences;
-        }
-        public IList<string> GetStringArray(int iterations, string field, int value)
-        {
-            IList<string> sentences = new List<string>();
-            for (int i = 1; i <= iterations; i++)
-            {
-                sentences.Add(GetSentence(i, field, value));
             }
 
             return sentences;
@@ -169,15 +196,16 @@ namespace MiPrimeraApp.Data
             this.stringconnection = $@"Data Source=localhost\SQLEXPRESS;DataBase=Incidences;Persist Security Info=True;USER ID={user};Password={pass};MultipleActiveResultSets=true;";
             this.connection = new SqlConnection(this.stringconnection);
         }
-        public IDbCommand command {
+        public IDbCommand command
+        {
             get { return get_sql; }
             set { get_sql = value; }
         }
-        public IDataReader GetReader() 
+        public IDataReader GetReader()
         {
             return get_sql.ExecuteReader();
         }
-        public void Open() 
+        public void Open()
         {
             this.connection.Open();
         }

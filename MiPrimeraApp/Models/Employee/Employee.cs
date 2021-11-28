@@ -1,4 +1,4 @@
-﻿namespace MiPrimeraApp.Models.Employee
+﻿namespace Incidences.Models.Employee
 {
     public class Employee
     {
@@ -24,9 +24,9 @@
             {
                 return this.name;
             }
-            set 
-            { 
-                name = value; 
+            set
+            {
+                name = value;
             }
         }
         public string Surname1

@@ -1,4 +1,4 @@
-﻿namespace MiPrimeraApp.Models.Employee
+﻿namespace Incidences.Models.Employee
 {
     public class CredentialsDto
     {

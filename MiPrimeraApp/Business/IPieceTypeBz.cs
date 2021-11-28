@@ -1,4 +1,4 @@
-﻿using MiPrimeraApp.Models.Incidence;
+﻿using Incidences.Models.Incidence;
 using System.Collections.Generic;
 
 namespace Incidences.Business

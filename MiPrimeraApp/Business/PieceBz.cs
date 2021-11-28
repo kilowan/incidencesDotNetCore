@@ -1,14 +1,11 @@
-﻿using Incidences.Business;
-using Incidences.Data;
+﻿using Incidences.Data;
 using Incidences.Models.Incidence;
-using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
-using MiPrimeraApp.Models.Incidence;
+using Incidences.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace MiPrimeraApp.Business
+namespace Incidences.Business
 {
     public class PieceBz : IPieceBz
     {
@@ -73,10 +70,10 @@ namespace MiPrimeraApp.Business
                 else conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces[0]);
 
                 bool result = this.sql.Update(
-                    "incidence_piece_log", 
-                    new CDictionary<string, string> { 
-                        { "status", null, "1" } 
-                    }, 
+                    "incidence_piece_log",
+                    new CDictionary<string, string> {
+                        { "status", null, "1" }
+                    },
                     conditions
                 );
 

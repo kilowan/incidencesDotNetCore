@@ -1,18 +1,18 @@
-﻿namespace MiPrimeraApp.Models.Employee
+﻿namespace Incidences.Models.Employee
 {
     public class TypeRange
     {
         private int? id;
         private string name;
-        public int? Id 
+        public int? Id
         {
-            get 
-            { 
-                return id; 
+            get
+            {
+                return id;
             }
-            set 
-            { 
-                id = value; 
+            set
+            {
+                id = value;
             }
         }
         public string Name

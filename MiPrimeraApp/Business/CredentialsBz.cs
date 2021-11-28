@@ -1,14 +1,11 @@
-﻿using Incidences.Business;
-using Incidences.Data;
-using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
-using MiPrimeraApp.Models.Employee;
+﻿using Incidences.Data;
+using Incidences.Data.Models;
+using Incidences.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Net;
 
-namespace MiPrimeraApp.Business
+namespace Incidences.Business
 {
     public class CredentialsBz : ICredentialsBz
     {
@@ -26,7 +23,7 @@ namespace MiPrimeraApp.Business
             {
                 return SelectCredentials(
                     this.bisba.WhereUsername(
-                        new CDictionary<string, string>(), 
+                        new CDictionary<string, string>(),
                         username
                     )
                 );
@@ -57,8 +54,8 @@ namespace MiPrimeraApp.Business
                     using IDataReader reader = this.sql.GetReader();
                     reader.Read();
                     Credentials cred = new(
-                        (string)reader.GetValue(1), 
-                        (string)reader.GetValue(2), 
+                        (string)reader.GetValue(1),
+                        (string)reader.GetValue(2),
                         (int)reader.GetValue(3)
                     );
                     this.sql.Close();

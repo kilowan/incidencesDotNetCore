@@ -1,13 +1,11 @@
-﻿using Incidences.Business;
-using Incidences.Data;
-using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
-using MiPrimeraApp.Models.Employee;
+﻿using Incidences.Data;
+using Incidences.Data.Models;
+using Incidences.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace MiPrimeraApp.Business
+namespace Incidences.Business
 {
     public class EmployeeRangeBz : IEmployeeRangeBz
     {
@@ -35,7 +33,7 @@ namespace MiPrimeraApp.Business
         {
             try
             {
-                
+
                 return SelectRangeList(
                     this.bisba.WhereId(new CDictionary<string, string>(), id)
                 )[0];

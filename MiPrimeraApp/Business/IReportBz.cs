@@ -1,4 +1,4 @@
-﻿using MiPrimeraApp.Models;
+﻿using Incidences.Models;
 
 namespace Incidences.Business
 {

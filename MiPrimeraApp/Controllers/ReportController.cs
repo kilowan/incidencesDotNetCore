@@ -1,9 +1,8 @@
 ﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Business;
-using MiPrimeraApp.Models;
+using Incidences.Models;
 
-namespace MiPrimeraApp.Controllers
+namespace Incidences.Controllers
 {
     [Route("api/Report")]
     [ApiController]

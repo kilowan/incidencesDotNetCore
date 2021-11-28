@@ -1,20 +1,20 @@
-﻿namespace MiPrimeraApp.Models.Incidence
+﻿namespace Incidences.Models.Incidence
 {
     public class ReportedPiece
     {
         private string pieceName;
         private int pieceNumber;
 
-        public string PieceName 
+        public string PieceName
         {
-            get 
-            { 
-                return pieceName; 
+            get
+            {
+                return pieceName;
             }
-            set 
-            { 
-                pieceName = value; 
-            } 
+            set
+            {
+                pieceName = value;
+            }
         }
         public int PieceNumber
         {

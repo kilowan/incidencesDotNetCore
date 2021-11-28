@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 
-namespace MiPrimeraApp.Models.Incidence
+namespace Incidences.Models.Incidence
 {
     public class IncidenceList
     {
         private IList<Incidence> own;
         private IList<Incidence> other;
 
-        public IList<Incidence> Own 
+        public IList<Incidence> Own
         {
-            get 
-            { 
-                return own; 
+            get
+            {
+                return own;
             }
-            set 
-            { 
-                own = value; 
+            set
+            {
+                own = value;
             }
         }
         public IList<Incidence> Other

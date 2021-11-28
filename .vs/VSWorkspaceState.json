@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\MiPrimeraApp",
-    "\\MiPrimeraApp\\Business"
+    "\\MiPrimeraApp\\Business",
+    "\\MiPrimeraApp\\Controllers"
   ],
-  "SelectedNode": "\\Incidences.sln",
+  "SelectedNode": "\\MiPrimeraApp\\Controllers\\IncidenceController.cs",
   "PreviewInSolutionExplorer": false
 }

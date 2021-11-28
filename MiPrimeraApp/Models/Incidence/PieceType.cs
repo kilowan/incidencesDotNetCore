@@ -1,4 +1,4 @@
-﻿namespace MiPrimeraApp.Models.Incidence
+﻿namespace Incidences.Models.Incidence
 {
     public class PieceType
     {
@@ -6,16 +6,16 @@
         private string name;
         private int? id;
 
-        public string Description 
+        public string Description
         {
-            get 
+            get
             {
                 return description;
             }
-            set 
+            set
             {
                 description = value;
-            } 
+            }
         }
         public string Name
         {

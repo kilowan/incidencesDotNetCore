@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MiPrimeraApp.Models.Incidence
+namespace Incidences.Models.Incidence
 {
     public class Incidence
     {
@@ -17,16 +17,16 @@ namespace MiPrimeraApp.Models.Incidence
         private int id;
         private DateTime? finishDateTime;
 
-        public string Owner 
+        public string Owner
         {
-            get 
+            get
             {
                 return owner;
             }
-            set 
+            set
             {
                 owner = value;
-            } 
+            }
         }
         public int? OwnerId
         {
@@ -91,7 +91,7 @@ namespace MiPrimeraApp.Models.Incidence
             }
             set
             {
-              pieces = value;
+                pieces = value;
             }
         }
         public IList<Note> Notes

@@ -1,7 +1,7 @@
-﻿using MiPrimeraApp.Models.Incidence;
+﻿using Incidences.Models.Incidence;
 using System.Collections.Generic;
 
-namespace MiPrimeraApp.Models
+namespace Incidences.Models
 {
     public class Report
     {
@@ -9,15 +9,15 @@ namespace MiPrimeraApp.Models
         private IList<Statistics> global;
         private Statistics statistics;
 
-        public IList<ReportedPiece> Reported 
+        public IList<ReportedPiece> Reported
         {
-            get 
-            { 
-                return reported; 
+            get
+            {
+                return reported;
             }
-            set 
-            { 
-                reported = value; 
+            set
+            {
+                reported = value;
             }
         }
         public IList<Statistics> Global

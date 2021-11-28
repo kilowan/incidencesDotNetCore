@@ -1,8 +1,8 @@
 ﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
-using MiPrimeraApp.Models.Employee;
+using Incidences.Models.Employee;
 
-namespace MiPrimeraApp.Controllers
+namespace Incidences.Controllers
 {
     [Route("api/Credentials")]
     [ApiController]

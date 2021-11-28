@@ -1,5 +1,4 @@
-﻿using MiPrimeraApp.Data;
-using MiPrimeraApp.Data.Models;
+﻿using Incidences.Data.Models;
 using System.Collections.Generic;
 using System.Data;
 
@@ -67,11 +66,7 @@ namespace Incidences.Data
         public IList<Select> GetArray(int iterations, string field, int value);
         public IDictionary<string, int> GetCounters(bool result, IDictionary<string, int> counters);
 
-        public IList<string> GetStringArray(int iterations, string field, int value);
-
         public string GetSentence(int state, string column, int userId);
-        public bool MultiSelect(IList<string> queries);
-        public bool Select(string query);
 
         /// <summary>
         /// Sets the IDBCommand Connection
