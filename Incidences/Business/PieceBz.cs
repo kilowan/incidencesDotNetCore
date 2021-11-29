@@ -9,6 +9,23 @@ namespace Incidences.Business
 {
     public class PieceBz : IPieceBz
     {
+        #region cconstants
+        //tables
+        private const string piece_class = "piece_class";
+        private const string ipl = "incidence_piece_log";
+        private const string FullPiece = "FullPiece";
+
+        //columns
+        private const string typeId = "typeId";
+        private const string nameC = "name";
+        private const string status = "status";
+        private const string deletedC = "deleted";
+        private const string pieceId = "pieceId";
+        private const string incidenceIdC = "incidenceId";
+        private const string ALL = "*";
+
+        #endregion
+
         private readonly IBusinessBase bisba;
         private readonly ISqlBase sql;
         public PieceBz(IBusinessBase bisba, ISqlBase sql)
@@ -20,10 +37,10 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Insert("piece_class", new()
+                return this.sql.Insert(piece_class, new()
                 {
-                    { "type", null, piece.typeId.ToString() },
-                    { "name", null, piece.name }
+                    { typeId, null, piece.typeId.ToString() },
+                    { nameC, null, piece.name }
                 });
             }
             catch (Exception e)
@@ -52,7 +69,7 @@ namespace Incidences.Business
                     values.Add($"{piece}, {incidenceId}");
                 }
                 string stringPieces = string.Join(", ", values);
-                string text = $"INSERT INTO incidence_piece_log (pieceId, incidenceId) VALUES ({ stringPieces });";
+                string text = $"INSERT INTO {ipl} ({pieceId}, {incidenceIdC}) VALUES ({ stringPieces });";
                 return this.sql.Call(text);
             }
             catch (Exception e)
@@ -69,10 +86,11 @@ namespace Incidences.Business
                 if (pieces.Count > 1) conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces);
                 else conditions = this.bisba.WherePieceId(new CDictionary<string, string>(), pieces[0]);
 
+                
                 bool result = this.sql.Update(
-                    "incidence_piece_log",
+                    ipl,
                     new CDictionary<string, string> {
-                        { "status", null, "1" }
+                        { status, null, "1" }
                     },
                     conditions
                 );
@@ -89,7 +107,14 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Update("piece_class", new CDictionary<string, string> { { "deleted", null, "1" } }, new CDictionary<string, string> { { "id", null, id.ToString() } });
+                bisba.WhereId(new CDictionary<string, string>(), id);
+                return this.sql.Update(
+                    piece_class, 
+                    new CDictionary<string, string> { 
+                        { deletedC, null, "1" } 
+                    },
+                    bisba.WhereId(new CDictionary<string, string>(), id)
+                );
             }
             catch (Exception e)
             {
@@ -100,9 +125,9 @@ namespace Incidences.Business
         {
             CDictionary<string, string> columns = new()
             {
-                { "type", null, type.ToString() },
-                { "name", null, name },
-                { "deleted", null, deleted.ToString() }
+                { typeId, null, type.ToString() },
+                { nameC, null, name },
+                { deletedC, null, deleted.ToString() }
             };
 
             return columns;
@@ -112,7 +137,7 @@ namespace Incidences.Business
             try
             {
                 return this.sql.Update(
-                    "piece_class",
+                    piece_class,
                     GetPieceColumns(piece),
                     this.bisba.WherePieceId(new CDictionary<string, string>(), id));
             }
@@ -125,10 +150,10 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Update("piece_class",
+                bool result = this.sql.Update(piece_class,
                     new()
                     {
-                        { "deleted", null, deleted.ToString() }
+                        { deletedC, null, deleted.ToString() }
                     },
                     this.bisba.WherePieceId(
                         new CDictionary<string, string>(),
@@ -148,7 +173,12 @@ namespace Incidences.Business
         {
             try
             {
-                IList<Piece> pieces = SelectPieces(this.bisba.WherePieceId(new CDictionary<string, string>(), pieceId));
+                IList<Piece> pieces = SelectPieces(
+                    this.bisba.WherePieceId(
+                        new CDictionary<string, string>(), 
+                        pieceId
+                    )
+                );
                 return pieces[0];
             }
             catch (Exception e)
@@ -160,7 +190,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("FullPiece", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select(FullPiece, new List<string> { ALL }, conditions));
                 if (result)
                 {
                     IList<Piece> pieces = new List<Piece>();
@@ -207,11 +237,18 @@ namespace Incidences.Business
                 CDictionary<string, string> conditions;
                 if (piece != null)
                 {
-                    conditions = this.bisba.WherePieceId(this.bisba.WhereNotDeleted(new CDictionary<string, string>()), piece);
+                    conditions = this.bisba.WherePieceId(
+                        this.bisba.WhereNotDeleted(
+                            new CDictionary<string, string>()
+                            ), 
+                        piece
+                    );
                 }
                 else
                 {
-                    conditions = this.bisba.WhereNotDeleted(new CDictionary<string, string>());
+                    conditions = this.bisba.WhereNotDeleted(
+                        new CDictionary<string, string>()
+                    );
                 }
 
                 return SelectPieces(conditions);
@@ -224,9 +261,9 @@ namespace Incidences.Business
         public CDictionary<string, string> GetPieceColumns(PieceDto piece)
         {
             CDictionary<string, string> tmpColumns = new CDictionary<string, string>();
-            if (piece.typeId != null) tmpColumns.Add("type", null, piece.typeId.ToString());
-            if (piece.name != null) tmpColumns.Add("name", null, piece.name);
-            if (piece.deleted != null) tmpColumns.Add("deleted", null, piece.deleted.ToString());
+            if (piece.typeId != null) tmpColumns.Add(typeId, null, piece.typeId.ToString());
+            if (piece.name != null) tmpColumns.Add(nameC, null, piece.name);
+            if (piece.deleted != null) tmpColumns.Add(deletedC, null, piece.deleted.ToString());
             return tmpColumns;
         }
     }

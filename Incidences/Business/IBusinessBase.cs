@@ -9,7 +9,9 @@ namespace Incidences.Business
         public IList<ColumnKeyValue<string, string>> Pushcolumns(string field, string value, IList<ColumnKeyValue<string, string>> columns, string key = null);
 
         public CDictionary<string, string> WhereIncidenceId(CDictionary<string, string> conditions, int incidenceId);
+        public CDictionary<string, string> WhereIncidenceId(CDictionary<string, string> conditions, int? incidenceId);
         public CDictionary<string, string> WhereNoteType(CDictionary<string, string> conditions, string noteType);
+        public CDictionary<string, string> WhereNoteTypeId(CDictionary<string, string> conditions, int noteType);
         public CDictionary<string, string> WhereOwnerId(CDictionary<string, string> conditions, int ownerId);
         public CDictionary<string, string> WhereSolverId(CDictionary<string, string> conditions, int solverId);
         public CDictionary<string, string> WhereEmployeeTypeName(CDictionary<string, string> conditions, string typeName);

@@ -1,6 +1,6 @@
 ﻿using Incidences.Data;
-using Incidences.Models.Incidence;
 using Incidences.Data.Models;
+using Incidences.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,6 +9,27 @@ namespace Incidences.Business
 {
     public class IncidenceBz : IIncidenceBz
     {
+        #region constants
+        //tables
+        private const string incidenceC = "incidence";
+        private const string FullIncidence = "FullIncidence";
+        private const string incidence_pieces = "incidence_pieces";
+        private const string incidence_notes = "incidence_notes";
+
+        //columns
+        private const string counter = "COUNT(*) AS counter";
+        private const string ALL = "*";
+        private const string ownerId = "ownerId";
+        private const string stateC = "state";
+        private const string technicianId = "technicianId";
+        private const string max = "MAX(id)";
+        private const string solverId = "solverId";
+        private const string close_dateeTime = "close_dateeTime";
+        private const string TIMESTAMP = "CURRENT_TIMESTAMP()";
+        private const string solverNote = "solverNote";
+
+        #endregion
+
         private INoteBz note;
         private IPieceBz piece;
         private IBusinessBase bisba;
@@ -26,7 +47,7 @@ namespace Incidences.Business
             try
             {
                 IList<Incidence> own = SelectIncidences(
-                    new List<string> { "*" },
+                    new List<string> { ALL },
                     this.bisba.WhereEmployeeId(
                         this.bisba.WhereIncidenceState(
                             new CDictionary<string, string>(),
@@ -36,27 +57,28 @@ namespace Incidences.Business
                     )
                 );
                 IncidenceList incidences = new(own);
-                IList<string> list = new List<string>();
-                list.Add("Technician");
-                list.Add("Admin");
-                list.Contains(type);
+                IList<string> list = new List<string>{
+                    "Technician",
+                    "Admin"
+                };
+
                 if (list.Contains(type) && state != 4)
                 {
                     incidences.Other = SelectIncidences(
-                        new List<string> { "*" },
+                        new List<string> { ALL },
                         new ColumnsKeysValues<string, string>
                         {
                             KeyValue = new List<ColumnKeyValue<string, string>>
                             {
-                                new ColumnKeyValue<string, string>( "state", "=", state.ToString() )
+                                new ColumnKeyValue<string, string>( stateC, "=", state.ToString() )
                             },
                             Connector = "AND",
                             Children = new ColumnsKeysValues<string, string>
                             {
                                 KeyValue = new List<ColumnKeyValue<string, string>>
                                 {
-                                    new ColumnKeyValue<string, string>("technicianId", "=", userId.ToString()),
-                                    new ColumnKeyValue<string, string>( "technicianId", "IS", "NULL" )
+                                    new ColumnKeyValue<string, string>(technicianId, "=", userId.ToString()),
+                                    new ColumnKeyValue<string, string>( technicianId, "IS", "NULL" )
                                 },
                                 Connector = "OR"
                             }
@@ -75,7 +97,7 @@ namespace Incidences.Business
         {
             try
             {
-                return SelectIncidences(new List<string> { "*" }, this.bisba.WhereIncidence(new CDictionary<string, string>(), id))[0];
+                return SelectIncidences(new List<string> { ALL }, this.bisba.WhereIncidence(new CDictionary<string, string>(), id))[0];
             }
             catch (Exception e)
             {
@@ -86,7 +108,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("incidence", fields));
+                bool result = this.sql.Select(new Select(incidenceC, fields));
                 if (result)
                 {
                     using IDataReader reader = this.sql.GetReader(); reader.Read();
@@ -105,7 +127,7 @@ namespace Incidences.Business
         {
             try
             {
-                return LastIncidence(new List<string> { "MAX(id)" });
+                return LastIncidence(new List<string> { max });
             }
             catch (Exception e)
             {
@@ -117,7 +139,7 @@ namespace Incidences.Business
             try
             {
                 Incidence incidence = SelectIncidences(
-                    new List<string>('*'),
+                    new List<string> { ALL },
                     this.bisba.WhereIncidence(new CDictionary<string, string>(),
                     incidenceId)
                 )[0];
@@ -149,13 +171,13 @@ namespace Incidences.Business
                 }
                 else
                 {
-                    CDictionary<string, string> columns = new CDictionary<string, string>();
+                    CDictionary<string, string> columns = new();
                     if (incidence.state != null)
                     {
-                        columns.Add("state", null, incidence.state.ToString());
+                        columns.Add(stateC, null, incidence.state.ToString());
                     }
                     bool result = this.sql.Update(
-                        "incidence",
+                        incidenceC,
                         columns,
                         this.bisba.WhereIncidenceId(
                             new CDictionary<string, string>(),
@@ -197,20 +219,20 @@ namespace Incidences.Business
                 CDictionary<string, string> columns = new CDictionary<string, string>();
                 if (incidence.state != null)
                 {
-                    columns.Add("state", null, incidence.state.ToString());
+                    columns.Add(stateC, null, incidence.state.ToString());
                 }
                 else
                 {
                     columns = new CDictionary<string, string>();
-                    columns.Add("solverId", null, userId.ToString());
-                    columns.Add("state", null, "2");
+                    columns.Add(solverId, null, userId.ToString());
+                    columns.Add(stateC, null, "2");
                 }
                 if (close)
                 {
-                    columns.Add("close_dateeTime", null, "CURRENT_TIMESTAMP()");
+                    columns.Add(close_dateeTime, null, TIMESTAMP);
                 }
                 bool result = this.sql.Update(
-                    "incidence",
+                    incidenceC,
                     columns,
                     this.bisba.WhereIncidenceId(
                         new CDictionary<string, string>(),
@@ -250,11 +272,11 @@ namespace Incidences.Business
             try
             {
                 bool result = this.sql.Update(
-                    "incidence",
+                    incidenceC,
                     new CDictionary<string, string>
                     {
-                        { "solverId", null, solverID.ToString() },
-                        { "state", null, "2" }
+                        { solverId, null, solverID.ToString() },
+                        { stateC, null, "2" }
                     },
                     this.bisba.WhereId(
                         new CDictionary<string, string>(),
@@ -277,11 +299,11 @@ namespace Incidences.Business
             try
             {
                 bool result = this.sql.Update(
-                    "incidence",
+                    incidenceC,
                     new()
                     {
-                        { "state", null, "3" },
-                        { "close_dateeTime", null, "CURRENT_TIMESTAMP()" }
+                        { stateC, null, "3" },
+                        { close_dateeTime, null, TIMESTAMP }
                     },
                     this.bisba.WhereIncidenceId(
                         new CDictionary<string, string>(),
@@ -316,7 +338,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("FullIncidence", fields, conditions));
+                bool result = this.sql.Select(new Select(FullIncidence, fields, conditions));
                 IList<Incidence> incidences = new List<Incidence>();
                 if (result)
                 {
@@ -344,10 +366,10 @@ namespace Incidences.Business
                     {
                         IList<string> list = new List<string>
                         {
-                            "*"
+                            ALL
                         };
                         conditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
-                        result = this.sql.Select(new Select("incidence_pieces", list, conditions));
+                        result = this.sql.Select(new Select(incidence_pieces, list, conditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
@@ -371,8 +393,8 @@ namespace Incidences.Business
                             }
                             incidence.Pieces = pieces;
                         }
-                        conditions = this.bisba.WhereNoteType(conditions, "solverNote");
-                        result = this.sql.Select(new Select("incidence_notes", list, conditions));
+                        conditions = this.bisba.WhereNoteType(conditions, solverNote);
+                        result = this.sql.Select(new Select(incidence_notes, list, conditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();
@@ -402,7 +424,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("FullIncidence", fields, conditions));
+                bool result = this.sql.Select(new Select(FullIncidence, fields, conditions));
                 IList<Incidence> incidences = new List<Incidence>();
                 if (result)
                 {
@@ -433,7 +455,7 @@ namespace Incidences.Business
                             "*"
                         };
                         CDictionary<string, string> oldConditions = this.bisba.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
-                        result = this.sql.Select(new Select("incidence_pieces", list, oldConditions));
+                        result = this.sql.Select(new Select(incidence_pieces, list, oldConditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
@@ -457,8 +479,8 @@ namespace Incidences.Business
                             }
                             incidence.Pieces = pieces;
                         }
-                        oldConditions = this.bisba.WhereNoteType(oldConditions, "solverNote");
-                        result = this.sql.Select(new Select("incidence_notes", list, oldConditions));
+                        oldConditions = this.bisba.WhereNoteType(oldConditions, solverNote);
+                        result = this.sql.Select(new Select(incidence_notes, list, oldConditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();
@@ -489,7 +511,7 @@ namespace Incidences.Business
             try
             {
                 bool result = this.sql.Insert(
-                    "incidence",
+                    incidenceC,
                     this.bisba.WhereOwnerId(new CDictionary<string, string>(), incidence.ownerId)
                 );
                 if (!result) throw new Exception("Parte no insertado");
@@ -512,9 +534,9 @@ namespace Incidences.Business
             {
 
                 bool result = this.sql.Update(
-                    "incidence",
+                    incidenceC,
                     new CDictionary<string, string> {
-                        { "state", null, "5" }
+                        { stateC, null, "5" }
                     },
                     this.bisba.WhereOwnerId(
                         this.bisba.WhereIncidenceId(
@@ -545,23 +567,81 @@ namespace Incidences.Business
             if (types.Contains(type))
             {
                 //Technician or Admin
-                counters = this.sql.GetCounters(
-                    this.sql.MultiSelectSQL(
-                        this.sql.GetArray(3, "solverId", userId)
-                    ),
-                    counters
-                );
+                counters = GetCounters(3, solverId, userId, counters);
             }
 
-            counters = this.sql.GetCounters(
-                this.sql.MultiSelectSQL(
-                    this.sql.GetArray(
-                        4,
-                        "ownerId",
-                        userId
-                    )
-                ), counters
-            );
+            return GetCounters(4, ownerId, userId, counters);
+        }
+        private IDictionary<string, int> GetCounters(int state, string column, int userId, IDictionary<string, int> counters)
+        {
+            IList<string> sentences = new List<string>();
+            for (int i = 1; i <= state; i++)
+            {
+                string field = incidenceC;
+                Select select;
+                IList<string> columns = new List<string> { counter };
+                if (column == ownerId)
+                    select = new Select(
+                    field,
+                    columns,
+                    new CDictionary<string, string> {
+                        { stateC, null, state.ToString() },
+                        { column, null, userId.ToString() }
+                    }
+                    );
+                else
+                    select = new Select(
+                    field,
+                    columns,
+                    new ColumnsKeysValues<string, string>
+                    {
+                        KeyValue = new List<ColumnKeyValue<string, string>>
+                        {
+                            new ColumnKeyValue<string, string>
+                            (
+                                stateC, "=", state.ToString()
+                            )
+                        },
+                        Connector = "AND",
+                        Children = new ColumnsKeysValues<string, string>
+                        {
+                            KeyValue = new List<ColumnKeyValue<string, string>>
+                            {
+                                new ColumnKeyValue<string, string>
+                                (
+                                    column, "=", userId.ToString()
+                                ),
+                                new ColumnKeyValue<string, string>
+                                (
+                                    column, "IS", "NULL"
+                                )
+                            },
+                            Connector = "OR",
+                        }
+                    }
+                );
+
+                sentences.Add(select.GetSentence());
+            }
+
+            string text = string.Join($" UNION ALL ", sentences);
+            bool result = this.sql.Call(text, "");
+
+            if (result)
+            {
+                string[] names = new string[] { "new", "old", "closed", "hidden" };
+                int counter = 0;
+                using IDataReader reader = this.sql.GetReader();
+                while (reader.Read())
+                {
+                    counters[names[counter]] += (int)reader.GetValue(0);
+                    counters["total"] += (int)reader.GetValue(0);
+                    counter++;
+                }
+
+                this.sql.Close();
+            }
+
             return counters;
         }
     }

@@ -9,21 +9,42 @@ namespace Incidences.Business
 {
     public class NoteBz : INoteBz
     {
+        #region constants
+        //tables
+        private const string incidence_notes = "incidence_notes";
+        private const string Notes = "Notes";
+
+        //columns
+        private const string noteStr = "noteStr";
+        private const string date = "date";
+        private const string employeeIdC = "employeeId";
+        private const string incidenceIdC = "incidenceId";
+        private const string noteTypeIdC = "noteTypeId";
+
+        #endregion
+
         private ISqlBase sql;
-        public NoteBz(ISqlBase sql)
+        private IBusinessBase bisba;
+        public NoteBz(ISqlBase sql, IBusinessBase bisba)
         {
             this.sql = sql;
+            this.bisba = bisba;
         }
+
         #region SELECT
         public Note SelectEmployeeNoteByIncidenceId(int incidenceId)
         {
             try
             {
+                bisba.WhereNoteType(bisba.WhereIncidenceId(new CDictionary<string, string>(), incidenceId), "Employee");
                 return GetNotes(
-                    new CDictionary<string, string> {
-                        { "incidence", null, incidenceId.ToString() },
-                        { "noteType", null, "Employee" }
-                    }
+                    bisba.WhereNoteType(
+                        bisba.WhereIncidenceId(
+                            new CDictionary<string, string>(), 
+                            incidenceId
+                        ), 
+                        "Employee"
+                    )
                 )[0];
             }
             catch (Exception e)
@@ -36,10 +57,13 @@ namespace Incidences.Business
             try
             {
                 return GetNotes(
-                    new CDictionary<string, string> {
-                        { "incidence", null, incidenceId.ToString() },
-                        { "noteType", null, "Technician" }
-                    }
+                    bisba.WhereNoteType(
+                        bisba.WhereIncidenceId(
+                            new CDictionary<string, string>(), 
+                            incidenceId
+                        ), 
+                        "Technician"
+                    )
                 );
             }
             catch (Exception e)
@@ -51,10 +75,10 @@ namespace Incidences.Business
         {
             bool result = this.sql.Select(
                 new Select(
-                    "incidence_notes",
+                    incidence_notes,
                     new List<string> {
-                            "noteStr",
-                            "date"
+                            noteStr,
+                            date
                     },
                     conditions
                 )
@@ -73,7 +97,9 @@ namespace Incidences.Business
             }
             else throw new Exception("Ningún registro");
         }
+
         #endregion
+
         #region INSERT
         public bool InsertNoteFn(string note, int noteTypeId, int? userId, int? incidenceId)
         {
@@ -90,14 +116,13 @@ namespace Incidences.Business
         {
             try
             {
-
-                bool result = this.sql.Insert("Notes",
+                bool result = this.sql.Insert(Notes,
                     new CDictionary<string, string>
                     {
-                        { "employeeId", null, ownerId.ToString() },
-                        { "incidenceId", null, incidenceId.ToString() },
-                        { "noteTypeId", null, $"'{ noteTypeId }'" },
-                        { "noteStr", null, $"'{ note }'" }
+                        { employeeIdC, null, ownerId.ToString() },
+                        { incidenceIdC, null, incidenceId.ToString() },
+                        { noteTypeIdC, null, $"'{ noteTypeId }'" },
+                        { noteStr, null, $"'{ note }'" }
                     }
                 );
 
@@ -110,17 +135,18 @@ namespace Incidences.Business
             }
         }
         #endregion
+
         #region UPDATE
         public bool UpdateNote(string note, int incidenceId, int employeeId)
         {
             try
             {
                 bool result = this.sql.Update(
-                    "notes",
-                    new CDictionary<string, string> { { "noteStr", null, note } },
+                    Notes,
+                    new CDictionary<string, string> { { noteStr, null, note } },
                     new CDictionary<string, string>{
-                        { "incidence", null, incidenceId.ToString() },
-                        { "employee", null, employeeId.ToString() }
+                        { incidenceIdC, null, incidenceId.ToString() },
+                        { employeeIdC, null, employeeId.ToString() }
                     }
                 );
 

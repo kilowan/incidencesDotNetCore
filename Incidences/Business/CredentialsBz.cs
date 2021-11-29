@@ -9,6 +9,18 @@ namespace Incidences.Business
 {
     public class CredentialsBz : ICredentialsBz
     {
+        #region constants
+        //tables
+        private const string credentialsC = "credentials";
+        private const string credentialsmatch = "credentialsmatch";
+
+        //columns
+        private const string ALL = "*";
+        private const string employeeC = "employee";
+        private const string usernameC = "username";
+        private const string passwordC = "password";
+        #endregion
+
         private IBusinessBase bisba;
         private ISqlBase sql;
         public CredentialsBz(IBusinessBase businessBase, ISqlBase sqlBase)
@@ -48,7 +60,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("credentials", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select(credentialsC, new List<string> { ALL }, conditions));
                 if (result)
                 {
                     using IDataReader reader = this.sql.GetReader();
@@ -75,7 +87,7 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Update("credentials", GetCredentialsColumns(null, password), new CDictionary<string, string> { { "employee", null, employeeId.ToString() } });
+                return this.sql.Update(credentialsC, GetCredentialsColumns(null, password), new CDictionary<string, string> { { employeeC, null, employeeId.ToString() } });
             }
             catch (Exception e)
             {
@@ -86,7 +98,7 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Update("credentials", GetCredentialsColumns(username), new CDictionary<string, string> { { "employee", null, employeeId.ToString() } });
+                return this.sql.Update(credentialsC, GetCredentialsColumns(username), new CDictionary<string, string> { { employeeC, null, employeeId.ToString() } });
             }
             catch (Exception e)
             {
@@ -98,12 +110,12 @@ namespace Incidences.Business
             try
             {
                 return this.sql.Update(
-                    "credentials",
+                    credentialsC,
                     GetCredentialsColumns(
                         credentials.username,
                         credentials.password),
                     new CDictionary<string, string> {
-                        { "employee", null, employeeId.ToString() }
+                        { employeeC, null, employeeId.ToString() }
                     }
                 );
             }
@@ -115,12 +127,12 @@ namespace Incidences.Business
         #endregion
 
         #region OTHER
-        private CDictionary<string, string> GetCredentialsColumns(string username = null, string password = null, int? employee = null)
+        private static CDictionary<string, string> GetCredentialsColumns(string username = null, string password = null, int? employee = null)
         {
             CDictionary<string, string> tmpColumns = new CDictionary<string, string>();
-            if (username != null) tmpColumns.Add("username", null, username);
-            if (password != null) tmpColumns.Add("password", null, password);
-            if (employee != null) tmpColumns.Add("employee", null, employee.ToString());
+            if (username != null) tmpColumns.Add(usernameC, null, username);
+            if (password != null) tmpColumns.Add(passwordC, null, password);
+            if (employee != null) tmpColumns.Add(employeeC, null, employee.ToString());
             return tmpColumns;
         }
         public bool CheckCredentialsFn(string username, string password)
@@ -162,8 +174,8 @@ namespace Incidences.Business
         {
             return this.sql.Select(
                 new Select(
-                    "credentialsmatch",
-                    new List<string> { "*" },
+                    credentialsmatch,
+                    new List<string> { ALL },
                     conditions
                 )
             );

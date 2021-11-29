@@ -7,6 +7,21 @@ namespace Incidences.Data
 {
     public class SqlBase : ISqlBase
     {
+        #region constants
+        //SQL
+        private const string AND = "AND";
+        private const string IS = "IS";
+        private const string equal = "=";
+        private const string INSERT = "INSERT INTO";
+        private const string VALUES = "VALUES";
+        private const string WHERE = "WHERE";
+        private const string SET = "SET";
+        private const string UPDATE = "UPDATE";
+        private const string GROUP = "GROUP BY";
+        private const string INNER = "INNER JOIN";
+        private const string ON = "ON";
+        private const string ORDER = "ORDER BY";
+        #endregion
         private string stringconnection;
         private IDbConnection connection;
         private IDbCommand get_sql;
@@ -15,34 +30,12 @@ namespace Incidences.Data
 
         public bool Insert(string table, CDictionary<string, string> data)
         {
-            string text = $"INSERT INTO { table } ({ string.Join(", ", data.Keys) }) VALUES ({ string.Join(", ", data.Values) })";
+            string text = $"{INSERT} { table } ({ string.Join(", ", data.Keys) }) {VALUES} ({ string.Join(", ", data.Values) })";
             return Call(text);
         }
         public bool Select(Select select)
         {
             return Call(select.GetSentence(), "");
-        }
-        public string GetSentence(int state, string column, int userId)
-        {
-            if (column == "ownerId")
-            {
-                return $"SELECT COUNT(*) AS counter FROM incidence WHERE state = '{ state }' AND { column } = '{ userId }'";
-            }
-            else
-            {
-                return $"SELECT COUNT(*) AS counter FROM incidence WHERE state = '{ state }' AND ({ column } = '{ userId }' OR { column } IS NULL)";
-            }
-        }
-        public bool MultiSelectSQL(IList<Select> queries)
-        {
-            IList<string> sentences = new List<string>();
-            foreach (Select query in queries)
-            {
-                sentences.Add(query.GetSentence());
-            }
-
-            string text = string.Join(" UNION ALL ", sentences);
-            return Call(text, "");
         }
         public string Where(CDictionary<string, string> conditions)
         {
@@ -56,14 +49,14 @@ namespace Incidences.Data
                 results.Add(result);
             }
 
-            return $"WHERE { string.Join(" AND ", results) }";
+            return $"{WHERE} { string.Join($" {AND} ", results) }";
         }
         public string Where(ColumnsKeysValues<string, string> data)
         {
             IList<string> strings = new List<string>();
             foreach (ColumnKeyValue<string, string> value in data.KeyValue)
             {
-                if (value.key == "IS") strings.Add($"{ value.column } { value.key } { $"{ value.value }" }");
+                if (value.key == IS) strings.Add($"{ value.column } { value.key } { $"{ value.value }" }");
                 else strings.Add($"{ value.column } { value.key } { $"'{ value.value }'" }");
             }
 
@@ -79,7 +72,7 @@ namespace Incidences.Data
                 conditionsValues.Add($"{ item.column } = '{ item.value }'");
             }
 
-            string text = $"UPDATE { table } SET { string.Join(", ", conditionsValues) } { Where(conditions) }";
+            string text = $"{UPDATE} { table } {SET} { string.Join(", ", conditionsValues) } { Where(conditions) }";
             return Call(text);
         }
         public void Delete()
@@ -88,7 +81,7 @@ namespace Incidences.Data
         }
         public string GroupBySQL(IList<string> fields)
         {
-            return " GROUP BY " + string.Join(", ", fields);
+            return $" {GROUP} {string.Join(", ", fields)}";
         }
         public string InnerJoinSQL(IList<InnerJoin> innerJoin)
         {
@@ -100,90 +93,17 @@ namespace Incidences.Data
                 {
                     innerText = inner.tableA;
                 }
-                innerText = innerText + " INNER JOIN " + inner.tableB + " ON " + inner.conditions.column + " = " + inner.conditions.value;
+
+                innerText += $" {INNER} {inner.tableB} {ON} {inner.conditions.column} {equal} {inner.conditions.value}";
                 position++;
             }
             return innerText;
         }
         public string OrderBySQL(Order orderBy)
         {
-            return $"ORDER BY { string.Join(", ", orderBy.fields) } { orderBy.order }";
+            return $"{ORDER} { string.Join(", ", orderBy.fields) } { orderBy.order }";
         }
 
-        private static Select GetCountSentence(int state, string column, int userId)
-        {
-            string field = "incidence";
-            IList<string> columns = new List<string> { "COUNT(*) AS counter" };
-            if (column == "ownerId")
-                return new Select(
-                field,
-                columns,
-                new CDictionary<string, string> {
-                 { "state", null, state.ToString() },
-                 { column, null, userId.ToString() }
-                }
-               );
-            else
-                return new Select(
-                field,
-                columns,
-                new ColumnsKeysValues<string, string>
-                {
-                    KeyValue = new List<ColumnKeyValue<string, string>>
-                    {
-                        new ColumnKeyValue<string, string>
-                        (
-                            "state", "=", state.ToString()
-                        )
-                    },
-                    Connector = "AND",
-                    Children = new ColumnsKeysValues<string, string>
-                    {
-                        KeyValue = new List<ColumnKeyValue<string, string>>
-                        {
-                            new ColumnKeyValue<string, string>
-                            (
-                                column, "=", userId.ToString()
-                            ),
-                            new ColumnKeyValue<string, string>
-                            (
-                                column, "IS", "NULL"
-                            )
-                        },
-                        Connector = "OR",
-                    }
-                }
-               );
-        }
-        public IList<Select> GetArray(int iterations, string field, int value)
-        {
-            IList<Select> sentences = new List<Select>();
-            for (int i = 1; i <= iterations; i++)
-            {
-                sentences.Add(GetCountSentence(i, field, value));
-            }
-
-            return sentences;
-        }
-        public IDictionary<string, int> GetCounters(bool result, IDictionary<string, int> counters)
-        {
-            if (result)
-            {
-                string[] names = new string[] { "new", "old", "closed", "hidden" };
-                int counter = 0;
-                using IDataReader reader = this.get_sql.ExecuteReader();
-                while (reader.Read())
-                {
-                    counters[names[counter]] += (int)reader.GetValue(0);
-                    counters["total"] += (int)reader.GetValue(0);
-                    counter++;
-                }
-
-                this.Close();
-            }
-
-            return counters;
-        }
         #endregion
 
         #region SQLServer

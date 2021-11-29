@@ -26,7 +26,7 @@ namespace Incidences.Data
         /// </summary>
         /// <param name="queries">The queries</param>
         /// <returns>Returns queries joined</returns>
-        public bool MultiSelectSQL(IList<Select> queries);
+        //public bool MultiSelectSQL(IList<Select> queries);
         /// <summary>
         /// Makes Where string
         /// </summary>
@@ -63,11 +63,6 @@ namespace Incidences.Data
         /// <param name="orderBy">OrderBy params</param>
         /// <returns>Returns the OrderBy string</returns>
         public string OrderBySQL(Order orderBy);
-        public IList<Select> GetArray(int iterations, string field, int value);
-        public IDictionary<string, int> GetCounters(bool result, IDictionary<string, int> counters);
-
-        public string GetSentence(int state, string column, int userId);
-
         /// <summary>
         /// Sets the IDBCommand Connection
         /// </summary>
