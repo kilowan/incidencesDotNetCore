@@ -9,6 +9,9 @@ namespace Incidences.Business
 {
     public class EmployeeRangeBz : IEmployeeRangeBz
     {
+        private const string employee_range = "employee_range";
+        private const string ALL = "*";
+
         private IBusinessBase bisba;
         private ISqlBase sql;
         public EmployeeRangeBz(IBusinessBase bisba, ISqlBase sql)
@@ -56,7 +59,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("employee_range", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select(employee_range, new List<string> { ALL }, conditions));
                 if (result)
                 {
                     IList<TypeRange> ranges = new List<TypeRange>();

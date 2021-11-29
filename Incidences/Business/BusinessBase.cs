@@ -17,9 +17,17 @@ namespace Incidences.Business
         {
             return WhereCommon(conditions, "incidenceId", null, $"{ incidenceId }");
         }
+        public CDictionary<string, string> WhereIncidenceId(CDictionary<string, string> conditions, int? incidenceId)
+        {
+            return WhereCommon(conditions, "incidenceId", null, $"{ incidenceId }");
+        }
         public CDictionary<string, string> WhereNoteType(CDictionary<string, string> conditions, string noteType)
         {
             return WhereCommon(conditions, "noteType", null, $"{ noteType }");
+        }
+        public CDictionary<string, string> WhereNoteTypeId(CDictionary<string, string> conditions, int noteType)
+        {
+            return WhereCommon(conditions, "noteTypeId", null, $"'{ noteType }'");
         }
         public CDictionary<string, string> WhereOwnerId(CDictionary<string, string> conditions, int ownerId)
         {

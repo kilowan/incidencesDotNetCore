@@ -9,6 +9,15 @@ namespace Incidences.Business
 {
     public class PieceTypeBz : IPieceTypeBz
     {
+        #region constants
+        //tables
+        private const string piece_type = "piece_type";
+
+        //columns
+        private const string ALL = "*";
+
+        #endregion
+
         private readonly ISqlBase sql;
         private readonly IBusinessBase bisba;
         public PieceTypeBz(ISqlBase sql, IBusinessBase bisba)
@@ -33,7 +42,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("piece_type", new List<string> { "*" }, conditions));
+                bool result = this.sql.Select(new Select(piece_type, new List<string> { ALL }, conditions));
                 IList<PieceType> pieceTypes = new List<PieceType>();
                 using IDataReader reader = this.sql.GetReader();
 

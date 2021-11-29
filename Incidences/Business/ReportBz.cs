@@ -11,7 +11,21 @@ namespace Incidences.Business
 {
     public class ReportBz : IReportBz
     {
-        #region CONST
+        #region constants
+
+        //tables
+        private const string rp = "reportedpieces";
+
+        //columns
+        private const string ALL = "*";
+        private const string tr = "Tiempo_resolucion";
+        private const string tiempo_medio = "ROUND(AVG(Tiempo), 0) AS 'tiempo_medio'";
+        private const string cantidad_partes = "count(solverId) AS 'cantidad_partes'";
+        private const string employeeName = "employeeName";
+        private const string solverId = "solverId";
+        private const string ROUND = "ROUND(AVG(Tiempo),0)";
+        private const string DESC = "DESC";
+
         /// <summary>
         /// One mounth in seconds
         /// </summary>
@@ -88,8 +102,8 @@ namespace Incidences.Business
                 IList<ReportedPiece> reportedPieces = new List<ReportedPiece>();
                 bool result = this.sql.Select(
                     new Select(
-                        "reportedpieces",
-                        new List<string> { "*" }
+                        rp,
+                        new List<string> { ALL }
                     )
                 );
                 if (result)
@@ -125,13 +139,13 @@ namespace Incidences.Business
                 IList<Statistics> globalData = new List<Statistics>();
                 bool result = this.sql.Select(
                     new Select(
-                        "Tiempo_resolucion",
+                        tr,
                         new List<string> {
-                            "ROUND(AVG(Tiempo),0) AS 'tiempo_medio'",
-                            "employeeName"
+                            tiempo_medio,
+                            employeeName
                         },
-                        new List<string> { "employeeName, solverId" },
-                        new Order("solverId")
+                        new List<string> { employeeName, solverId },
+                        new Order(solverId)
                     )
                 );
                 if (result)
@@ -167,21 +181,21 @@ namespace Incidences.Business
             {
                 bool result = this.sql.Select(
                     new Select(
-                        "Tiempo_resolucion",
+                        tr,
                         new List<string> {
-                            "ROUND(AVG(Tiempo),0) AS 'tiempo_medio'",
-                            "count(solverId) AS 'cantidad_partes'",
-                            "employeeName"
+                            tiempo_medio,
+                            cantidad_partes,
+                            employeeName
                         },
                         new CDictionary<string, string> {
-                            { "solverId", null, id.ToString() }
+                            { solverId, null, id.ToString() }
                         },
                         new List<string> {
-                            "employeeName"
+                            employeeName
                         },
                         new Order(
-                            "ROUND(AVG(Tiempo),0)",
-                            "DESC"
+                            ROUND,
+                            DESC
                         )
                     )
                 );
@@ -248,6 +262,7 @@ namespace Incidences.Business
 
             return res;
         }
+
         #endregion
     }
 }

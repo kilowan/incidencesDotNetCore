@@ -9,6 +9,15 @@ namespace Incidences.Business
 {
     public class EmployeeBz : IEmployeeBz
     {
+        private const string completeEmployee = "completeEmployee";
+
+
+        private const string ALL = "*";
+        private const string dniC = "dni";
+        private const string idC = "id";
+        private const string deleted = "deleted";
+        private const string employeeC = "employee";
+
         private ICredentialsBz cred;
         private IEmployeeRangeBz range;
         private ISqlBase sql;
@@ -40,9 +49,9 @@ namespace Incidences.Business
             try
             {
                 return SelectEmployees(
-                    new List<string> { "*" },
+                    new List<string> { ALL },
                     new CDictionary<string, string> {
-                        { "dni", null, dni }
+                        { dniC, null, dni }
                     }
                 )[0];
             }
@@ -56,9 +65,9 @@ namespace Incidences.Business
             try
             {
                 return SelectEmployees(
-                    new List<string> { "*" },
+                    new List<string> { ALL },
                     new CDictionary<string, string> {
-                        { "id", null, id.ToString() }
+                        { idC, null, id.ToString() }
                     }
                 );
             }
@@ -72,9 +81,9 @@ namespace Incidences.Business
             try
             {
                 return SelectEmployees(
-                    new List<string> { "*" },
+                    new List<string> { ALL },
                     new CDictionary<string, string> {
-                        { "deleted", null, "0" }
+                        { deleted, null, "0" }
                     }
                 );
             }
@@ -87,7 +96,7 @@ namespace Incidences.Business
         {
             try
             {
-                bool result = this.sql.Select(new Select("completeEmployee", fields, conditions));
+                bool result = this.sql.Select(new Select(completeEmployee, fields, conditions));
                 if (result)
                 {
                     IList<Employee> employees = new List<Employee>();
@@ -137,12 +146,12 @@ namespace Incidences.Business
                     CDictionary<string, string> columns = new CDictionary<string, string>();
                     foreach (string field in fields)
                     {
-                        if (CheckField("employee", field)) columns.Add(field, null, values[position]);
+                        if (CheckField(employeeC, field)) columns.Add(field, null, values[position]);
                         position++;
                     }
                     if (columns.Count > 0)
                     {
-                        bool result = this.sql.Update("employee", columns, new CDictionary<string, string> { { "dni", null, dni } });
+                        bool result = this.sql.Update(employeeC, columns, new CDictionary<string, string> { { dniC, null, dni } });
                         this.sql.Close();
                         return result;
                     }
@@ -161,7 +170,7 @@ namespace Incidences.Business
                 int? rangeId = employee.type != null ? this.range.GetEmployeeRangeIdByName(employee.type) : null;
 
                 bool result = this.sql.Update(
-                    "employee",
+                    employeeC,
                     GetUserColumns(employee),
                     bisba.WhereId(new CDictionary<string, string>(), id)
                 );
