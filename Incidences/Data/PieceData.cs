@@ -36,12 +36,7 @@ namespace Incidences.Data
         {
             try
             {
-                IList<Piece> pieces = SelectPieces(
-                    this.sql.WherePieceId(
-                        new CDictionary<string, string>(),
-                        pieceId
-                    )
-                );
+                IList<Piece> pieces = SelectPieces(sql.WherePieceId(pieceId));
                 return pieces[0];
             }
             catch (Exception e)
@@ -53,11 +48,11 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(new Select(FullPiece, new List<string> { ALL }, conditions));
+                bool result = sql.Select(new Select(FullPiece, new List<string> { ALL }, conditions));
                 if (result)
                 {
                     IList<Piece> pieces = new List<Piece>();
-                    using IDataReader reader = this.sql.GetReader();
+                    using IDataReader reader = sql.GetReader();
                     while (reader.Read())
                     {
                         pieces.Add(new(
@@ -72,7 +67,7 @@ namespace Incidences.Data
                         ));
                     }
 
-                    this.sql.Close();
+                    sql.Close();
                     return pieces;
                 }
                 else throw new Exception("Ningún registro");
@@ -86,7 +81,7 @@ namespace Incidences.Data
         {
             try
             {
-                return this.sql.Insert(piece_class, new()
+                return sql.Insert(piece_class, new()
                 {
                     { typeId, null, piece.typeId.ToString() },
                     { nameC, null, piece.name }
@@ -108,7 +103,7 @@ namespace Incidences.Data
                 }
                 string stringPieces = string.Join(", ", values);
                 string text = $"INSERT INTO {ipl} ({pieceId}, {incidenceIdC}) VALUES ({ stringPieces });";
-                return this.sql.Call(text);
+                return sql.Call(text);
             }
             catch (Exception e)
             {
@@ -121,11 +116,11 @@ namespace Incidences.Data
             {
 
                 CDictionary<string, string> conditions;
-                if (pieces.Count > 1) conditions = this.sql.WherePieceId(new CDictionary<string, string>(), pieces);
-                else conditions = this.sql.WherePieceId(new CDictionary<string, string>(), pieces[0]);
+                if (pieces.Count > 1) conditions = sql.WherePieceId(pieces);
+                else conditions = sql.WherePieceId(pieces[0]);
 
 
-                bool result = this.sql.Update(
+                bool result = sql.Update(
                     ipl,
                     new CDictionary<string, string> {
                         { status, null, "1" }
@@ -133,7 +128,7 @@ namespace Incidences.Data
                     conditions
                 );
 
-                this.sql.Close();
+                sql.Close();
                 return result;
             }
             catch (Exception e)
@@ -145,13 +140,13 @@ namespace Incidences.Data
         {
             try
             {
-                sql.WhereId(new CDictionary<string, string>(), id);
-                return this.sql.Update(
+                sql.WhereId(id);
+                return sql.Update(
                     piece_class,
                     new CDictionary<string, string> {
                         { deletedC, null, "1" }
                     },
-                    sql.WhereId(new CDictionary<string, string>(), id)
+                    sql.WhereId(id)
                 );
             }
             catch (Exception e)
@@ -163,10 +158,10 @@ namespace Incidences.Data
         {
             try
             {
-                return this.sql.Update(
+                return sql.Update(
                     piece_class,
                     GetPieceColumns(piece),
-                    this.sql.WherePieceId(new CDictionary<string, string>(), id));
+                    sql.WherePieceId(id));
             }
             catch (Exception e)
             {
@@ -177,18 +172,15 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Update(piece_class,
+                bool result = sql.Update(piece_class,
                     new()
                     {
                         { deletedC, null, deleted.ToString() }
                     },
-                    this.sql.WherePieceId(
-                        new CDictionary<string, string>(),
-                        id
-                    )
+                    sql.WherePieceId(id)
                 );
 
-                this.sql.Close();
+                sql.Close();
                 return result;
             }
             catch (Exception e)
@@ -203,12 +195,7 @@ namespace Incidences.Data
                 CDictionary<string, string> conditions;
                 if (piece != null)
                 {
-                    conditions = sql.WherePieceId(
-                        sql.WhereNotDeleted(
-                            new CDictionary<string, string>()
-                            ),
-                        piece
-                    );
+                    conditions = sql.WherePieceId(piece, sql.WhereNotDeleted());
                 }
                 else
                 {

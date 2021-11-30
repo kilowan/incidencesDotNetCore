@@ -67,7 +67,7 @@ namespace Incidences.Data
             try
             {
                 IList<ReportedPiece> reportedPieces = new List<ReportedPiece>();
-                bool result = this.sql.Select(
+                bool result = sql.Select(
                     new Select(
                         rp,
                         new List<string> { ALL }
@@ -75,7 +75,7 @@ namespace Incidences.Data
                 );
                 if (result)
                 {
-                    using IDataReader reader = this.sql.GetReader();
+                    using IDataReader reader = sql.GetReader();
                     while (reader.Read())
                     {
                         reportedPieces.Add(
@@ -85,7 +85,7 @@ namespace Incidences.Data
                             )
                         );
                     }
-                    this.sql.Close();
+                    sql.Close();
                 }
 
                 return reportedPieces;
@@ -104,7 +104,7 @@ namespace Incidences.Data
             try
             {
                 IList<Statistics> globalData = new List<Statistics>();
-                bool result = this.sql.Select(
+                bool result = sql.Select(
                     new Select(
                         tr,
                         new List<string> {
@@ -117,7 +117,7 @@ namespace Incidences.Data
                 );
                 if (result)
                 {
-                    using IDataReader reader = this.sql.GetReader();
+                    using IDataReader reader = sql.GetReader();
 
                     while (reader.Read())
                     {
@@ -128,7 +128,7 @@ namespace Incidences.Data
                     }
                 }
 
-                this.sql.Close();
+                sql.Close();
                 return globalData;
 
             }
@@ -146,7 +146,7 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(
+                bool result = sql.Select(
                     new Select(
                         tr,
                         new List<string> {
@@ -169,13 +169,13 @@ namespace Incidences.Data
                 Statistics statistics = new();
                 if (result)
                 {
-                    using IDataReader reader = this.sql.GetReader();
+                    using IDataReader reader = sql.GetReader();
                     reader.Read();
                     statistics.Average = SecondsToTimeFn((int)reader.GetValue(0));
                     statistics.SolvedIncidences = (int)reader.GetValue(1);
                 }
 
-                this.sql.Close();
+                sql.Close();
                 return statistics;
             }
             catch (Exception e)

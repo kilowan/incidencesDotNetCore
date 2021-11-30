@@ -40,12 +40,12 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(new Select(incidenceC, fields));
+                bool result = sql.Select(new Select(incidenceC, fields));
                 if (result)
                 {
-                    using IDataReader reader = this.sql.GetReader(); reader.Read();
+                    using IDataReader reader = sql.GetReader(); reader.Read();
                     int id = (int)reader.GetValue(0);
-                    this.sql.Close();
+                    sql.Close();
                     return id;
                 }
                 else throw new Exception("Ningún registro");
@@ -119,13 +119,13 @@ namespace Incidences.Data
             }
 
             string text = string.Join($" UNION ALL ", sentences);
-            bool result = this.sql.Call(text, "");
+            bool result = sql.Call(text, "");
 
             if (result)
             {
                 string[] names = new string[] { "new", "old", "closed", "hidden" };
                 int counter = 0;
-                using IDataReader reader = this.sql.GetReader();
+                using IDataReader reader = sql.GetReader();
                 while (reader.Read())
                 {
                     counters[names[counter]] += (int)reader.GetValue(0);
@@ -133,7 +133,7 @@ namespace Incidences.Data
                     counter++;
                 }
 
-                this.sql.Close();
+                sql.Close();
             }
 
             return counters;
@@ -162,18 +162,12 @@ namespace Incidences.Data
             try
             {
 
-                bool result = this.sql.Update(
+                bool result = sql.Update(
                     incidenceC,
                     new CDictionary<string, string> {
                         { stateC, null, "5" }
                     },
-                    this.sql.WhereOwnerId(
-                        this.sql.WhereIncidenceId(
-                            new CDictionary<string, string>(),
-                            incidenceId
-                        ),
-                        userId
-                    )
+                    sql.WhereOwnerId(userId, sql.WhereIncidenceId(incidenceId))
                 );
                 return result;
             }
@@ -186,9 +180,9 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Insert(
+                bool result = sql.Insert(
                     incidenceC,
-                    this.sql.WhereOwnerId(new CDictionary<string, string>(), ownerId)
+                    sql.WhereOwnerId(ownerId)
                 );
                 if (!result) throw new Exception("Parte no insertado");
                 return LastIncidence();
@@ -203,11 +197,11 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(new Select(FullIncidence, fields, conditions));
+                bool result = sql.Select(new Select(FullIncidence, fields, conditions));
                 IList<Incidence> incidences = new List<Incidence>();
                 if (result)
                 {
-                    using (IDataReader reader = this.sql.GetReader())
+                    using (IDataReader reader = sql.GetReader())
                     {
                         while (reader.Read())
                         {
@@ -224,21 +218,21 @@ namespace Incidences.Data
                             );
                             incidences.Add(inc);
                         }
-                        this.sql.Close();
+                        sql.Close();
                     }
 
                     foreach (Incidence incidence in incidences)
                     {
                         IList<string> list = new List<string>
                         {
-                            "*"
+                            ALL
                         };
-                        CDictionary<string, string> oldConditions = this.sql.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
-                        result = this.sql.Select(new Select(incidence_pieces, list, oldConditions));
+                        CDictionary<string, string> oldConditions = sql.WhereIncidenceId(incidence.Id);
+                        result = sql.Select(new Select(incidence_pieces, list, oldConditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
-                            using (IDataReader reader = this.sql.GetReader())
+                            using (IDataReader reader = sql.GetReader())
                             {
                                 while (reader.Read())
                                 {
@@ -254,16 +248,16 @@ namespace Incidences.Data
                                     );
                                     pieces.Add(piece);
                                 }
-                                this.sql.Close();
+                                sql.Close();
                             }
                             incidence.Pieces = pieces;
                         }
-                        oldConditions = this.sql.WhereNoteType(oldConditions, solverNote);
-                        result = this.sql.Select(new Select(incidence_notes, list, oldConditions));
+                        oldConditions = sql.WhereNoteType(solverNote, oldConditions);
+                        result = sql.Select(new Select(incidence_notes, list, oldConditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();
-                            using IDataReader reader = this.sql.GetReader();
+                            using IDataReader reader = sql.GetReader();
                             while (reader.Read())
                             {
                                 Note note = new(
@@ -273,7 +267,7 @@ namespace Incidences.Data
                                 notes.Add(note);
                             }
 
-                            this.sql.Close();
+                            sql.Close();
                             incidence.Notes = notes;
                         }
                     }
@@ -289,11 +283,11 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(new Select(FullIncidence, fields, conditions));
+                bool result = sql.Select(new Select(FullIncidence, fields, conditions));
                 IList<Incidence> incidences = new List<Incidence>();
                 if (result)
                 {
-                    using (IDataReader reader = this.sql.GetReader())
+                    using (IDataReader reader = sql.GetReader())
                     {
                         while (reader.Read())
                         {
@@ -310,7 +304,7 @@ namespace Incidences.Data
                             );
                             incidences.Add(inc);
                         }
-                        this.sql.Close();
+                        sql.Close();
                     }
 
                     foreach (Incidence incidence in incidences)
@@ -319,12 +313,12 @@ namespace Incidences.Data
                         {
                             ALL
                         };
-                        conditions = this.sql.WhereIncidenceId(new CDictionary<string, string>(), incidence.Id);
-                        result = this.sql.Select(new Select(incidence_pieces, list, conditions));
+                        conditions = sql.WhereIncidenceId(incidence.Id);
+                        result = sql.Select(new Select(incidence_pieces, list, conditions));
                         if (result)
                         {
                             IList<Piece> pieces = new List<Piece>();
-                            using (IDataReader reader = this.sql.GetReader())
+                            using (IDataReader reader = sql.GetReader())
                             {
                                 while (reader.Read())
                                 {
@@ -340,16 +334,16 @@ namespace Incidences.Data
                                     );
                                     pieces.Add(piece);
                                 }
-                                this.sql.Close();
+                                sql.Close();
                             }
                             incidence.Pieces = pieces;
                         }
-                        conditions = this.sql.WhereNoteType(conditions, solverNote);
-                        result = this.sql.Select(new Select(incidence_notes, list, conditions));
+                        conditions = sql.WhereNoteType(solverNote, conditions);
+                        result = sql.Select(new Select(incidence_notes, list, conditions));
                         if (result)
                         {
                             IList<Note> notes = new List<Note>();
-                            using IDataReader reader = this.sql.GetReader();
+                            using IDataReader reader = sql.GetReader();
                             while (reader.Read())
                             {
                                 Note note = new(
@@ -359,7 +353,7 @@ namespace Incidences.Data
                                 notes.Add(note);
                             }
 
-                            this.sql.Close();
+                            sql.Close();
                             incidence.Notes = notes;
                         }
                     }
@@ -376,19 +370,16 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Update(
+                bool result = sql.Update(
                     incidenceC,
                     new CDictionary<string, string>
                     {
                         { solverId, null, solverID.ToString() },
                         { stateC, null, "2" }
                     },
-                    this.sql.WhereId(
-                        new CDictionary<string, string>(),
-                        incidenceId
-                    )
+                    sql.WhereId(incidenceId)
                 );
-                this.sql.Close();
+                sql.Close();
                 if (!result) throw new Exception("Parte no actualizado");
                 return result;
             }
@@ -402,19 +393,16 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Update(
+                bool result = sql.Update(
                     incidenceC,
                     new()
                     {
                         { stateC, null, "3" },
                         { close_dateeTime, null, TIMESTAMP }
                     },
-                    this.sql.WhereIncidenceId(
-                        new CDictionary<string, string>(),
-                        incidenceId
-                    )
+                    sql.WhereIncidenceId(incidenceId)
                 );
-                this.sql.Close();
+                sql.Close();
 
                 return result;
             }
@@ -442,15 +430,12 @@ namespace Incidences.Data
                 {
                     columns.Add(close_dateeTime, null, TIMESTAMP);
                 }
-                bool result = this.sql.Update(
+                bool result = sql.Update(
                     incidenceC,
                     columns,
-                    this.sql.WhereIncidenceId(
-                        new CDictionary<string, string>(),
-                        incidenceId
-                    )
+                    sql.WhereIncidenceId(incidenceId)
                 );
-                this.sql.Close();
+                sql.Close();
                 if (!result) throw new Exception("Parte no actualizado");
                 return result;
             }
@@ -465,8 +450,7 @@ namespace Incidences.Data
             {
                 Incidence incidence = SelectIncidences(
                     new List<string> { ALL },
-                    this.sql.WhereIncidence(new CDictionary<string, string>(),
-                    incidenceId)
+                    sql.WhereIncidence(incidenceId)
                 )[0];
                 if (incidence.SolverId == userId || incidence.State == 1 || incidence.OwnerId == userId)
                 {
@@ -482,7 +466,10 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectIncidences(new List<string> { ALL }, this.sql.WhereIncidence(new CDictionary<string, string>(), id))[0];
+                return SelectIncidences(
+                    new List<string> { ALL }, 
+                    sql.WhereIncidence(id)
+                )[0];
             }
             catch (Exception e)
             {
@@ -498,15 +485,12 @@ namespace Incidences.Data
                     {
                         columns.Add(stateC, null, incidence.state.ToString());
                     }
-                    bool result = this.sql.Update(
+                    bool result = sql.Update(
                         incidenceC,
                         columns,
-                        this.sql.WhereIncidenceId(
-                            new CDictionary<string, string>(),
-                            incidenceId
-                        )
+                        sql.WhereIncidenceId(incidenceId)
                     );
-                    this.sql.Close();
+                    sql.Close();
                     if (!result) throw new Exception("Parte no actualizado");
                     return result;
             }
@@ -521,12 +505,9 @@ namespace Incidences.Data
             {
                 IList<Incidence> own = SelectIncidences(
                     new List<string> { ALL },
-                    this.sql.WhereEmployeeId(
-                        this.sql.WhereIncidenceState(
-                            new CDictionary<string, string>(),
-                            state
-                        ),
-                        userId
+                    sql.WhereEmployeeId(
+                        userId, 
+                        sql.WhereIncidenceState(state)
                     )
                 );
                 IncidenceList incidences = new(own);

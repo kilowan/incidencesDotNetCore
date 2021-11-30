@@ -22,11 +22,17 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(new Select(employee_range, new List<string> { ALL }, conditions));
+                bool result = sql.Select(
+                    new Select(
+                        employee_range, 
+                        new List<string> { ALL }, 
+                        conditions
+                    )
+                );
                 if (result)
                 {
                     IList<TypeRange> ranges = new List<TypeRange>();
-                    using IDataReader reader = this.sql.GetReader();
+                    using IDataReader reader = sql.GetReader();
                     while (reader.Read())
                     {
                         ranges.Add(
@@ -36,7 +42,7 @@ namespace Incidences.Data
                             )
                         );
                     }
-                    this.sql.Close();
+                    sql.Close();
                     return ranges;
                 }
                 else throw new Exception("Ningún registro");
@@ -51,9 +57,7 @@ namespace Incidences.Data
             try
             {
 
-                return SelectRangeList(
-                    this.sql.WhereId(new CDictionary<string, string>(), id)
-                )[0];
+                return SelectRangeList(sql.WhereId(id))[0];
             }
             catch (Exception e)
             {
@@ -62,12 +66,7 @@ namespace Incidences.Data
         }
         public int GetEmployeeRangeIdByName(string typeName)
         {
-            return (int)SelectRangeList(
-                sql.WhereEmployeeTypeName(
-                    new CDictionary<string, string>(),
-                    typeName
-                )
-            )[0].Id;
+            return (int)SelectRangeList(sql.WhereEmployeeTypeName(typeName))[0].Id;
         }
     }
 }

@@ -32,14 +32,9 @@ namespace Incidences.Data
         {
             try
             {
-                sql.WhereNoteType(sql.WhereIncidenceId(new CDictionary<string, string>(), incidenceId), "Employee");
                 return GetNotes(
-                    sql.WhereNoteType(
-                        sql.WhereIncidenceId(
-                            new CDictionary<string, string>(),
-                            incidenceId
-                        ),
-                        "Employee"
+                    sql.WhereNoteType("Employee", 
+                        sql.WhereIncidenceId(incidenceId)
                     )
                 )[0];
             }
@@ -54,11 +49,8 @@ namespace Incidences.Data
             {
                 return GetNotes(
                     sql.WhereNoteType(
-                        sql.WhereIncidenceId(
-                            new CDictionary<string, string>(),
-                            incidenceId
-                        ),
-                        "Technician"
+                        "Technician", 
+                        sql.WhereIncidenceId(incidenceId)
                     )
                 );
             }
@@ -71,7 +63,7 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Update(
+                bool result = sql.Update(
                     Notes,
                     new CDictionary<string, string> { { noteStr, null, note } },
                     new CDictionary<string, string>{
@@ -80,7 +72,7 @@ namespace Incidences.Data
                     }
                 );
 
-                this.sql.Close();
+                sql.Close();
                 return result;
             }
             catch (Exception e)
@@ -90,7 +82,7 @@ namespace Incidences.Data
         }
         private IList<Note> GetNotes(CDictionary<string, string> conditions)
         {
-            bool result = this.sql.Select(
+            bool result = sql.Select(
                 new Select(
                     incidence_notes,
                     new List<string> {
@@ -103,12 +95,12 @@ namespace Incidences.Data
             if (result)
             {
                 IList<Note> notes = new List<Note>();
-                using IDataReader reader = this.sql.GetReader();
+                using IDataReader reader = sql.GetReader();
                 while (reader.Read())
                 {
                     notes.Add(new Note((string)reader.GetValue(1), (DateTime)reader.GetValue(2)));
                 }
-                this.sql.Close();
+                sql.Close();
 
                 return notes;
             }
@@ -118,7 +110,7 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Insert(Notes,
+                bool result = sql.Insert(Notes,
                     new CDictionary<string, string>
                     {
                         { employeeIdC, null, ownerId.ToString() },
@@ -128,7 +120,7 @@ namespace Incidences.Data
                     }
                 );
 
-                this.sql.Close();
+                sql.Close();
                 return result;
             }
             catch (Exception e)

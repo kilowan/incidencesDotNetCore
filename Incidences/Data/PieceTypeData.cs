@@ -28,9 +28,9 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = this.sql.Select(new Select(piece_type, new List<string> { ALL }, conditions));
+                bool result = sql.Select(new Select(piece_type, new List<string> { ALL }, conditions));
                 IList<PieceType> pieceTypes = new List<PieceType>();
-                using IDataReader reader = this.sql.GetReader();
+                using IDataReader reader = sql.GetReader();
 
                 while (reader.Read())
                 {
@@ -43,7 +43,7 @@ namespace Incidences.Data
                     );
                 }
 
-                this.sql.Close();
+                sql.Close();
                 return pieceTypes;
             }
             catch (Exception e)
@@ -55,9 +55,7 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectPieceType(
-                    this.sql.WhereId(new CDictionary<string, string>(), pieceTypeId)
-                )[0];
+                return SelectPieceType(sql.WhereId(pieceTypeId))[0];
             }
             catch (Exception e)
             {
