@@ -1,44 +1,23 @@
 ﻿using Incidences.Data;
-using Incidences.Data.Models;
 using Incidences.Models.Employee;
 using System;
-using System.Collections.Generic;
-using System.Data;
 
 namespace Incidences.Business
 {
     public class CredentialsBz : ICredentialsBz
     {
-        #region constants
-        //tables
-        private const string credentialsC = "credentials";
-        private const string credentialsmatch = "credentialsmatch";
-
-        //columns
-        private const string ALL = "*";
-        private const string employeeC = "employee";
-        private const string usernameC = "username";
-        private const string passwordC = "password";
-        #endregion
-
-        private IBusinessBase bisba;
-        private ISqlBase sql;
-        public CredentialsBz(IBusinessBase businessBase, ISqlBase sqlBase)
+        private readonly ICredentialsData credentialsData;
+        public CredentialsBz(ICredentialsData credentialsData)
         {
-            this.bisba = businessBase;
-            this.sql = sqlBase;
+            this.credentialsData = credentialsData;
         }
+
         #region SELECT
         public Credentials SelectCredentialsByUsername(string username)
         {
             try
             {
-                return SelectCredentials(
-                    this.bisba.WhereUsername(
-                        new CDictionary<string, string>(),
-                        username
-                    )
-                );
+                return credentialsData.SelectCredentialsByUsername(username);
             }
             catch (Exception e)
             {
@@ -49,31 +28,7 @@ namespace Incidences.Business
         {
             try
             {
-                return SelectCredentials(this.bisba.WhereEmployee(new CDictionary<string, string>(), id));
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
-        private Credentials SelectCredentials(CDictionary<string, string> conditions)
-        {
-            try
-            {
-                bool result = this.sql.Select(new Select(credentialsC, new List<string> { ALL }, conditions));
-                if (result)
-                {
-                    using IDataReader reader = this.sql.GetReader();
-                    reader.Read();
-                    Credentials cred = new(
-                        (string)reader.GetValue(1),
-                        (string)reader.GetValue(2),
-                        (int)reader.GetValue(3)
-                    );
-                    this.sql.Close();
-                    return cred;
-                }
-                else throw new Exception("Ningún registro");
+                return credentialsData.SelectCredentialsById(id);
             }
             catch (Exception e)
             {
@@ -87,7 +42,7 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Update(credentialsC, GetCredentialsColumns(null, password), new CDictionary<string, string> { { employeeC, null, employeeId.ToString() } });
+                return credentialsData.UpdatePassword(password, employeeId);
             }
             catch (Exception e)
             {
@@ -98,7 +53,7 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Update(credentialsC, GetCredentialsColumns(username), new CDictionary<string, string> { { employeeC, null, employeeId.ToString() } });
+                return credentialsData.UpdateUsername(username, employeeId);
             }
             catch (Exception e)
             {
@@ -109,15 +64,7 @@ namespace Incidences.Business
         {
             try
             {
-                return this.sql.Update(
-                    credentialsC,
-                    GetCredentialsColumns(
-                        credentials.username,
-                        credentials.password),
-                    new CDictionary<string, string> {
-                        { employeeC, null, employeeId.ToString() }
-                    }
-                );
+                return credentialsData.UpdateCredentials(credentials, employeeId);
             }
             catch (Exception e)
             {
@@ -127,27 +74,11 @@ namespace Incidences.Business
         #endregion
 
         #region OTHER
-        private static CDictionary<string, string> GetCredentialsColumns(string username = null, string password = null, int? employee = null)
-        {
-            CDictionary<string, string> tmpColumns = new CDictionary<string, string>();
-            if (username != null) tmpColumns.Add(usernameC, null, username);
-            if (password != null) tmpColumns.Add(passwordC, null, password);
-            if (employee != null) tmpColumns.Add(employeeC, null, employee.ToString());
-            return tmpColumns;
-        }
         public bool CheckCredentialsFn(string username, string password)
         {
             try
             {
-                return CheckCredentials(
-                    this.bisba.WherePassword(
-                        this.bisba.WhereUsername(
-                            new CDictionary<string, string>(),
-                            username
-                        ),
-                        password
-                    )
-                );
+                return credentialsData.CheckCredentialsFn(username, password);
             }
             catch (Exception e)
             {
@@ -158,27 +89,12 @@ namespace Incidences.Business
         {
             try
             {
-                return CheckCredentials(
-                    this.bisba.WhereUsername(
-                        new CDictionary<string, string>(),
-                        username
-                    )
-                );
+                return credentialsData.CheckCredentialsFn(username);
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-        }
-        private bool CheckCredentials(CDictionary<string, string> conditions)
-        {
-            return this.sql.Select(
-                new Select(
-                    credentialsmatch,
-                    new List<string> { ALL },
-                    conditions
-                )
-            );
         }
         #endregion
     }

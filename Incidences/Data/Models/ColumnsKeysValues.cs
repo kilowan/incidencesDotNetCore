@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Incidences.Data
+namespace Incidences.Data.Models
 {
     public class ColumnsKeysValues<T, K>
     {
