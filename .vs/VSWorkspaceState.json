@@ -1,10 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\MiPrimeraApp",
-    "\\MiPrimeraApp\\Business",
-    "\\MiPrimeraApp\\Controllers"
+    "\\Incidences",
+    "\\Incidences\\Business"
   ],
-  "SelectedNode": "\\MiPrimeraApp\\Controllers\\EmployeeRangeController.cs",
+  "SelectedNode": "\\Incidences\\Business\\IncidenceBz.cs",
   "PreviewInSolutionExplorer": false
 }

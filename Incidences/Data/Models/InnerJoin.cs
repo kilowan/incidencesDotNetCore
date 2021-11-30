@@ -1,4 +1,4 @@
-﻿namespace Incidences.Data
+﻿namespace Incidences.Data.Models
 {
     public class InnerJoin
     {

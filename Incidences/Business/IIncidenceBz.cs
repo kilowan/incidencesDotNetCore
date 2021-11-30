@@ -7,7 +7,6 @@ namespace Incidences.Business
     {
         public IncidenceList GetIncidencesByStateTypeFn(int state, int userId, string type);
         public Incidence GetIncidenceByIdFn(int id);
-        public void UpdateIncidenceFn(IncidenceDto incidenceDto, int incidenceId, int userId, bool close);
         public bool UpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false);
         public bool NewUpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false);
         public bool InsertIncidence(IncidenceDto incidence);

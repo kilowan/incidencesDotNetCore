@@ -27,7 +27,14 @@ namespace Incidences
             services.AddTransient<ICredentialsBz, CredentialsBz>();
             services.AddTransient<IEmployeeRangeBz, EmployeeRangeBz>();
             services.AddTransient<ISqlBase, SqlBase>();
-            services.AddTransient<IBusinessBase, BusinessBase>();
+            services.AddTransient<ICredentialsData, CredentialsData>();
+            services.AddTransient<IIncidenceData, IncidenceData>();
+            services.AddTransient<IEmployeeData, EmployeeData>();
+            services.AddTransient<IEmployeeRangeData, EmployeeRangeData>();
+            services.AddTransient<INoteData, NoteData>();
+            services.AddTransient<IPieceData, PieceData>();
+            services.AddTransient<IPieceTypeData, PieceTypeData>();
+            services.AddTransient<IReportData, ReportData>();
             services.AddTransient<IPieceTypeBz, PieceTypeBz>();
             services.AddTransient<INoteBz, NoteBz>();
         }

@@ -20,7 +20,6 @@ namespace Incidences.Business
         #region INSERT
         public bool AddEmployeeFn(EmployeeDto employee);
 
-        public bool InsertEmployee(EmployeeDto employee);
         #endregion
 
         #region DELETE
