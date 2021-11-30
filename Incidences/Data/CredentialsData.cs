@@ -18,6 +18,7 @@ namespace Incidences.Data
         private const string employeeC = "employee";
         private const string usernameC = "username";
         private const string passwordC = "password";
+        private const string employeeIdC = "employeeId";
         #endregion
 
         private readonly ISqlBase sql;
@@ -31,7 +32,7 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectCredentials(this.sql.WhereEmployee(new CDictionary<string, string>(), id));
+                return SelectCredentials(sql.WhereEmployee(id));
             }
             catch (Exception e)
             {
@@ -42,12 +43,7 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectCredentials(
-                    this.sql.WhereUsername(
-                        new CDictionary<string, string>(),
-                        username
-                    )
-                );
+                return SelectCredentials(sql.WhereUsername(username));
             }
             catch (Exception e)
             {
@@ -58,7 +54,16 @@ namespace Incidences.Data
         {
             try
             {
-                return this.sql.Update(credentialsC, GetCredentialsColumns(null, password), new CDictionary<string, string> { { employeeC, null, employeeId.ToString() } });
+                return sql.Update(
+                    credentialsC, 
+                    GetCredentialsColumns(
+                        null, 
+                        password
+                    ), 
+                    new CDictionary<string, string> { 
+                        { employeeC, null, employeeId.ToString() } 
+                    }
+                );
             }
             catch (Exception e)
             {
@@ -69,12 +74,7 @@ namespace Incidences.Data
         {
             try
             {
-                return CheckCredentials(
-                    this.sql.WhereUsername(
-                        new CDictionary<string, string>(),
-                        username
-                    )
-                );
+                return CheckCredentials(sql.WhereUsername(username));
             }
             catch (Exception e)
             {
@@ -86,12 +86,9 @@ namespace Incidences.Data
             try
             {
                 return CheckCredentials(
-                    this.sql.WherePassword(
-                        this.sql.WhereUsername(
-                            new CDictionary<string, string>(),
-                            username
-                        ),
-                        password
+                    sql.WherePassword(
+                        password, 
+                        sql.WhereUsername(username)
                     )
                 );
             }
@@ -109,9 +106,7 @@ namespace Incidences.Data
                     GetCredentialsColumns(
                         credentials.username,
                         credentials.password),
-                    new CDictionary<string, string> {
-                        { employeeC, null, employeeId.ToString() }
-                    }
+                    sql.WhereEmployeeId(employeeId)
                 );
             }
             catch (Exception e)
@@ -123,29 +118,56 @@ namespace Incidences.Data
         {
             try
             {
-                return this.sql.Update(credentialsC, GetCredentialsColumns(username), new CDictionary<string, string> { { employeeC, null, employeeId.ToString() } });
+                return sql.Update(
+                    credentialsC, 
+                    GetCredentialsColumns(username), 
+                    new CDictionary<string, string> { 
+                        { employeeC, null, employeeId.ToString() } 
+                    }
+                );
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
+        public bool InsertCredentials(CredentialsDto credentials, int? employeeId) 
+        {
+            bool result = sql.Insert(
+                credentialsC, 
+                new CDictionary<string, string>
+                {
+                    { usernameC, null, $"'{ credentials.username }'" },
+                    { passwordC, null, $"'{ sql.GetMD5(credentials.password) }'" },
+                    { employeeIdC, null, employeeId.ToString() }
+                }
+            );
+            sql.Close();
+            if (!result) throw new Exception("Empleado no insertado");
+            return result;
+        }
 
         private Credentials SelectCredentials(CDictionary<string, string> conditions)
         {
             try
             {
-                bool result = this.sql.Select(new Select(credentialsC, new List<string> { ALL }, conditions));
+                bool result = sql.Select(
+                    new Select(
+                        credentialsC, new List<string> { ALL }, 
+                        conditions
+                    )
+                );
+
                 if (result)
                 {
-                    using IDataReader reader = this.sql.GetReader();
+                    using IDataReader reader = sql.GetReader();
                     reader.Read();
                     Credentials cred = new(
                         (string)reader.GetValue(1),
                         (string)reader.GetValue(2),
                         (int)reader.GetValue(3)
                     );
-                    this.sql.Close();
+                    sql.Close();
                     return cred;
                 }
                 else throw new Exception("Ningún registro");
@@ -165,7 +187,7 @@ namespace Incidences.Data
         }
         private bool CheckCredentials(CDictionary<string, string> conditions)
         {
-            bool result = this.sql.Select(
+            bool result = sql.Select(
                 new Select(
                     credentialsmatch,
                     new List<string> { ALL },
@@ -173,10 +195,8 @@ namespace Incidences.Data
                 )
             );
 
-            this.sql.Close();
+            sql.Close();
             return result;
         }
-
-
     }
 }

@@ -63,23 +63,24 @@ namespace Incidences.Data
         /// <param name="orderBy">OrderBy params</param>
         /// <returns>Returns the OrderBy string</returns>
         public string OrderBySQL(Order orderBy);
-
-        public CDictionary<string, string> WhereEmployeeId(CDictionary<string, string> conditions, int? employeeId);
-        public CDictionary<string, string> WhereIncidenceState(CDictionary<string, string> conditions, int state);
-        public CDictionary<string, string> WhereIncidence(CDictionary<string, string> conditions, int incidenceId);
-        public CDictionary<string, string> WhereOwnerId(CDictionary<string, string> conditions, int ownerId);
-        public CDictionary<string, string> WhereUsername(CDictionary<string, string> conditions, string username);
-        public CDictionary<string, string> WherePassword(CDictionary<string, string> conditions, string password);
-        public CDictionary<string, string> WhereEmployee(CDictionary<string, string> conditions, int employee);
-        public CDictionary<string, string> WhereEmployeeTypeName(CDictionary<string, string> conditions, string typeName);
-        public CDictionary<string, string> WhereIncidenceId(CDictionary<string, string> conditions, int incidenceId);
-        public CDictionary<string, string> WhereIncidenceId(CDictionary<string, string> conditions, int? incidenceId);
-        public CDictionary<string, string> WhereNoteType(CDictionary<string, string> conditions, string noteType);
-        public CDictionary<string, string> WhereNoteTypeId(CDictionary<string, string> conditions, int noteType);
-        public CDictionary<string, string> WhereNotDeleted(CDictionary<string, string> conditions);
-        public CDictionary<string, string> WhereId(CDictionary<string, string> conditions, int? id);
-        public CDictionary<string, string> WherePieceId(CDictionary<string, string> conditions, int? id);
-        public CDictionary<string, string> WherePieceId(CDictionary<string, string> conditions, IList<int> ids);
+        public CDictionary<string, string> WhereDni(string Dni, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereDeleted(int deleted, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereEmployeeId(int? employeeId, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereIncidenceState(int state, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereIncidence(int incidenceId, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereOwnerId(int ownerId, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereUsername(string username, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WherePassword(string password, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereEmployee(int employee, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereEmployeeTypeName(string typeName, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereIncidenceId(int incidenceId, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereIncidenceId(int? incidenceId, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereNoteType(string noteType, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereNoteTypeId(int noteType, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereNotDeleted(CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WhereId(int? id, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WherePieceId(int? id, CDictionary<string, string> conditions = null);
+        public CDictionary<string, string> WherePieceId(IList<int> ids, CDictionary<string, string> conditions = null);
         public string GetMD5(string str);
         /// <summary>
         /// Sets the IDBCommand Connection
