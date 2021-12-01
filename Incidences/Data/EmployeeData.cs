@@ -3,6 +3,7 @@ using Incidences.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Incidences.Data
 {
@@ -42,21 +43,20 @@ namespace Incidences.Data
                 return SelectEmployees(
                     new List<string> { ALL },
                     sql.WhereDni(dni)
-                )[0];
+                ).FirstOrDefault();
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        public IList<Employee> SelectEmployeeById(int id)
+        public Employee SelectEmployeeById(int id)
         {
             try
             {
                 return SelectEmployees(
-                    new List<string> { ALL },
-                    sql.WhereId(id)
-                );
+                    new List<string> { ALL }, 
+                    sql.WhereId(id)).FirstOrDefault();
             }
             catch (Exception e)
             {
@@ -150,7 +150,7 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdateEmployeeFn(int id)
+        public bool UpdateEmployee(int id)
         {
             EmployeeDto employee = new();
             employee.deleted = true;
@@ -197,7 +197,7 @@ namespace Incidences.Data
         }
 
         #region OTHER
-        private CDictionary<string, string> GetUserColumns(EmployeeDto employee)
+        private static CDictionary<string, string> GetUserColumns(EmployeeDto employee)
         {
             CDictionary<string, string> tmpColumns = new();
             if (employee.dni != null) tmpColumns.Add(dni, null, $"{ employee.dni }");
@@ -208,7 +208,7 @@ namespace Incidences.Data
             if (employee.deleted != null) tmpColumns.Add(state, null, Convert.ToInt16(employee.deleted).ToString());
             return tmpColumns;
         }
-        private bool CheckField(string table, string field)
+        private static bool CheckField(string table, string field)
         {
             IList<string> fields;
             switch (table)

@@ -5,12 +5,12 @@ namespace Incidences.Business
 {
     public interface IIncidenceBz
     {
-        public IncidenceList GetIncidencesByStateTypeFn(int state, int userId, string type);
-        public Incidence GetIncidenceByIdFn(int id);
+        public IncidenceList GetIncidencesByStateType(int state, int userId, string type);
+        public Incidence GetIncidenceById(int id);
         public bool UpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false);
         public bool NewUpdateIncidence(IncidenceDto incidence, int incidenceId, int userId, bool close = false);
         public bool InsertIncidence(IncidenceDto incidence);
-        public bool DeleteIncidenceFn(int incidenceId, int userId);
+        public bool DeleteIncidence(int incidenceId, int userId);
         public IDictionary<string, int> GetIncidencesCounters(int userId, string type);
     }
 }

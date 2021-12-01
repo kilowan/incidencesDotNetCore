@@ -10,8 +10,8 @@ namespace Incidences.Data
     {
         public Credentials SelectCredentialsById(int id);
         public Credentials SelectCredentialsByUsername(string username);
-        public bool CheckCredentialsFn(string username);
-        public bool CheckCredentialsFn(string username, string password);
+        public bool CheckCredentials(string username);
+        public bool CheckCredentials(string username, string password);
         public bool UpdateCredentials(CredentialsDto credentials, int employeeId);
         public bool UpdateUsername(string username, int employeeId);
         public bool UpdatePassword(string password, int employeeId);

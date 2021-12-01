@@ -40,7 +40,7 @@ namespace Incidences.Business
         #endregion
 
         #region INSERT
-        public bool InsertNoteFn(string note, int noteTypeId, int? userId, int? incidenceId)
+        public bool InsertNote(string note, int noteTypeId, int? userId, int? incidenceId)
         {
             try
             {

@@ -85,7 +85,7 @@ namespace Incidences.Data
         /// <summary>
         /// Sets the IDBCommand Connection
         /// </summary>
-        public void ConnectionFn();
+        public void Connection();
         /// <summary>
         /// Launch Call to the SQLServer
         /// </summary>

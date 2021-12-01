@@ -204,7 +204,7 @@ namespace Incidences.Data
 
         #region SQLServer
         //CONNECTION
-        public void ConnectionFn()
+        public void Connection()
         {
             string user = "test";
             string pass = "123456";
@@ -231,7 +231,7 @@ namespace Incidences.Data
         }
         public bool Call(string text, string type = null)
         {
-            ConnectionFn();
+            Connection();
             Open();
             get_sql = connection.CreateCommand();
             get_sql.CommandText = text;
@@ -239,7 +239,7 @@ namespace Incidences.Data
         }
         public bool Call(string text)
         {
-            ConnectionFn();
+            Connection();
             Open();
             get_sql = connection.CreateCommand();
             get_sql.CommandText = text;

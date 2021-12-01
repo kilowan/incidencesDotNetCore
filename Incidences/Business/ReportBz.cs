@@ -1,6 +1,7 @@
 ﻿using Incidences.Data;
 using Incidences.Models;
 using Incidences.Models.Employee;
+using System;
 
 namespace Incidences.Business
 {
@@ -32,15 +33,20 @@ namespace Incidences.Business
         /// </summary>
         /// <param name="userId">Id param</param>
         /// <returns>Returns report</returns>
-        public Report GetReportFn(int userId)
+        public Report GetReport(int userId)
         {
-            Employee user = this.emp.SelectEmployeeById(userId)[0];
-            Report report = new(reportData.SelectReportedPieces(), reportData.GetStatisticsFn(userId));
-            if (user.Type.Id == 3)
+            try
             {
-                report.Global = reportData.GetGlobalStatistics();
+                Employee user = emp.SelectEmployeeById(userId);
+                Report report = new(reportData.SelectReportedPieces(), reportData.GetStatistics(userId));
+                if (user.Type.Id == 3) report.Global = reportData.GetGlobalStatistics();
+                
+                return report;
             }
-            return report;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
         #endregion
     }

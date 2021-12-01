@@ -36,13 +36,13 @@ namespace Incidences.Controllers
         [HttpDelete("{id}")]
         public bool Delete(int id)
         {
-            return this.piece.DeletePieceFn(id);
+            return this.piece.DeletePiece(id);
         }
 
         [HttpPost]
         public bool Create(PieceDto piece)
         {
-            return this.piece.AddPieceFn(piece);
+            return this.piece.AddPiece(piece);
         }
     }
 }

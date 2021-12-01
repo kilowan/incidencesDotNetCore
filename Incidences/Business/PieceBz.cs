@@ -23,7 +23,7 @@ namespace Incidences.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool AddPieceFn(PieceDto piece)
+        public bool AddPiece(PieceDto piece)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace Incidences.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool DeletePieceFn(int id)
+        public bool DeletePiece(int id)
         {
             try
             {

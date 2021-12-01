@@ -74,22 +74,22 @@ namespace Incidences.Business
         #endregion
 
         #region OTHER
-        public bool CheckCredentialsFn(string username, string password)
+        public bool CheckCredentials(string username, string password)
         {
             try
             {
-                return credentialsData.CheckCredentialsFn(username, password);
+                return credentialsData.CheckCredentials(username, password);
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        public bool CheckCredentialsFn(string username)
+        public bool CheckCredentials(string username)
         {
             try
             {
-                return credentialsData.CheckCredentialsFn(username);
+                return credentialsData.CheckCredentials(username);
             }
             catch (Exception e)
             {
