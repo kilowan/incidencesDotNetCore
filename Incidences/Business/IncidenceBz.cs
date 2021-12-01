@@ -18,22 +18,22 @@ namespace Incidences.Business
             this.piece = piece;
             this.incidenceData = incidenceData;
         }
-        public IncidenceList GetIncidencesByStateTypeFn(int state, int userId, string type)
+        public IncidenceList GetIncidencesByStateType(int state, int userId, string type)
         {
             try
             {
-                return incidenceData.GetIncidencesByStateTypeFn(state, userId, type);
+                return incidenceData.GetIncidencesByStateType(state, userId, type);
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        public Incidence GetIncidenceByIdFn(int id)
+        public Incidence GetIncidenceById(int id)
         {
             try
             {
-                return incidenceData.GetIncidenceByIdFn(id);
+                return incidenceData.GetIncidenceById(id);
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace Incidences.Business
 
                     if (note != null)
                     {
-                        result = this.note.InsertNoteFn(incidence.note, 2, userId, incidenceId);
+                        result = this.note.InsertNote(incidence.note, 2, userId, incidenceId);
                         if (!result) throw new Exception("Parte no actualizado");
                     }
 
@@ -95,7 +95,7 @@ namespace Incidences.Business
 
                 if (note != null)
                 {
-                    result = this.note.InsertNoteFn(incidence.note, 2, userId, incidenceId);
+                    result = this.note.InsertNote(incidence.note, 2, userId, incidenceId);
                     if (!result) throw new Exception("Parte no actualizado");
                 }
 
@@ -122,7 +122,7 @@ namespace Incidences.Business
             try
             {
                 int id = incidenceData.InsertIncidence(incidence.ownerId);
-                bool result = this.note.InsertNoteFn(incidence.note, 1, incidence.ownerId, id);
+                bool result = this.note.InsertNote(incidence.note, 1, incidence.ownerId, id);
                 if (!result) throw new Exception("Parte no insertado");
                 result = this.piece.InsertPiecesSql(incidence.piecesAdded, id);
                 if (!result) throw new Exception("Parte no insertado");
@@ -133,11 +133,11 @@ namespace Incidences.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool DeleteIncidenceFn(int incidenceId, int userId)
+        public bool DeleteIncidence(int incidenceId, int userId)
         {
             try
             {
-                return incidenceData.DeleteIncidenceFn(incidenceId, userId);
+                return incidenceData.DeleteIncidence(incidenceId, userId);
             }
             catch (Exception e)
             {
@@ -163,7 +163,7 @@ namespace Incidences.Business
             {
                 bool result = incidenceData.CloseIncidence(incidenceId);
                 if (!result) throw new Exception("Parte no actualizado");
-                result = this.note.InsertNoteFn(incidence.note, 2, userId, incidenceId);
+                result = this.note.InsertNote(incidence.note, 2, userId, incidenceId);
                 if (!result) throw new Exception("Parte no actualizado");
 
                 if (incidence.piecesAdded != null && incidence.piecesAdded.Count > 0)

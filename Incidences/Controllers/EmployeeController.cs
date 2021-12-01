@@ -24,13 +24,13 @@ namespace Incidences.Controllers
         [HttpGet("{username}")]
         public Employee Details(string username)
         {
-            return emp.GetEmployeeByUsernameFn(username)[0];
+            return emp.GetEmployeeByUsername(username);
         }
 
         [HttpPost]
         public bool Add(EmployeeDto employee)
         {
-            return emp.AddEmployeeFn(employee);
+            return emp.AddEmployee(employee);
         }
         [HttpPut("{id}")]
         public bool Update(EmployeeDto employee, int id)
@@ -41,7 +41,7 @@ namespace Incidences.Controllers
         [HttpDelete("{id}")]
         public bool Delete(int id)
         {
-            return emp.UpdateEmployeeFn(id);
+            return emp.UpdateEmployee(id);
         }
     }
 }

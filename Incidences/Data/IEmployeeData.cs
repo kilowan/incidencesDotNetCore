@@ -7,10 +7,10 @@ namespace Incidences.Data
     public interface IEmployeeData
     {
         public Employee SelectEmployeeByDni(string dni);
-        public IList<Employee> SelectEmployeeById(int id);
+        public Employee SelectEmployeeById(int id);
         public IList<Employee> SelectActiveEmployee();
         public bool UpdateEmployee(EmployeeDto employee, int? id);
         public bool InsertEmployee(EmployeeDto employee);
-        public bool UpdateEmployeeFn(int id);
+        public bool UpdateEmployee(int id);
     }
 }

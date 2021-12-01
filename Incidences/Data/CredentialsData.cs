@@ -70,7 +70,7 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public bool CheckCredentialsFn(string username)
+        public bool CheckCredentials(string username)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public bool CheckCredentialsFn(string username, string password)
+        public bool CheckCredentials(string username, string password)
         {
             try
             {

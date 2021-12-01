@@ -17,7 +17,7 @@ namespace Incidences.Controllers
         [HttpGet("{id}")]
         public Report Details(int id)
         {
-            return rep.GetReportFn(id);
+            return rep.GetReport(id);
         }
     }
 }

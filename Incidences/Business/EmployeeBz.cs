@@ -16,13 +16,13 @@ namespace Incidences.Business
         }
 
         #region SELECT
-        public IList<Employee> GetEmployeeByUsernameFn(string username)
+        public Employee GetEmployeeByUsername(string username)
         {
             try
             {
                 Credentials credentials = cred.SelectCredentialsByUsername(username);
                 if (credentials.EmployeeId != null) return SelectEmployeeById((int)credentials.EmployeeId);
-                else return new List<Employee>();
+                else return new Employee();
             }
             catch (Exception e)
             {
@@ -40,7 +40,7 @@ namespace Incidences.Business
                 throw new Exception(e.Message);
             }
         }
-        public IList<Employee> SelectEmployeeById(int id)
+        public Employee SelectEmployeeById(int id)
         {
             try
             {
@@ -80,11 +80,11 @@ namespace Incidences.Business
         #endregion
 
         #region INSERT
-        public bool AddEmployeeFn(EmployeeDto employee)
+        public bool AddEmployee(EmployeeDto employee)
         {
             try
             {
-                bool result = cred.CheckCredentialsFn(employee.credentials.username);
+                bool result = cred.CheckCredentials(employee.credentials.username);
                 if (result)
                 {
                     Credentials credentials = cred.SelectCredentialsByUsername(employee.credentials.username);
@@ -102,9 +102,9 @@ namespace Incidences.Business
         #endregion
 
         #region DELETE
-        public bool UpdateEmployeeFn(int id)
+        public bool UpdateEmployee(int id)
         {
-            return employeeData.UpdateEmployeeFn(id);
+            return employeeData.UpdateEmployee(id);
         }
         #endregion
 

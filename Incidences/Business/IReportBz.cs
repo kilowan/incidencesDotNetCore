@@ -9,6 +9,6 @@ namespace Incidences.Business
         /// </summary>
         /// <param name="userId">Id param</param>
         /// <returns>Returns report</returns>
-        public Report GetReportFn(int userId);
+        public Report GetReport(int userId);
     }
 }

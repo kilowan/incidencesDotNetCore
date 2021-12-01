@@ -18,7 +18,7 @@ namespace Incidences.Controllers
         [HttpGet("{id}")]
         public Incidence Details(int id)
         {
-            return inc.GetIncidenceByIdFn(id);
+            return inc.GetIncidenceById(id);
         }
 
         [HttpGet("{userId}/{type}")]
@@ -30,7 +30,7 @@ namespace Incidences.Controllers
         [HttpGet("{state}/{userId}/{Type}")]
         public IncidenceList List(int state, int userId, string Type)
         {
-            return inc.GetIncidencesByStateTypeFn(state, userId, Type);
+            return inc.GetIncidencesByStateType(state, userId, Type);
         }
 
         [HttpPost]
@@ -54,7 +54,7 @@ namespace Incidences.Controllers
         [HttpDelete("{incidenceId}/{userId}")]
         public bool Delete(int incidenceId, int userId)
         {
-            return inc.DeleteIncidenceFn(incidenceId, userId);
+            return inc.DeleteIncidence(incidenceId, userId);
         }
     }
 }

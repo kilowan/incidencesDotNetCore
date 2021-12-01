@@ -17,7 +17,7 @@ namespace Incidences.Controllers
         [HttpGet("{username}/{password}")]
         public bool Details(string username, string password)
         {
-            return this.cred.CheckCredentialsFn(username, password);
+            return this.cred.CheckCredentials(username, password);
         }
 
         [HttpGet("{username}")]

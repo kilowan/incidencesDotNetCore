@@ -122,7 +122,7 @@ namespace Incidences.Data
                     while (reader.Read())
                     {
                         Statistics globalStatistics = new();
-                        globalStatistics.Average = SecondsToTimeFn((int)reader.GetValue(0));
+                        globalStatistics.Average = SecondsToTime((int)reader.GetValue(0));
                         globalStatistics.EmployeeName = (string)reader.GetValue(3);
                         globalData.Add(globalStatistics);
                     }
@@ -142,7 +142,7 @@ namespace Incidences.Data
         /// </summary>
         /// <param name="id">own employeeId</param>
         /// <returns>Returns own statistics</returns>
-        public Statistics GetStatisticsFn(int id)
+        public Statistics GetStatistics(int id)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace Incidences.Data
                 {
                     using IDataReader reader = sql.GetReader();
                     reader.Read();
-                    statistics.Average = SecondsToTimeFn((int)reader.GetValue(0));
+                    statistics.Average = SecondsToTime((int)reader.GetValue(0));
                     statistics.SolvedIncidences = (int)reader.GetValue(1);
                 }
 
@@ -189,7 +189,7 @@ namespace Incidences.Data
         /// </summary>
         /// <param name="seconds">seconds param</param>
         /// <returns>Returns number</returns>
-        private static int SetNumUnitsFn(int seconds)
+        private static int SetNumUnits(int seconds)
         {
             return
                 seconds >= OneMonth ? 6 :
@@ -203,9 +203,9 @@ namespace Incidences.Data
         /// </summary>
         /// <param name="seconds"></param>
         /// <returns>Returns string time</returns>
-        private static string SecondsToTimeFn(int seconds)
+        private static string SecondsToTime(int seconds)
         {
-            int num_units = SetNumUnitsFn(seconds);
+            int num_units = SetNumUnits(seconds);
             decimal mounths = seconds / OneMonth;
             decimal weeks = seconds % OneMonth / OneWeek;
             decimal days = seconds % OneMonth / OneDay;

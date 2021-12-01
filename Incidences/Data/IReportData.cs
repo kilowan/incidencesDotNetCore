@@ -23,6 +23,6 @@ namespace Incidences.Data
         /// </summary>
         /// <param name="id">own employeeId</param>
         /// <returns>Returns own statistics</returns>
-        public Statistics GetStatisticsFn(int id);
+        public Statistics GetStatistics(int id);
     }
 }

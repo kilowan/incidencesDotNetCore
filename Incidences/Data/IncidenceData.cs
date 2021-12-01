@@ -157,7 +157,7 @@ namespace Incidences.Data
 
             return GetCounters(4, ownerId, userId, counters);
         }
-        public bool DeleteIncidenceFn(int incidenceId, int userId)
+        public bool DeleteIncidence(int incidenceId, int userId)
         {
             try
             {
@@ -444,25 +444,7 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public void UpdateIncidenceFn(IncidenceDto incidenceDto, int incidenceId, int userId, bool close)
-        {
-            try
-            {
-                Incidence incidence = SelectIncidences(
-                    new List<string> { ALL },
-                    sql.WhereIncidence(incidenceId)
-                )[0];
-                if (incidence.SolverId == userId || incidence.State == 1 || incidence.OwnerId == userId)
-                {
-                    UpdateIncidence(incidenceDto, incidenceId, userId, close);
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
-        public Incidence GetIncidenceByIdFn(int id)
+        public Incidence GetIncidenceById(int id)
         {
             try
             {
@@ -499,7 +481,7 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public IncidenceList GetIncidencesByStateTypeFn(int state, int userId, string type)
+        public IncidenceList GetIncidencesByStateType(int state, int userId, string type)
         {
             try
             {

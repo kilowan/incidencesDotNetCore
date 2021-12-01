@@ -6,9 +6,9 @@ namespace Incidences.Business
     public interface IEmployeeBz
     {
         #region SELECT
-        public IList<Employee> GetEmployeeByUsernameFn(string username);
+        public Employee GetEmployeeByUsername(string username);
         public Employee SelectEmployeeByDni(string dni);
-        public IList<Employee> SelectEmployeeById(int id);
+        public Employee SelectEmployeeById(int id);
         public IList<Employee> SelectActiveEmployee();
         #endregion
 
@@ -18,12 +18,12 @@ namespace Incidences.Business
         #endregion
 
         #region INSERT
-        public bool AddEmployeeFn(EmployeeDto employee);
+        public bool AddEmployee(EmployeeDto employee);
 
         #endregion
 
         #region DELETE
-        public bool UpdateEmployeeFn(int id);
+        public bool UpdateEmployee(int id);
         #endregion
     }
 }
