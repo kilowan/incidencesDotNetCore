@@ -28,16 +28,14 @@ namespace Incidences.Data
                 employee_range emra = _context.EmployeeRange
                     .Where(er => er.id == emp.typeId)
                     .FirstOrDefault();
-                return new Employee()
-                {
-                    Dni = emp.dni,
-                    Name = emp.name,
-                    Surname1 = emp.surname1,
-                    Surname2 = emp.surname2,
-                    Id = emp.id,
-                    State = emp.state,
-                    Type = new TypeRange(emra.id, emra.name)
-                };
+                return new Employee(
+                    emp.dni,
+                    emp.name,
+                    emp.surname1,
+                    emp.surname2,
+                    new TypeRange(emra.id, emra.name),
+                    emp.id, emp.state
+                );
             }
             catch (Exception e)
             {
@@ -54,16 +52,14 @@ namespace Incidences.Data
                 employee_range emra = _context.EmployeeRange
                     .Where(er => er.id == emp.typeId)
                     .FirstOrDefault();
-                return new Employee()
-                {
-                    Dni = emp.dni,
-                    Name = emp.name,
-                    Surname1 = emp.surname1,
-                    Surname2 = emp.surname2,
-                    Id = emp.id,
-                    State = emp.state,
-                    Type = new TypeRange(emra.id, emra.name)
-                };
+                return new Employee(
+                    emp.dni, 
+                    emp.name, 
+                    emp.surname1, 
+                    emp.surname2, 
+                    new TypeRange(emra.id, emra.name), 
+                    emp.id, emp.state
+                );
             }
             catch (Exception e)
             {
@@ -84,17 +80,14 @@ namespace Incidences.Data
                         .Where(er => er.id == employee.typeId)
                         .FirstOrDefault();
                     result.Add(
-                        new Employee() 
-                        {
-                            Dni = employee.dni,
-                            Name = employee.name,
-                            Surname1 = employee.surname1,
-                            Surname2 = employee.surname2,
-                            Id = employee.id,
-                            State = employee.state,
-                            Type = new TypeRange(emra.id, emra.name)
-                        }
-                    );
+                        new Employee(
+                            employee.dni, 
+                            employee.name, 
+                            employee.surname1, 
+                            employee.surname2, 
+                            new TypeRange(emra.id, emra.name), 
+                            employee.id, employee.state)
+                        );
                 }
                 return result;
             }

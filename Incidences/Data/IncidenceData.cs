@@ -165,7 +165,6 @@ namespace Incidences.Data
                     .Where(inc => inc.id == incidenceId)
                     .FirstOrDefault();
 
-                CDictionary<string, string> columns = new CDictionary<string, string>();
                 if (incidence.state != null) inc.state = (int)incidence.state;
                 else
                 {
@@ -265,11 +264,27 @@ namespace Incidences.Data
         private Incidence ConvertIncidence(incidence incidence) 
         {
             Note employeeNote = noteData.SelectEmployeeNoteByIncidenceId(incidence.id);
-            IList<Note> notes = noteData.SelectNotesByIncidenceId(incidence.id);
             IList<Piece> pieces = pieceData.GetPiecesByIncidenceId(incidence.id);
             Employee owner = employeeData.SelectEmployeeById(incidence.ownerId);
-            Employee solver = new Employee();
-            if (incidence.solverId != null) solver = employeeData.SelectEmployeeById((int)incidence.solverId);
+            if (incidence.state == 2)
+            {
+                IList<Note> notes = noteData.SelectNotesByIncidenceId(incidence.id);
+                Employee solver = employeeData.SelectEmployeeById((int)incidence.solverId);
+                return new Incidence(
+                    incidence.id,
+                    incidence.state,
+                    owner.FullName,
+                    incidence.ownerId,
+                    incidence.open_dateTime,
+                    employeeNote.NoteStr,
+                    pieces,
+                    notes,
+                    solver.FullName,
+                    incidence.solverId,
+                    (DateTime)incidence.close_dateTime
+                );
+            }
+            
             return new Incidence(
                 incidence.id,
                 incidence.state,
@@ -277,11 +292,7 @@ namespace Incidences.Data
                 incidence.ownerId,
                 incidence.open_dateTime,
                 employeeNote.NoteStr,
-                pieces,
-                notes,
-                solver.FullName,
-                incidence.solverId,
-                (DateTime)incidence.close_dateTime
+                pieces
             );
         }
     }

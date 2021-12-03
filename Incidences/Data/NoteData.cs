@@ -21,7 +21,7 @@ namespace Incidences.Data
         {
             try
             {
-                NoteType noteType = noteTypeData.GetNoteTypeByName("Employee");
+                NoteType noteType = noteTypeData.GetNoteTypeByName("ownerNote");
                 Notes note = _context.Notes
                     .Where(note => note.incidenceId == incidenceId && note.noteTypeId == noteType.Id)
                     .FirstOrDefault();
@@ -40,7 +40,7 @@ namespace Incidences.Data
         {
             try
             {
-                NoteType noteType = noteTypeData.GetNoteTypeByName("Technician");
+                NoteType noteType = noteTypeData.GetNoteTypeByName("solverNote");
                 IList<Notes> notes = _context.Notes
                     .Where(note => note.incidenceId == incidenceId && note.noteTypeId == noteType.Id)
                     .ToList();

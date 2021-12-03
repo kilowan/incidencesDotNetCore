@@ -1,8 +1,5 @@
 ﻿using Incidences.Data.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Incidences.Data
 {
@@ -80,15 +77,15 @@ namespace Incidences.Data
 
             var Pieces = new piece_class[]
             {
-                new piece_class{id=1, name="RAM", typeId=1, deleted=false},
-                new piece_class{id=2, name="HDD o SSD", typeId=1, deleted=false},
-                new piece_class{id=3, name="Placa base", typeId=1, deleted=false},
-                new piece_class{id=4, name="Tarjeta Gráfica (GPU)", typeId=1, deleted=false},
-                new piece_class{id=5, name="Ratón", typeId=2, deleted=false},
-                new piece_class{id=6, name="Teclado", typeId=2, deleted=false},
-                new piece_class{id=7, name="Impresora", typeId=2, deleted=false},
-                new piece_class{id=8, name="Cámara", typeId=2, deleted=false},
-                new piece_class{id=9, name="Otros", typeId=3, deleted=false},
+                new piece_class{id=1, name="RAM", typeId=1, deleted=0},
+                new piece_class{id=2, name="HDD o SSD", typeId=1, deleted=0},
+                new piece_class{id=3, name="Placa base", typeId=1, deleted=0},
+                new piece_class{id=4, name="Tarjeta Gráfica (GPU)", typeId=1, deleted=0},
+                new piece_class{id=5, name="Ratón", typeId=2, deleted=0},
+                new piece_class{id=6, name="Teclado", typeId=2, deleted=0},
+                new piece_class{id=7, name="Impresora", typeId=2, deleted=0},
+                new piece_class{id=8, name="Cámara", typeId=2, deleted=0},
+                new piece_class{id=9, name="Otros", typeId=3, deleted=0},
             };
 
             foreach (piece_class pc in Pieces)
