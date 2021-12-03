@@ -1,4 +1,6 @@
-﻿namespace Incidences.Models.Incidence
+﻿using Incidences.Data.Models;
+
+namespace Incidences.Models.Incidence
 {
     public class PieceType
     {
@@ -55,6 +57,12 @@
             this.id = id;
             this.name = name;
             this.description = description;
+        }
+        public PieceType(piece_type pt)
+        {
+            this.id = pt.id;
+            this.name = pt.name;
+            this.description = pt.description;
         }
     }
 }

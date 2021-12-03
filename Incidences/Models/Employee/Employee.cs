@@ -1,4 +1,6 @@
-﻿namespace Incidences.Models.Employee
+﻿using Incidences.Data.Models;
+
+namespace Incidences.Models.Employee
 {
     public class Employee
     {
@@ -99,6 +101,17 @@
         public Employee()
         {
 
+        }
+        public Employee(employee emp)
+        {
+            this.dni = emp.dni;
+            this.name = emp.name;
+            this.surname1 = emp.surname1;
+            this.surname2 = emp.surname2;
+            this.fullName = $"{ name } { surname1 } { surname2 }";
+            this.type = new TypeRange(emp.EmployeeRange);
+            this.id = emp.id;
+            this.state = emp.state;
         }
         public Employee(string dni, string name, string surname1)
         {

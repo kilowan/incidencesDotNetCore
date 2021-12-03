@@ -32,7 +32,6 @@ namespace Incidences
             services.AddTransient<IEmployeeData, EmployeeData>();
             services.AddTransient<IEmployeeRangeData, EmployeeRangeData>();
             services.AddTransient<INoteData, NoteData>();
-            services.AddTransient<INoteTypeData, NoteTypeData>();
             services.AddTransient<IPieceData, PieceData>();
             services.AddTransient<IPieceTypeData, PieceTypeData>();
             services.AddTransient<IReportData, ReportData>();
