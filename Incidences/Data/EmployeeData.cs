@@ -9,30 +9,12 @@ namespace Incidences.Data
 {
     public class EmployeeData : IEmployeeData
     {
-        #region constants
-        //tables
-        private const string completeEmployee = "completeEmployee";
-        private const string employee = "employee";
-
-        //columns
-        private const string ALL = "*";
-        private const string employeeC = "employee";
-        private const string dni = "dni";
-        private const string name = "name";
-        private const string surname1 = "surname1";
-        private const string surname2 = "surname2";
-        private const string typeId = "typeId";
-        private const string state = "state";
-        private const string deleted = "deleted";
-
-        #endregion
-
-        private readonly ISqlBase sql;
         private readonly ICredentialsData credentialsData;
+        private readonly IncidenceContext _context;
 
-        public EmployeeData(ISqlBase sql, ICredentialsData credentialsData)
+        public EmployeeData(ICredentialsData credentialsData, IncidenceContext context)
         {
-            this.sql = sql;
+            this._context = context;
             this.credentialsData = credentialsData;
         }
 
@@ -40,10 +22,22 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectEmployees(
-                    new List<string> { ALL },
-                    sql.WhereDni(dni)
-                ).FirstOrDefault();
+                employee emp = _context.Employee
+                    .Where(em => em.dni == dni)
+                    .FirstOrDefault();
+                employee_range emra = _context.EmployeeRange
+                    .Where(er => er.id == emp.typeId)
+                    .FirstOrDefault();
+                return new Employee()
+                {
+                    Dni = emp.dni,
+                    Name = emp.name,
+                    Surname1 = emp.surname1,
+                    Surname2 = emp.surname2,
+                    Id = emp.id,
+                    State = emp.state,
+                    Type = new TypeRange(emra.id, emra.name)
+                };
             }
             catch (Exception e)
             {
@@ -54,9 +48,22 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectEmployees(
-                    new List<string> { ALL }, 
-                    sql.WhereId(id)).FirstOrDefault();
+                employee emp = _context.Employee
+                    .Where(em => em.id == id)
+                    .FirstOrDefault();
+                employee_range emra = _context.EmployeeRange
+                    .Where(er => er.id == emp.typeId)
+                    .FirstOrDefault();
+                return new Employee()
+                {
+                    Dni = emp.dni,
+                    Name = emp.name,
+                    Surname1 = emp.surname1,
+                    Surname2 = emp.surname2,
+                    Id = emp.id,
+                    State = emp.state,
+                    Type = new TypeRange(emra.id, emra.name)
+                };
             }
             catch (Exception e)
             {
@@ -67,46 +74,29 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectEmployees(
-                    new List<string> { ALL },
-                    sql.WhereDeleted(0)
-                );
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
-        public bool UpdateWorker(IList<string> fields, IList<string> values, string dni)
-        {
-            try
-            {
-                Employee oldUser = SelectEmployeeByDni(dni);
-                if (oldUser == null)
+                IList<employee> emps = _context.Employee
+                    .Where(em => em.state != 1)
+                    .ToList();
+                IList<Employee> result = new List<Employee>(); 
+                foreach (employee employee in emps)
                 {
-                    return false;
+                    employee_range emra = _context.EmployeeRange
+                        .Where(er => er.id == employee.typeId)
+                        .FirstOrDefault();
+                    result.Add(
+                        new Employee() 
+                        {
+                            Dni = employee.dni,
+                            Name = employee.name,
+                            Surname1 = employee.surname1,
+                            Surname2 = employee.surname2,
+                            Id = employee.id,
+                            State = employee.state,
+                            Type = new TypeRange(emra.id, emra.name)
+                        }
+                    );
                 }
-                else
-                {
-                    int position = 0;
-                    CDictionary<string, string> columns = new();
-                    foreach (string field in fields)
-                    {
-                        if (CheckField(employeeC, field)) columns.Add(field, null, values[position]);
-                        position++;
-                    }
-                    if (columns.Count > 0)
-                    {
-                        bool result = sql.Update(
-                            employeeC, 
-                            columns,
-                            sql.WhereDni(dni)
-                        );
-                        sql.Close();
-                        return result;
-                    }
-                    else return false;
-                }
+                return result;
             }
             catch (Exception e)
             {
@@ -117,13 +107,24 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = sql.Update(
-                    employeeC,
-                    GetUserColumns(employee),
-                    sql.WhereId(id)
-                );
-                sql.Close();
-                if (!result) throw new Exception("Empleado no actualizado");
+                bool result = false;
+                employee emp = _context.Employee
+                    .Where(em => em.id == id)
+                    .FirstOrDefault();
+                if (emp != null)
+                {
+                    employee_range emra = _context.EmployeeRange
+                        .Where(er => er.id == emp.typeId)
+                        .FirstOrDefault();
+                    if(employee.name != null) emp.name = employee.name;
+                    if (employee.surname1 != null) emp.surname1 = employee.surname1;
+                    if (employee.surname2 != null) emp.surname2 = employee.surname2;
+                    if (employee.typeId != null) emp.typeId = (int)employee.typeId;
+                    _context.Update(emp);
+                    if (_context.SaveChanges() != 1) throw new Exception("Empleado no actualizado");
+                    result = true;
+                } else throw new Exception("Empleado no actualizado");
+
                 return result;
             }
             catch (Exception e)
@@ -135,15 +136,32 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = sql.Insert(employeeC, GetUserColumns(employee));
-                if (!result) throw new Exception("Empleado no insertado");
-                IList<Employee> employees = SelectEmployees(
-                    new List<string> { ALL }, 
-                    sql.WhereDni(employee.dni)
+                employee emp = new()
+                {
+                    dni = employee.dni,
+                    name = employee.name,
+                    surname1 = employee.surname1,
+                    surname2 = employee.surname2,
+                    state = 0,
+                    typeId = (int)employee.typeId
+                };
+                _context.Employee.Add(emp);
+                emp = _context.Employee
+                    .Where(em => em.dni == employee.dni)
+                    .FirstOrDefault();
+                if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
+                bool result = credentialsData.InsertCredentials(
+                    new CredentialsDto()
+                    { 
+                        username = employee.credentials.username,
+                        password = employee.credentials.password,
+                    },
+                    emp.id
                 );
-                Employee user = employees[0];
 
-                return credentialsData.InsertCredentials(employee.credentials, user.Id);
+                if (result) throw new Exception("Empleado no insertado");
+
+                return true;
             }
             catch (Exception e)
             {
@@ -152,74 +170,19 @@ namespace Incidences.Data
         }
         public bool UpdateEmployee(int id)
         {
-            EmployeeDto employee = new();
-            employee.deleted = true;
-            return sql.Update(employeeC,
-                GetUserColumns(employee),
-                sql.WhereId(id)
-            );
-        }
-        private IList<Employee> SelectEmployees(IList<string> fields, CDictionary<string, string> conditions = null)
-        {
-            try
+            bool result = false;
+            employee emp = _context.Employee
+                .Where(em => em.id == id)
+                .FirstOrDefault();
+            if (emp != null)
             {
-                bool result = sql.Select(new Select(completeEmployee, fields, conditions));
-                if (result)
-                {
-                    IList<Employee> employees = new List<Employee>();
-                    using IDataReader reader = sql.GetReader();
-                    while (reader.Read())
-                    {
-                        employees.Add(
-                            new Employee(
-                                (string)reader.GetValue(1),
-                                (string)reader.GetValue(2),
-                                (string)reader.GetValue(3),
-                                reader.GetValue(4) != DBNull.Value ? (string)reader.GetValue(4) : null,
-                                new TypeRange(
-                                    (int)reader.GetValue(7),
-                                    (string)reader.GetValue(8)
-                                ),
-                                (int)reader.GetValue(0),
-                                (int)reader.GetValue(9)
-                            )
-                        );
-                    }
-                    sql.Close();
-                    return employees;
-                }
-                else throw new Exception("Ningún registro");
+                 emp.state = 1;
+                _context.Update(emp);
+                result = true;
             }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
+            else throw new Exception("Empleado no actualizado");
 
-        #region OTHER
-        private static CDictionary<string, string> GetUserColumns(EmployeeDto employee)
-        {
-            CDictionary<string, string> tmpColumns = new();
-            if (employee.dni != null) tmpColumns.Add(dni, null, $"{ employee.dni }");
-            if (employee.name != null) tmpColumns.Add(name, null, $"{ employee.name }");
-            if (employee.surname1 != null) tmpColumns.Add(surname1, null, $"{ employee.surname1 }");
-            if (employee.surname2 != null) tmpColumns.Add(surname2, null, $"{ employee.surname2 }");
-            if (employee.type != null) tmpColumns.Add(typeId, null, employee.typeId.ToString());
-            if (employee.deleted != null) tmpColumns.Add(state, null, Convert.ToInt16(employee.deleted).ToString());
-            return tmpColumns;
+            return result;
         }
-        private static bool CheckField(string table, string field)
-        {
-            IList<string> fields;
-            switch (table)
-            {
-                case employee:
-                    fields = new List<string> { name, surname1, surname2, typeId, deleted };
-                    return fields.Contains(field);
-                default:
-                    return false;
-            }
-        }
-        #endregion
     }
 }

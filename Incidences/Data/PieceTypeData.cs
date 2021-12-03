@@ -3,47 +3,36 @@ using Incidences.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Incidences.Data
 {
     public class PieceTypeData : IPieceTypeData
     {
-        #region constants
-        //tables
-        private const string piece_type = "piece_type";
+        private readonly IncidenceContext _context;
 
-        //columns
-        private const string ALL = "*";
-
-        #endregion
-
-        private readonly ISqlBase sql;
-
-        public PieceTypeData(ISqlBase sql)
+        public PieceTypeData(IncidenceContext context)
         {
-            this.sql = sql;
+            _context = context;
         }
 
-        public IList<PieceType> SelectPieceType(CDictionary<string, string> conditions = null)
+        public IList<PieceType> SelectPieceType()
         {
             try
             {
-                bool result = sql.Select(new Select(piece_type, new List<string> { ALL }, conditions));
+                IList<piece_type> pitys = _context.PieceType.ToList();
                 IList<PieceType> pieceTypes = new List<PieceType>();
-                using IDataReader reader = sql.GetReader();
-
-                while (reader.Read())
+                foreach (piece_type pity in pitys)
                 {
                     pieceTypes.Add(
-                        new PieceType(
-                            (int)reader.GetValue(0),
-                            (string)reader.GetValue(1),
-                            (string)reader.GetValue(2)
-                        )
+                        new PieceType()
+                        {
+                            Description = pity.description,
+                            Id = pity.id,
+                            Name = pity.name
+                        }
                     );
                 }
-
-                sql.Close();
                 return pieceTypes;
             }
             catch (Exception e)
@@ -55,7 +44,16 @@ namespace Incidences.Data
         {
             try
             {
-                return SelectPieceType(sql.WhereId(pieceTypeId))[0];
+                piece_type pity = _context.PieceType
+                    .Where(pity => pity.id == pieceTypeId)
+                    .FirstOrDefault();
+
+                return new PieceType()
+                {
+                    Description = pity.description,
+                    Id = pity.id,
+                    Name = pity.name
+                };
             }
             catch (Exception e)
             {

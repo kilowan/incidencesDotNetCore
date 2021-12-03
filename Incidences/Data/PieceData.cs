@@ -3,74 +3,34 @@ using Incidences.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Incidences.Data
 {
     public class PieceData : IPieceData
     {
-        #region constants
-        //tables
-        private const string piece_class = "piece_class";
-        private const string ipl = "incidence_piece_log";
-        private const string FullPiece = "FullPiece";
+        private readonly IncidenceContext _context;
+        private readonly IPieceTypeData pieceType;
 
-        //columns
-        private const string typeId = "typeId";
-        private const string nameC = "name";
-        private const string status = "status";
-        private const string deletedC = "deleted";
-        private const string pieceId = "pieceId";
-        private const string incidenceIdC = "incidenceId";
-        private const string ALL = "*";
-
-        #endregion
-
-        private readonly ISqlBase sql;
-
-        public PieceData(ISqlBase sql)
+        public PieceData(IncidenceContext context, IPieceTypeData pieceType)
         {
-            this.sql = sql;
+            _context = context;
+            this.pieceType = pieceType;
         }
 
         public Piece SelectPieceById(int pieceId)
         {
             try
             {
-                IList<Piece> pieces = SelectPieces(sql.WherePieceId(pieceId));
-                return pieces[0];
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
-        public IList<Piece> SelectPieces(CDictionary<string, string> conditions = null)
-        {
-            try
-            {
-                bool result = sql.Select(new Select(FullPiece, new List<string> { ALL }, conditions));
-                if (result)
+                piece_class picla = _context.PieceClass
+                    .Where(pi => pi.id == pieceId)
+                    .FirstOrDefault();
+                if (picla != null)
                 {
-                    IList<Piece> pieces = new List<Piece>();
-                    using IDataReader reader = sql.GetReader();
-                    while (reader.Read())
-                    {
-                        pieces.Add(new(
-                            (int)reader.GetValue(0),
-                            (string)reader.GetValue(1),
-                            new PieceType(
-                                (int)reader.GetValue(2),
-                                (string)reader.GetValue(3),
-                                (string)reader.GetValue(4)
-                            ),
-                            Convert.ToBoolean(reader.GetValue(5))
-                        ));
-                    }
-
-                    sql.Close();
-                    return pieces;
+                    PieceType pity = pieceType.SelectPieceTypeById(picla.typeId);
+                    return new(picla.id, picla.name, pity, picla.deleted);
                 }
-                else throw new Exception("Ningún registro");
+                else return new Piece();
             }
             catch (Exception e)
             {
@@ -81,11 +41,14 @@ namespace Incidences.Data
         {
             try
             {
-                return sql.Insert(piece_class, new()
+                _context.PieceClass.Add(new()
                 {
-                    { typeId, null, piece.typeId.ToString() },
-                    { nameC, null, piece.name }
+                    name = piece.name,
+                    typeId = (int)piece.typeId
                 });
+
+                if (_context.SaveChanges() != 1) throw new Exception("Pieza no insertada");
+                return true;
             }
             catch (Exception e)
             {
@@ -96,14 +59,19 @@ namespace Incidences.Data
         {
             try
             {
-                IList<string> values = new List<string>();
-                foreach (int piece in pieces)
+                IList<incidence_piece_log> ipls = new List<incidence_piece_log>();
+                foreach (int pieceId in pieces)
                 {
-                    values.Add($"{piece}, {incidenceId}");
+                    ipls.Add(new incidence_piece_log()
+                    {
+                        pieceId = pieceId,
+                        incidenceId = incidenceId
+                    });
                 }
-                string stringPieces = string.Join(", ", values);
-                string text = $"INSERT INTO {ipl} ({pieceId}, {incidenceIdC}) VALUES ({ stringPieces });";
-                return sql.Call(text);
+                _context.IncidencePieceLog.AddRange(ipls);
+                if (_context.SaveChanges() != 1) throw new Exception("Piezas no insertadas");
+
+                return true;
             }
             catch (Exception e)
             {
@@ -114,22 +82,12 @@ namespace Incidences.Data
         {
             try
             {
-
-                CDictionary<string, string> conditions;
-                if (pieces.Count > 1) conditions = sql.WherePieceId(pieces);
-                else conditions = sql.WherePieceId(pieces[0]);
-
-
-                bool result = sql.Update(
-                    ipl,
-                    new CDictionary<string, string> {
-                        { status, null, "1" }
-                    },
-                    conditions
-                );
-
-                sql.Close();
-                return result;
+                IList<piece_class> piece_classes = _context.PieceClass
+                    .Where(pc => pieces.Contains(pc.id))
+                    .ToList();
+                _context.PieceClass.UpdateRange(piece_classes);
+                if (_context.SaveChanges() != 1) throw new Exception("Piezas no eliminadas");
+                return true;
             }
             catch (Exception e)
             {
@@ -140,14 +98,17 @@ namespace Incidences.Data
         {
             try
             {
-                sql.WhereId(id);
-                return sql.Update(
-                    piece_class,
-                    new CDictionary<string, string> {
-                        { deletedC, null, "1" }
-                    },
-                    sql.WhereId(id)
-                );
+                piece_class picla = _context.PieceClass
+                    .Where(pi => pi.id == id)
+                    .FirstOrDefault();
+                if (picla != null)
+                {
+                    picla.deleted = true;
+                    _context.PieceClass.Update(picla);
+                    if (_context.SaveChanges() != 1) throw new Exception("Pieza no eliminada");
+                    return true;
+                }
+                else return false;
             }
             catch (Exception e)
             {
@@ -158,10 +119,19 @@ namespace Incidences.Data
         {
             try
             {
-                return sql.Update(
-                    piece_class,
-                    GetPieceColumns(piece),
-                    sql.WherePieceId(id));
+                piece_class pi = _context.PieceClass
+                    .Where(piece => piece.id == id)
+                    .FirstOrDefault();
+                if (pi != null)
+                {
+                    if (piece.deleted != null) pi.deleted = (bool)piece.deleted;
+                    if (piece.name != null) pi.name = piece.name;
+                    if (piece.typeId != null) pi.typeId = (int)piece.typeId;
+                    _context.PieceClass.Update(pi);
+                    if (_context.SaveChanges() != 1) throw new Exception("Pieza no actualizada");
+                    return true;
+                }
+                else return false;
             }
             catch (Exception e)
             {
@@ -172,16 +142,17 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = sql.Update(piece_class,
-                    new()
-                    {
-                        { deletedC, null, deleted.ToString() }
-                    },
-                    sql.WherePieceId(id)
-                );
-
-                sql.Close();
-                return result;
+                piece_class pi = _context.PieceClass
+                    .Where(piece => piece.id == id)
+                    .FirstOrDefault();
+                if (pi != null)
+                {
+                    pi.deleted = deleted;
+                    _context.PieceClass.Update(pi);
+                    if (_context.SaveChanges() != 1) throw new Exception("Pieza no actualizada");
+                    return true;
+                }
+                else return false;
             }
             catch (Exception e)
             {
@@ -192,45 +163,60 @@ namespace Incidences.Data
         {
             try
             {
-                CDictionary<string, string> conditions;
+
+                IList<piece_class> piece_classes;
                 if (piece != null)
                 {
-                    conditions = sql.WherePieceId(piece, sql.WhereNotDeleted());
+                    piece_classes = _context.PieceClass
+                        .Where(pi => pi.id == piece)
+                        .ToList();
                 }
                 else
                 {
-                    conditions = sql.WhereNotDeleted(
-                        new CDictionary<string, string>()
-                    );
+                    piece_classes = _context.PieceClass
+                        .ToList();
                 }
 
-                return SelectPieces(conditions);
+                IList<Piece> pieces = new List<Piece>();
+                foreach (piece_class piece_class in piece_classes)
+                {
+                    PieceType pity = pieceType.SelectPieceTypeById(piece_class.typeId);
+                    pieces.Add(new(piece_class.id, piece_class.name, pity, piece_class.deleted));
+                }
+
+                return pieces;
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-
-
-        private CDictionary<string, string> GetPieceColumns(int type, string name, bool deleted)
+        public IList<Piece> GetPiecesByIncidenceId(int incidenceId) 
         {
-            CDictionary<string, string> columns = new()
+            IList<int> ipls = _context.IncidencePieceLog
+                .Where(ipl => ipl.incidenceId == incidenceId)
+                .Select(ipl => ipl.id)
+                .ToList();
+
+            IList<piece_class> cleanPieces = _context.PieceClass
+                .Where(pie => ipls.Contains(pie.id))
+                .ToList();
+
+            IList<Piece> pieces = new List<Piece>();
+            foreach (piece_class ipl in cleanPieces)
             {
-                { typeId, null, type.ToString() },
-                { nameC, null, name },
-                { deletedC, null, deleted.ToString() }
-            };
+                pieces.Add(
+                    new Piece() 
+                    { 
+                        Deleted = ipl.deleted,
+                        Id = ipl.id,
+                        Name = ipl.name,
+                        Type = pieceType.SelectPieceTypeById(ipl.typeId)
+                    }
+                );
+            }
 
-            return columns;
-        }
-        private CDictionary<string, string> GetPieceColumns(PieceDto piece)
-        {
-            CDictionary<string, string> tmpColumns = new CDictionary<string, string>();
-            if (piece.typeId != null) tmpColumns.Add(typeId, null, piece.typeId.ToString());
-            if (piece.name != null) tmpColumns.Add(nameC, null, piece.name);
-            if (piece.deleted != null) tmpColumns.Add(deletedC, null, piece.deleted.ToString());
-            return tmpColumns;
+            return pieces;
         }
     }
 }
