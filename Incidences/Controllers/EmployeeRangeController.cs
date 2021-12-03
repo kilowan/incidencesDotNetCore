@@ -1,5 +1,4 @@
 ﻿using Incidences.Business;
-using Incidences.Data;
 using Microsoft.AspNetCore.Mvc;
 using Incidences.Models.Employee;
 using System.Collections.Generic;
@@ -11,11 +10,9 @@ namespace Incidences.Controllers
     public class EmployeeRangeController : ControllerBase
     {
         private readonly IEmployeeRangeBz employeeRange;
-        private readonly ISqlBase sql;
-        public EmployeeRangeController(IEmployeeRangeBz employeeRange, ISqlBase sql)
+        public EmployeeRangeController(IEmployeeRangeBz employeeRange)
         {
             this.employeeRange = employeeRange;
-            this.sql = sql;
         }
 
         [HttpGet]

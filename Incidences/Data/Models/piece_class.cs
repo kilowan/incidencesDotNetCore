@@ -10,7 +10,7 @@ namespace Incidences.Data.Models
     {
         public string name { get; set; }
         public int typeId { get; set; }
-        public bool deleted { get; set; }
+        public byte deleted { get; set; }
 
         /*[ForeignKey(nameof(typeId))]
         [InverseProperty(nameof(id))]

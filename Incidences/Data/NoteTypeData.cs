@@ -17,11 +17,21 @@ namespace Incidences.Data
 
         public NoteType GetNoteTypeByName(string noteTypeName)
         {
+            NoteType note = new NoteType();
             note_type noteType = _context.NoteType
                 .Where(note => note.name == noteTypeName)
                 .FirstOrDefault();
 
-            return new NoteType(noteType.id, noteType.name);
+            if (noteType != null)
+            {
+                note = new()
+                {
+                    Id = noteType.id,
+                    Name = noteType.name
+                };
+            }
+
+            return note;
         }
     }
 }

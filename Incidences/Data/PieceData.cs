@@ -28,7 +28,7 @@ namespace Incidences.Data
                 if (picla != null)
                 {
                     PieceType pity = pieceType.SelectPieceTypeById(picla.typeId);
-                    return new(picla.id, picla.name, pity, picla.deleted);
+                    return new(picla.id, picla.name, pity, Convert.ToBoolean(picla.deleted));
                 }
                 else return new Piece();
             }
@@ -103,7 +103,7 @@ namespace Incidences.Data
                     .FirstOrDefault();
                 if (picla != null)
                 {
-                    picla.deleted = true;
+                    picla.deleted = 1;
                     _context.PieceClass.Update(picla);
                     if (_context.SaveChanges() != 1) throw new Exception("Pieza no eliminada");
                     return true;
@@ -124,7 +124,7 @@ namespace Incidences.Data
                     .FirstOrDefault();
                 if (pi != null)
                 {
-                    if (piece.deleted != null) pi.deleted = (bool)piece.deleted;
+                    if (piece.deleted != null) pi.deleted = (byte)piece.deleted;
                     if (piece.name != null) pi.name = piece.name;
                     if (piece.typeId != null) pi.typeId = (int)piece.typeId;
                     _context.PieceClass.Update(pi);
@@ -138,7 +138,7 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdatePiece(int id, bool deleted)
+        public bool UpdatePiece(int id, byte deleted)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace Incidences.Data
                 foreach (piece_class piece_class in piece_classes)
                 {
                     PieceType pity = pieceType.SelectPieceTypeById(piece_class.typeId);
-                    pieces.Add(new(piece_class.id, piece_class.name, pity, piece_class.deleted));
+                    pieces.Add(new(piece_class.id, piece_class.name, pity, Convert.ToBoolean(piece_class.deleted)));
                 }
 
                 return pieces;
@@ -208,7 +208,7 @@ namespace Incidences.Data
                 pieces.Add(
                     new Piece() 
                     { 
-                        Deleted = ipl.deleted,
+                        Deleted = Convert.ToBoolean(ipl.deleted),
                         Id = ipl.id,
                         Name = ipl.name,
                         Type = pieceType.SelectPieceTypeById(ipl.typeId)

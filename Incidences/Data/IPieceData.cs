@@ -13,7 +13,7 @@ namespace Incidences.Data
         public Piece SelectPieceById(int pieceId);
         public bool DeletePiece(int id);
         public bool UpdatePiece(PieceDto piece, int id);
-        public bool UpdatePiece(int id, bool deleted);
+        public bool UpdatePiece(int id, byte deleted);
         public IList<Piece> GetPieces(int? piece = null);
         public IList<Piece> GetPiecesByIncidenceId(int incidenceId);
     }

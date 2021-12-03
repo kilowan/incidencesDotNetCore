@@ -67,7 +67,7 @@ namespace Incidences.Business
                 throw new Exception(e.Message);
             }
         }
-        public bool UpdatePiece(int id, bool deleted)
+        public bool UpdatePiece(int id, byte deleted)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace Incidences.Business
         {
             try
             {
-                return UpdatePiece(id, true);
+                return UpdatePiece(id, 1);
             }
             catch (Exception e)
             {

@@ -3,25 +3,12 @@ using Incidences.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Incidences.Data
 {
     public class ReportData : IReportData
     {
-
-        //tables
-        private const string rp = "reportedpieces";
-
-        //columns
-        private const string ALL = "*";
-        private const string tr = "Tiempo_resolucion";
-        private const string tiempo_medio = "ROUND(AVG(Tiempo), 0) AS 'tiempo_medio'";
-        private const string cantidad_partes = "count(solverId) AS 'cantidad_partes'";
-        private const string employeeName = "employeeName";
-        private const string solverId = "solverId";
-        private const string ROUND = "ROUND(AVG(Tiempo),0)";
-        private const string DESC = "DESC";
-
         /// <summary>
         /// One mounth in seconds
         /// </summary>
@@ -51,11 +38,11 @@ namespace Incidences.Data
         /// <summary>
         /// SqlBase dependency
         /// </summary>
-        private readonly ISqlBase sql;
+        private readonly IncidenceContext _context;
         #endregion
-        public ReportData(ISqlBase sql)
+        public ReportData(IncidenceContext context)
         {
-            this.sql = sql;
+            _context = context;
         }
 
         /// <summary>
@@ -67,25 +54,28 @@ namespace Incidences.Data
             try
             {
                 IList<ReportedPiece> reportedPieces = new List<ReportedPiece>();
-                bool result = sql.Select(
-                    new Select(
-                        rp,
-                        new List<string> { ALL }
-                    )
-                );
-                if (result)
+                IList<int> states = new List<int> { 3, 4 };
+                IList<int> incidenceIds = _context.Incidence
+                    .Where(inc => states.Contains(inc.state))
+                    .Select(inc => inc.id)
+                    .ToList();
+                if (incidenceIds.Count >0)
                 {
-                    using IDataReader reader = sql.GetReader();
-                    while (reader.Read())
+                    IList<int> pieceIds = _context.IncidencePieceLog
+                        .Where(ipl => incidenceIds.Contains(ipl.incidenceId))
+                        .Select(inc => inc.pieceId)
+                        .ToList();
+                    if (pieceIds.Count > 0)
                     {
-                        reportedPieces.Add(
-                            new ReportedPiece(
-                                (string)reader.GetValue(0),
-                                (int)reader.GetValue(1)
-                            )
-                        );
+                        piece_class[] pieces = _context.PieceClass
+                            .Where(pie => pieceIds.Contains(pie.id))
+                            .ToArray();
+
+                        foreach (piece_class piece in pieces)
+                        {
+                            reportedPieces.Add(new(piece.name, piece.id));
+                        }
                     }
-                    sql.Close();
                 }
 
                 return reportedPieces;
@@ -103,32 +93,45 @@ namespace Incidences.Data
         {
             try
             {
-                IList<Statistics> globalData = new List<Statistics>();
-                bool result = sql.Select(
-                    new Select(
-                        tr,
-                        new List<string> {
-                            tiempo_medio,
-                            employeeName
-                        },
-                        new List<string> { employeeName, solverId },
-                        new Order(solverId)
-                    )
-                );
-                if (result)
-                {
-                    using IDataReader reader = sql.GetReader();
+                int incidences = _context.Incidence
+                    .Where(inc => inc.solverId != null)
+                    .Select(inc => inc.id)
+                    .Count();
 
-                    while (reader.Read())
+                IList <Statistics> globalData = new List<Statistics>();
+                if (incidences > 0)
+                {
+                    IList<int> employeeId = _context.Incidence
+                        .Select(inc => (int)inc.solverId)
+                        .ToList();
+
+                    employee[] employees = _context.Employee
+                        .Where(emp => employeeId.Contains(emp.id))
+                        .ToArray();
+                    foreach (employee emp in employees)
                     {
                         Statistics globalStatistics = new();
-                        globalStatistics.Average = SecondsToTime((int)reader.GetValue(0));
-                        globalStatistics.EmployeeName = (string)reader.GetValue(3);
+                        incidence[] emp_inc = _context.Incidence
+                            .Where(inc => inc.solverId == emp.id)
+                            .ToArray();
+                        double dtime = 0;
+
+                        foreach (incidence inc in emp_inc)
+                        {
+                            dtime += CalculateTime(inc.open_dateTime, (DateTime)inc.close_dateTime);
+                        }
+
+                        int time = (int)Math.Truncate(Math.Round(dtime / emp_inc.Length));
+                        if (time > 0)
+                        {
+                            globalStatistics.Average = SecondsToTime(time);
+                            globalStatistics.EmployeeName = $"{emp.name} {emp.surname1} {emp.surname2}";
+                        }
+
                         globalData.Add(globalStatistics);
                     }
                 }
 
-                sql.Close();
                 return globalData;
 
             }
@@ -146,36 +149,28 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = sql.Select(
-                    new Select(
-                        tr,
-                        new List<string> {
-                            tiempo_medio,
-                            cantidad_partes,
-                            employeeName
-                        },
-                        new CDictionary<string, string> {
-                            { solverId, null, id.ToString() }
-                        },
-                        new List<string> {
-                            employeeName
-                        },
-                        new Order(
-                            ROUND,
-                            DESC
-                        )
-                    )
-                );
+                incidence[] incidences = _context.Incidence
+                    .Where(inc => inc.solverId == id)
+                    .ToArray();
                 Statistics statistics = new();
-                if (result)
+                if (incidences.Length > 0)
                 {
-                    using IDataReader reader = sql.GetReader();
-                    reader.Read();
-                    statistics.Average = SecondsToTime((int)reader.GetValue(0));
-                    statistics.SolvedIncidences = (int)reader.GetValue(1);
+                    employee emp = _context.Employee
+                        .Where(emp => emp.id == id)
+                        .FirstOrDefault();
+                    double dtime = 0;
+                    foreach (incidence inc in incidences)
+                    {
+                        dtime += CalculateTime(inc.open_dateTime, (DateTime)inc.close_dateTime);
+                    }
+                    int time = (int)Math.Truncate(Math.Round(dtime / incidences.Length));
+                    if (time > 0)
+                    {
+                        statistics.Average = SecondsToTime(time);
+                        statistics.SolvedIncidences = incidences.Length;
+                    }
                 }
 
-                sql.Close();
                 return statistics;
             }
             catch (Exception e)
@@ -229,6 +224,10 @@ namespace Incidences.Data
             }
 
             return res;
+        }
+        private static double CalculateTime(DateTime before, DateTime after)
+        {
+            return after.Subtract(DateTime.MinValue).TotalSeconds - before.Subtract(DateTime.MinValue).TotalSeconds;
         }
     }
 }

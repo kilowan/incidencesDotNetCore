@@ -4,6 +4,6 @@
     {
         public string name { get; set; }
         public int? typeId { get; set; }
-        public bool? deleted { get; set; }
+        public byte? deleted { get; set; }
     }
 }
