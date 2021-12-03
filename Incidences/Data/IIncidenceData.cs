@@ -6,9 +6,7 @@ namespace Incidences.Data
 {
     public interface IIncidenceData
     {
-        public int LastIncidence(IList<string> fields);
         public int LastIncidence();
-        public IDictionary<string, int> GetCounters(int state, string column, int userId, IDictionary<string, int> counters);
         public IDictionary<string, int> GetIncidencesCounters(int userId, string type);
         public bool DeleteIncidence(int incidenceId, int userId);
         public int InsertIncidence(int ownerId);

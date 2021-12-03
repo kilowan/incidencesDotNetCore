@@ -3,40 +3,33 @@ using Incidences.Models.Incidence;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Incidences.Data
 {
     public class NoteData : INoteData
     {
-        #region constants
-        //tables
-        private const string incidence_notes = "incidence_notes";
-        private const string Notes = "Notes";
-
-        //columns
-        private const string noteStr = "noteStr";
-        private const string date = "date";
-        private const string employeeIdC = "employeeId";
-        private const string incidenceIdC = "incidenceId";
-        private const string noteTypeIdC = "noteTypeId";
-
-        #endregion
-
-        private readonly ISqlBase sql;
-        public NoteData(ISqlBase sql)
+        private readonly IncidenceContext _context;
+        private readonly INoteTypeData noteTypeData;
+        public NoteData(IncidenceContext context, INoteTypeData noteTypeData)
         {
-            this.sql = sql;
+            _context = context;
+            this.noteTypeData = noteTypeData;
         }
 
         public Note SelectEmployeeNoteByIncidenceId(int incidenceId)
         {
             try
             {
-                return GetNotes(
-                    sql.WhereNoteType("Employee", 
-                        sql.WhereIncidenceId(incidenceId)
-                    )
-                )[0];
+                NoteType noteType = noteTypeData.GetNoteTypeByName("Employee");
+                Notes note = _context.Notes
+                    .Where(note => note.incidenceId == incidenceId && note.noteTypeId == noteType.Id)
+                    .FirstOrDefault();
+                if (note != null)
+                {
+                    return new(note.noteStr, noteType, note.date);
+                }
+                else return new Note();
             }
             catch (Exception e)
             {
@@ -47,12 +40,18 @@ namespace Incidences.Data
         {
             try
             {
-                return GetNotes(
-                    sql.WhereNoteType(
-                        "Technician", 
-                        sql.WhereIncidenceId(incidenceId)
-                    )
-                );
+                NoteType noteType = noteTypeData.GetNoteTypeByName("Technician");
+                IList<Notes> notes = _context.Notes
+                    .Where(note => note.incidenceId == incidenceId && note.noteTypeId == noteType.Id)
+                    .ToList();
+
+                IList<Note> result = new List<Note>();
+                foreach (Notes note in notes)
+                {
+                    result.Add(new(note.noteStr, noteType, note.date));
+                }
+
+                return result;
             }
             catch (Exception e)
             {
@@ -63,65 +62,34 @@ namespace Incidences.Data
         {
             try
             {
-                bool result = sql.Update(
-                    Notes,
-                    new CDictionary<string, string> { { noteStr, null, note } },
-                    new CDictionary<string, string>{
-                        { incidenceIdC, null, incidenceId.ToString() },
-                        { employeeIdC, null, employeeId.ToString() }
-                    }
-                );
+                Notes noteData = _context.Notes
+                    .Where(note => note.incidenceId == incidenceId && note.employeeId == employeeId)
+                    .FirstOrDefault();
+                noteData.noteStr = note;
+                _context.Notes.Update(noteData);
+                if (_context.SaveChanges() != 1) throw new Exception("Nota no actualizada");
 
-                sql.Close();
-                return result;
+                return true;
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        private IList<Note> GetNotes(CDictionary<string, string> conditions)
-        {
-            bool result = sql.Select(
-                new Select(
-                    incidence_notes,
-                    new List<string> {
-                            noteStr,
-                            date
-                    },
-                    conditions
-                )
-            );
-            if (result)
-            {
-                IList<Note> notes = new List<Note>();
-                using IDataReader reader = sql.GetReader();
-                while (reader.Read())
-                {
-                    notes.Add(new Note((string)reader.GetValue(1), (DateTime)reader.GetValue(2)));
-                }
-                sql.Close();
-
-                return notes;
-            }
-            else throw new Exception("Ningún registro");
-        }
         public bool InsertNote(string note, int noteTypeId, int? ownerId, int? incidenceId)
         {
             try
             {
-                bool result = sql.Insert(Notes,
-                    new CDictionary<string, string>
-                    {
-                        { employeeIdC, null, ownerId.ToString() },
-                        { incidenceIdC, null, incidenceId.ToString() },
-                        { noteTypeIdC, null, $"{ noteTypeId }" },
-                        { noteStr, null, $"'{ note }'" }
-                    }
-                );
+                _context.Notes.Add(new Notes()
+                {
+                    noteStr = note,
+                    noteTypeId = noteTypeId,
+                    employeeId = (int)ownerId,
+                    incidenceId = (int)incidenceId
+                });
+                if (_context.SaveChanges() != 1) throw new Exception("Nota no insertada");
 
-                sql.Close();
-                return result;
+                return true;
             }
             catch (Exception e)
             {

@@ -51,7 +51,10 @@
                 deleted = value;
             }
         }
+        public Piece()
+        {
 
+        }
         public Piece(string name)
         {
             this.name = name;

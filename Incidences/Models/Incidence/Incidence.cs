@@ -139,6 +139,10 @@ namespace Incidences.Models.Incidence
             }
         }
 
+        public Incidence()
+        {
+
+        }
         public Incidence(int id, string owner, int ownerId, DateTime initDateTime, string issueDesc, int state, string solver, int? solverId, DateTime? FinishDateTime)
         {
             this.id = id;
@@ -173,6 +177,20 @@ namespace Incidences.Models.Incidence
             this.state = state;
             this.owner = owner;
             this.ownerId = ownerId;
+            this.issueDesc = issueDesc;
+            this.initDateTime = initDateTime;
+            this.pieces = pieces;
+            this.notes = notes;
+            this.finishDateTime = finishDateTime;
+        }
+        public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes, string solver, int? solverId, DateTime finishDateTime)
+        {
+            this.id = id;
+            this.state = state;
+            this.owner = owner;
+            this.ownerId = ownerId;
+            this.solver = solver;
+            this.solverId = solverId;
             this.issueDesc = issueDesc;
             this.initDateTime = initDateTime;
             this.pieces = pieces;

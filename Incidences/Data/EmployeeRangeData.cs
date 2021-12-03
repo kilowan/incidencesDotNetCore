@@ -3,49 +3,34 @@ using Incidences.Models.Employee;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Incidences.Data
 {
     public class EmployeeRangeData : IEmployeeRangeData
     {
-        private const string employee_range = "employee_range";
-        private const string ALL = "*";
+        private readonly IncidenceContext _context;
 
-        private readonly ISqlBase sql;
-
-        public EmployeeRangeData(ISqlBase sql)
+        public EmployeeRangeData(IncidenceContext context)
         {
-            this.sql = sql;
+            _context = context;
         }
 
-        public IList<TypeRange> SelectRangeList(CDictionary<string, string> conditions = null)
+        public IList<TypeRange> SelectRangeList()
         {
             try
             {
-                bool result = sql.Select(
-                    new Select(
-                        employee_range, 
-                        new List<string> { ALL }, 
-                        conditions
-                    )
-                );
-                if (result)
+                IList<employee_range> emras = _context.EmployeeRange.ToList();
+                IList<TypeRange> tyra = new List<TypeRange>();
+                if (emras.Count > 0 )
                 {
-                    IList<TypeRange> ranges = new List<TypeRange>();
-                    using IDataReader reader = sql.GetReader();
-                    while (reader.Read())
+                    foreach (employee_range employee_range in emras)
                     {
-                        ranges.Add(
-                            new TypeRange(
-                                (int)reader.GetValue(0),
-                                (string)reader.GetValue(1)
-                            )
-                        );
+                        tyra.Add(new TypeRange(employee_range.id, employee_range.name));
                     }
-                    sql.Close();
-                    return ranges;
-                }
-                else throw new Exception("Ningún registro");
+                } else throw new Exception("Ningún registro");
+
+                return tyra;
             }
             catch (Exception e)
             {
@@ -56,8 +41,10 @@ namespace Incidences.Data
         {
             try
             {
-
-                return SelectRangeList(sql.WhereId(id))[0];
+                employee_range emra = _context.EmployeeRange
+                    .Where(er => er.id == id)
+                    .FirstOrDefault();
+                return new TypeRange(id, emra.name);
             }
             catch (Exception e)
             {
@@ -66,7 +53,10 @@ namespace Incidences.Data
         }
         public int GetEmployeeRangeIdByName(string typeName)
         {
-            return (int)SelectRangeList(sql.WhereEmployeeTypeName(typeName))[0].Id;
+            return _context.EmployeeRange
+                .Where(er => er.name == typeName)
+                .Select(er => er.id)
+                .FirstOrDefault();
         }
     }
 }

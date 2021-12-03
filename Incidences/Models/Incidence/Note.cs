@@ -42,6 +42,10 @@ namespace Incidences.Models.Incidence
             }
         }
 
+        public Note()
+        {
+
+        }
         public Note(string noteStr)
         {
             this.noteStr = noteStr;

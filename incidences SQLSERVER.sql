@@ -163,7 +163,7 @@ INSERT INTO note_type (name) VALUES
 	('12345678C', 'Samuel', 'Garcia', 'Sanchez', 1),
 	('12345678B', 'jessie', 'deep', NULL, 1);
 
-INSERT INTO credentials (username, password, employee) VALUES 
+INSERT INTO credentials (username, password, employeeId) VALUES 
 	('12345678Z', HASHBYTES('MD5', '1234'), 1),
 	('12345679W', HASHBYTES('MD5', '1234'), 2),
 	('11111111Z', HASHBYTES('MD5', '1234'), 3),

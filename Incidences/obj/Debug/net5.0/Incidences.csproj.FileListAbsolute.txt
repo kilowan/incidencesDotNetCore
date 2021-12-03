@@ -282,3 +282,4 @@ G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\Inc
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\ref\Incidences.dll
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\Incidences.pdb
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\Incidences.genruntimeconfig.cache
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll
