@@ -1,5 +1,6 @@
 ﻿using Incidences.Data.Models;
 using Incidences.Models.Incidence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,12 +11,10 @@ namespace Incidences.Data
     public class PieceData : IPieceData
     {
         private readonly IncidenceContext _context;
-        private readonly IPieceTypeData pieceType;
 
-        public PieceData(IncidenceContext context, IPieceTypeData pieceType)
+        public PieceData(IncidenceContext context)
         {
             _context = context;
-            this.pieceType = pieceType;
         }
 
         public Piece SelectPieceById(int pieceId)
@@ -23,12 +22,22 @@ namespace Incidences.Data
             try
             {
                 piece_class picla = _context.PieceClass
+                    .Include(a => a.PieceType)
                     .Where(pi => pi.id == pieceId)
                     .FirstOrDefault();
                 if (picla != null)
                 {
-                    PieceType pity = pieceType.SelectPieceTypeById(picla.typeId);
-                    return new(picla.id, picla.name, pity, Convert.ToBoolean(picla.deleted));
+                    return new(
+                        picla.id, 
+                        picla.name, 
+                        new PieceType() 
+                        { 
+                            Id = picla.PieceType.id, 
+                            Name = picla.PieceType.name, 
+                            Description = picla.PieceType.description 
+                        }, 
+                        picla.deleted
+                    );
                 }
                 else return new Piece();
             }
@@ -168,6 +177,7 @@ namespace Incidences.Data
                 if (piece != null)
                 {
                     piece_classes = _context.PieceClass
+                        .Include(pi => pi.PieceType)
                         .Where(pi => pi.id == piece)
                         .ToList();
                 }
@@ -180,8 +190,19 @@ namespace Incidences.Data
                 IList<Piece> pieces = new List<Piece>();
                 foreach (piece_class piece_class in piece_classes)
                 {
-                    PieceType pity = pieceType.SelectPieceTypeById(piece_class.typeId);
-                    pieces.Add(new(piece_class.id, piece_class.name, pity, Convert.ToBoolean(piece_class.deleted)));
+                    pieces.Add(
+                        new(
+                            piece_class.id, 
+                            piece_class.name, 
+                            new PieceType() 
+                            { 
+                                Id = piece_class.PieceType.id, 
+                                Name = piece_class.PieceType.name, 
+                                Description = piece_class.PieceType.description 
+                            }, 
+                            piece_class.deleted
+                        )
+                    );
                 }
 
                 return pieces;
@@ -199,6 +220,7 @@ namespace Incidences.Data
                 .ToList();
 
             IList<piece_class> cleanPieces = _context.PieceClass
+                .Include(ipl => ipl.PieceType)
                 .Where(pie => ipls.Contains(pie.id))
                 .ToList();
 
@@ -208,10 +230,15 @@ namespace Incidences.Data
                 pieces.Add(
                     new Piece() 
                     { 
-                        Deleted = Convert.ToBoolean(ipl.deleted),
+                        Deleted = ipl.deleted,
                         Id = ipl.id,
                         Name = ipl.name,
-                        Type = pieceType.SelectPieceTypeById(ipl.typeId)
+                        Type = new PieceType() 
+                        { 
+                            Id = ipl.PieceType.id,
+                            Name = ipl.PieceType.name, 
+                            Description = ipl.PieceType.description 
+                        }
                     }
                 );
             }

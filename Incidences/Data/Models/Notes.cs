@@ -14,16 +14,13 @@ namespace Incidences.Data.Models
         public string noteStr { get; set; }
         public DateTime date { get; set; }
 
-        /*[ForeignKey(nameof(incidenceId))]
-        [InverseProperty(nameof(id))]
+        [ForeignKey(nameof(incidenceId))]
         public virtual incidence Incidence { get; set; }
 
         [ForeignKey(nameof(employeeId))]
-        [InverseProperty(nameof(id))]
         public virtual employee Employee { get; set; }
 
         [ForeignKey(nameof(noteTypeId))]
-        [InverseProperty(nameof(id))]
-        public virtual note_type NoteType { get; set; }*/
+        public virtual note_type NoteType { get; set; }
     }
 }

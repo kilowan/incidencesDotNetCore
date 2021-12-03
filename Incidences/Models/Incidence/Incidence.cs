@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Incidences.Data.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Incidences.Models.Incidence
@@ -143,6 +144,7 @@ namespace Incidences.Models.Incidence
         {
 
         }
+
         public Incidence(
             int id, 
             string owner, 
@@ -187,6 +189,45 @@ namespace Incidences.Models.Incidence
             this.issueDesc = issueDesc;
             this.initDateTime = initDateTime;
             this.pieces = pieces;
+        }
+        public Incidence(
+            int id,
+            int state,
+            string owner,
+            int ownerId,
+            DateTime initDateTime,
+            string issueDesc,
+            IList<piece_class> pieces
+            )
+        {
+            this.id = id;
+            this.state = state;
+            this.owner = owner;
+            this.ownerId = ownerId;
+            this.issueDesc = issueDesc;
+            this.initDateTime = initDateTime;
+            this.pieces = new List<Piece>();
+            foreach (piece_class piece in pieces)
+            {
+                this.pieces.Add(new Piece(piece));
+            }
+        }
+        public Incidence(incidence inc, string issueDesc, IList<Note> notes)
+        {
+            this.id = inc.id;
+            this.state = inc.state;
+            this.owner = $"{inc.owner.name} {inc.owner.surname1} {inc.owner.surname2}";
+            this.ownerId = inc.ownerId;
+            this.solverId = inc.solverId;
+            this.solver = $"{inc.solver.name} {inc.solver.surname1} {inc.solver.surname2}";
+            this.issueDesc = issueDesc;
+            this.initDateTime = inc.open_dateTime;
+            this.pieces = new List<Piece>();
+            foreach (piece_class piece in inc.pieces)
+            {
+                this.pieces.Add(new Piece(piece));
+            }
+            this.notes = notes;
         }
         public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes, DateTime? finishDateTime)
         {

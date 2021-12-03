@@ -8,8 +8,7 @@ namespace Incidences.Data.Models
         public string password { get; set; }
         public int employeeId { get; set; }
 
-        /*[ForeignKey(nameof(employeeId))]
-        [InverseProperty(nameof(id))]
-        public virtual employee Employee { get; set; }*/
+        [ForeignKey(nameof(employeeId))]
+        public virtual employee Employee { get; set; }
     }
 }

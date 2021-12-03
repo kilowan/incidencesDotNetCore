@@ -11,8 +11,10 @@ namespace Incidences.Data.Models
         public int typeId { get; set; }
         public int state { get; set; }
 
-        //[ForeignKey(nameof(typeId))]
-        //[InverseProperty(nameof(id))]
-        //public virtual employee_range EmployeeRange { get; set; }
+        [ForeignKey(nameof(typeId))]
+        public virtual employee_range EmployeeRange { get; set; }
+
+        [ForeignKey(nameof(typeId))]
+        public virtual Credentials Credentials { get; set; }
     }
 }

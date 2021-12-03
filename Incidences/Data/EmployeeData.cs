@@ -1,5 +1,6 @@
 ﻿using Incidences.Data.Models;
 using Incidences.Models.Employee;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,17 +24,16 @@ namespace Incidences.Data
             try
             {
                 employee emp = _context.Employee
+                    .Include(em => em.EmployeeRange)
                     .Where(em => em.dni == dni)
                     .FirstOrDefault();
-                employee_range emra = _context.EmployeeRange
-                    .Where(er => er.id == emp.typeId)
-                    .FirstOrDefault();
+
                 return new Employee(
                     emp.dni,
                     emp.name,
                     emp.surname1,
                     emp.surname2,
-                    new TypeRange(emra.id, emra.name),
+                    new TypeRange(emp.EmployeeRange.id, emp.EmployeeRange.name),
                     emp.id, emp.state
                 );
             }
@@ -47,17 +47,15 @@ namespace Incidences.Data
             try
             {
                 employee emp = _context.Employee
+                    .Include(em => em.EmployeeRange)
                     .Where(em => em.id == id)
-                    .FirstOrDefault();
-                employee_range emra = _context.EmployeeRange
-                    .Where(er => er.id == emp.typeId)
                     .FirstOrDefault();
                 return new Employee(
                     emp.dni, 
                     emp.name, 
                     emp.surname1, 
-                    emp.surname2, 
-                    new TypeRange(emra.id, emra.name), 
+                    emp.surname2,
+                    new TypeRange(emp.EmployeeRange.id, emp.EmployeeRange.name),
                     emp.id, emp.state
                 );
             }
@@ -71,21 +69,19 @@ namespace Incidences.Data
             try
             {
                 IList<employee> emps = _context.Employee
+                    .Include(em => em.EmployeeRange)
                     .Where(em => em.state != 1)
                     .ToList();
                 IList<Employee> result = new List<Employee>(); 
                 foreach (employee employee in emps)
                 {
-                    employee_range emra = _context.EmployeeRange
-                        .Where(er => er.id == employee.typeId)
-                        .FirstOrDefault();
                     result.Add(
                         new Employee(
                             employee.dni, 
                             employee.name, 
                             employee.surname1, 
-                            employee.surname2, 
-                            new TypeRange(emra.id, emra.name), 
+                            employee.surname2,
+                            new TypeRange(employee.EmployeeRange.id, employee.EmployeeRange.name),
                             employee.id, employee.state)
                         );
                 }
@@ -106,9 +102,6 @@ namespace Incidences.Data
                     .FirstOrDefault();
                 if (emp != null)
                 {
-                    employee_range emra = _context.EmployeeRange
-                        .Where(er => er.id == emp.typeId)
-                        .FirstOrDefault();
                     if(employee.name != null) emp.name = employee.name;
                     if (employee.surname1 != null) emp.surname1 = employee.surname1;
                     if (employee.surname2 != null) emp.surname2 = employee.surname2;

@@ -1,5 +1,6 @@
 ﻿using Incidences.Data.Models;
 using Incidences.Models.Incidence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,24 +11,29 @@ namespace Incidences.Data
     public class NoteData : INoteData
     {
         private readonly IncidenceContext _context;
-        private readonly INoteTypeData noteTypeData;
-        public NoteData(IncidenceContext context, INoteTypeData noteTypeData)
+        public NoteData(IncidenceContext context)
         {
             _context = context;
-            this.noteTypeData = noteTypeData;
         }
 
         public Note SelectEmployeeNoteByIncidenceId(int incidenceId)
         {
             try
             {
-                NoteType noteType = noteTypeData.GetNoteTypeByName("ownerNote");
                 Notes note = _context.Notes
-                    .Where(note => note.incidenceId == incidenceId && note.noteTypeId == noteType.Id)
+                    .Include(note => note.NoteType)
+                    .Where(note => note.incidenceId == incidenceId)
                     .FirstOrDefault();
                 if (note != null)
                 {
-                    return new(note.noteStr, noteType, note.date);
+                    return new(
+                        note.noteStr, 
+                        new NoteType() 
+                        { 
+                            Id = note.NoteType.id,
+                            Name = note.NoteType.name
+                        }, 
+                        note.date);
                 }
                 else return new Note();
             }
@@ -40,15 +46,25 @@ namespace Incidences.Data
         {
             try
             {
-                NoteType noteType = noteTypeData.GetNoteTypeByName("solverNote");
                 IList<Notes> notes = _context.Notes
-                    .Where(note => note.incidenceId == incidenceId && note.noteTypeId == noteType.Id)
+                    .Include(note => note.NoteType)
+                    .Where(note => note.incidenceId == incidenceId)
                     .ToList();
 
                 IList<Note> result = new List<Note>();
                 foreach (Notes note in notes)
                 {
-                    result.Add(new(note.noteStr, noteType, note.date));
+                    result.Add(
+                        new(
+                            note.noteStr,
+                            new NoteType()
+                            {
+                                Id = note.NoteType.id,
+                                Name = note.NoteType.name
+                            },
+                            note.date
+                        )
+                    );
                 }
 
                 return result;

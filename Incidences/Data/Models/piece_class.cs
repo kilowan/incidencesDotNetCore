@@ -12,8 +12,7 @@ namespace Incidences.Data.Models
         public int typeId { get; set; }
         public byte deleted { get; set; }
 
-        /*[ForeignKey(nameof(typeId))]
-        [InverseProperty(nameof(id))]
-        public virtual note_type NoteType { get; set; }*/
+        [ForeignKey(nameof(typeId))]
+        public virtual piece_type PieceType { get; set; }
     }
 }

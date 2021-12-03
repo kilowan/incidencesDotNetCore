@@ -1,11 +1,13 @@
-﻿namespace Incidences.Models.Incidence
+﻿using Incidences.Data.Models;
+
+namespace Incidences.Models.Incidence
 {
     public class Piece
     {
         private int? id;
         private string name;
         private PieceType type;
-        private bool deleted;
+        private byte deleted;
 
         public int? Id
         {
@@ -40,7 +42,7 @@
                 type = value;
             }
         }
-        public bool Deleted
+        public byte Deleted
         {
             get
             {
@@ -65,12 +67,19 @@
             this.name = name;
             this.type = type;
         }
-        public Piece(int id, string name, PieceType type, bool deleted)
+        public Piece(int id, string name, PieceType type, byte deleted)
         {
             this.id = id;
             this.name = name;
             this.type = type;
             this.deleted = deleted;
+        }
+        public Piece(piece_class pc)
+        {
+            this.id = pc.id;
+            this.name = pc.name;
+            this.type = new PieceType(pc.PieceType);
+            this.deleted = pc.deleted;
         }
     }
 }

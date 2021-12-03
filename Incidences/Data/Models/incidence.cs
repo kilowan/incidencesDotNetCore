@@ -14,12 +14,16 @@ namespace Incidences.Data.Models
         public DateTime? close_dateTime { get; set; }
         public int state { get; set; }
 
-        /*[ForeignKey(nameof(ownerId))]
-        [InverseProperty(nameof(id))]
+        [ForeignKey(nameof(ownerId))]
         public virtual employee owner { get; set; }
 
         [ForeignKey(nameof(solverId))]
-        [InverseProperty(nameof(id))]
-        public virtual employee solver { get; set; }*/
+        public virtual employee solver { get; set; }
+
+        [ForeignKey(nameof(id))]
+        public virtual IList<Notes> notes { get; set; }
+
+        [ForeignKey(nameof(id))]
+        public virtual IList<piece_class> pieces { get; set; }
     }
 }

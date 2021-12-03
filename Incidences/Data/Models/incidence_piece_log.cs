@@ -12,12 +12,10 @@ namespace Incidences.Data.Models
         public int incidenceId { get; set; }
         public int status { get; set; }
 
-        /*[ForeignKey(nameof(incidenceId))]
-        [InverseProperty(nameof(id))]
+        [ForeignKey(nameof(incidenceId))]
         public virtual incidence Incidence { get; set; }
 
         [ForeignKey(nameof(pieceId))]
-        [InverseProperty(nameof(id))]
-        public virtual piece_class Piece { get; set; }*/
+        public virtual piece_class Piece { get; set; }
     }
 }

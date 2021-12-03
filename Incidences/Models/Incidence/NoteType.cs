@@ -1,4 +1,6 @@
-﻿namespace Incidences.Models.Incidence
+﻿using Incidences.Data.Models;
+
+namespace Incidences.Models.Incidence
 {
     public class NoteType
     {
@@ -32,6 +34,11 @@
         {
             this.id = id;
             this.name = name;
+        }
+        public NoteType(note_type nt)
+        {
+            this.id = nt.id;
+            this.name = nt.name;
         }
         public NoteType()
         {
