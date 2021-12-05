@@ -1,6 +1,7 @@
 ﻿using Incidences.Data.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Incidences.Models.Incidence
 {
@@ -190,6 +191,56 @@ namespace Incidences.Models.Incidence
             this.initDateTime = initDateTime;
             this.pieces = pieces;
         }
+        public Incidence(incidence inc)
+        {
+            if (inc.state != 1)
+            {
+                this.id = inc.id;
+                this.state = inc.state;
+                if (inc.owner.surname2 != null) this.owner = $"{inc.owner.name} {inc.owner.surname1} {inc.owner.surname2}";
+                else this.owner = $"{inc.owner.name} {inc.owner.surname1}";
+                this.ownerId = inc.ownerId;
+                this.solverId = inc.solverId;
+                if (inc.solver.surname2 != null) this.solver = $"{inc.solver.name} {inc.solver.surname1} {inc.solver.surname2}";
+                else this.solver = $"{inc.solver.name} {inc.solver.surname1}";
+                this.issueDesc = inc.notes
+                    .Where(inc => inc.noteTypeId == 1)
+                    .Select(inc => inc.noteStr)
+                    .FirstOrDefault();
+                this.initDateTime = inc.open_dateTime;
+                this.pieces = new List<Piece>();
+                foreach (incidence_piece_log ipl in inc.pieces)
+                {
+                    this.pieces.Add(new Piece(ipl.Piece));
+                }
+                Notes[] notes = inc.notes
+                    .Where(inc => inc.noteTypeId == 2)
+                    .ToArray();
+                this.notes = new List<Note>();
+                foreach (Notes note in notes)
+                {
+                    this.notes.Add(new Note(note));
+                }
+            }
+            else
+            {
+                this.id = inc.id;
+                this.state = inc.state;
+                if(inc.owner.surname2 != null) this.owner = $"{inc.owner.name} {inc.owner.surname1} {inc.owner.surname2}";
+                else this.owner = $"{inc.owner.name} {inc.owner.surname1}";
+                this.ownerId = inc.ownerId;
+                this.issueDesc = inc.notes
+                    .Where(inc => inc.noteTypeId == 1)
+                    .Select(inc => inc.noteStr)
+                    .FirstOrDefault();
+                this.initDateTime = inc.open_dateTime;
+                this.pieces = new List<Piece>();
+                foreach (incidence_piece_log ipl in inc.pieces)
+                {
+                    this.pieces.Add(new Piece(ipl.Piece));
+                }
+            }
+        }
         public Incidence(
             int id,
             int state,
@@ -223,9 +274,9 @@ namespace Incidences.Models.Incidence
             this.issueDesc = issueDesc;
             this.initDateTime = inc.open_dateTime;
             this.pieces = new List<Piece>();
-            foreach (piece_class piece in inc.pieces)
+            foreach (incidence_piece_log ipl in inc.pieces)
             {
-                this.pieces.Add(new Piece(piece));
+                this.pieces.Add(new Piece(ipl.Piece));
             }
             this.notes = notes;
         }
@@ -241,7 +292,7 @@ namespace Incidences.Models.Incidence
             this.notes = notes;
             this.finishDateTime = finishDateTime;
         }
-        public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes, string solver, int? solverId, DateTime finishDateTime)
+        public Incidence(int id, int state, string owner, int ownerId, DateTime initDateTime, string issueDesc, IList<Piece> pieces, IList<Note> notes, string solver, int? solverId, DateTime? finishDateTime)
         {
             this.id = id;
             this.state = state;

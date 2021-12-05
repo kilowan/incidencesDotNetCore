@@ -20,7 +20,7 @@ namespace Incidences.Data
         {
             try
             {
-                Notes note = _context.Notes
+                Notes note = _context.Notess
                     .Include(note => note.NoteType)
                     .Where(note => note.incidenceId == incidenceId)
                     .FirstOrDefault();
@@ -46,7 +46,7 @@ namespace Incidences.Data
         {
             try
             {
-                IList<Notes> notes = _context.Notes
+                IList<Notes> notes = _context.Notess
                     .Include(note => note.NoteType)
                     .Where(note => note.incidenceId == incidenceId)
                     .ToList();
@@ -78,11 +78,11 @@ namespace Incidences.Data
         {
             try
             {
-                Notes noteData = _context.Notes
+                Notes noteData = _context.Notess
                     .Where(note => note.incidenceId == incidenceId && note.employeeId == employeeId)
                     .FirstOrDefault();
                 noteData.noteStr = note;
-                _context.Notes.Update(noteData);
+                _context.Notess.Update(noteData);
                 if (_context.SaveChanges() != 1) throw new Exception("Nota no actualizada");
 
                 return true;
@@ -96,7 +96,7 @@ namespace Incidences.Data
         {
             try
             {
-                _context.Notes.Add(new Notes()
+                _context.Notess.Add(new Notes()
                 {
                     noteStr = note,
                     noteTypeId = noteTypeId,

@@ -19,7 +19,7 @@ namespace Incidences.Data
         {
             try
             {
-                Credentials old = _context.Credentials
+                Credentials old = _context.Credentialss
                     .Where(emp => emp.id == id)
                     .FirstOrDefault();
 
@@ -39,7 +39,7 @@ namespace Incidences.Data
         {
             try
             {
-                Credentials cred = _context.Credentials
+                Credentials cred = _context.Credentialss
                     .Where(a => a.username == username)
                     .FirstOrDefault();
                 return new()
@@ -59,13 +59,13 @@ namespace Incidences.Data
             try
             {
                 bool result = false;
-                Credentials old = _context.Credentials
+                Credentials old = _context.Credentialss
                     .Where(emp => emp.employeeId == employeeId)
                     .FirstOrDefault();
                 if (old != null)
                 {
                     old.password = password;
-                    _context.Credentials.Update(old);
+                    _context.Credentialss.Update(old);
                     _context.SaveChanges();
                     result = true;
                 }
@@ -81,7 +81,7 @@ namespace Incidences.Data
         {
             try
             {
-                Credentials old = _context.Credentials
+                Credentials old = _context.Credentialss
                     .Where(emp => emp.username == username)
                     .FirstOrDefault();
                 if (old != null) return true;
@@ -96,7 +96,7 @@ namespace Incidences.Data
         {
             try
             {
-                Credentials old = _context.Credentials
+                Credentials old = _context.Credentialss
                     .Where(emp => emp.username == username && emp.password == password)
                     .FirstOrDefault();
                 if (old != null) return true;
@@ -112,14 +112,14 @@ namespace Incidences.Data
             try
             {
                 bool result = false;
-                Credentials old = _context.Credentials
+                Credentials old = _context.Credentialss
                     .Where(emp => emp.employeeId == employeeId)
                     .FirstOrDefault();
                 if (old != null)
                 {
                     old.password = credentials.password;
                     old.username = credentials.username;
-                    _context.Credentials.Update(old);
+                    _context.Credentialss.Update(old);
                     _context.SaveChanges();
                     result = true;
                 }
@@ -136,13 +136,13 @@ namespace Incidences.Data
             try
             {
                 bool result = false;
-                Credentials old = _context.Credentials
+                Credentials old = _context.Credentialss
                     .Where(emp => emp.employeeId == employeeId)
                     .FirstOrDefault();
                 if (old != null)
                 {
                     old.username = username;
-                    _context.Credentials.Update(old);
+                    _context.Credentialss.Update(old);
                     _context.SaveChanges();
                     result = true;
                 }
@@ -162,7 +162,7 @@ namespace Incidences.Data
                 password = credentials.password
             };
 
-            _context.Credentials.Add(cred);
+            _context.Credentialss.Add(cred);
             if(_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
             return true;
         }

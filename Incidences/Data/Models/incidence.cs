@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Incidences.Data.Models
 {
@@ -14,16 +12,18 @@ namespace Incidences.Data.Models
         public DateTime? close_dateTime { get; set; }
         public int state { get; set; }
 
-        [ForeignKey(nameof(ownerId))]
+        [ForeignKey(nameof(incidence.ownerId))]
         public virtual employee owner { get; set; }
 
-        [ForeignKey(nameof(solverId))]
+        [ForeignKey(nameof(incidence.solverId))]
         public virtual employee solver { get; set; }
 
-        [ForeignKey(nameof(id))]
+        [InverseProperty("Incidence")]
         public virtual IList<Notes> notes { get; set; }
 
-        [ForeignKey(nameof(id))]
-        public virtual IList<piece_class> pieces { get; set; }
+        public virtual IList<incidence_piece_log> pieces { get; set; }
+
+        [ForeignKey(nameof(incidence.state))]
+        public virtual state State { get; set; }
     }
 }

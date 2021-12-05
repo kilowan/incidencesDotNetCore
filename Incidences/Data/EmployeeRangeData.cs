@@ -20,7 +20,7 @@ namespace Incidences.Data
         {
             try
             {
-                IList<employee_range> emras = _context.EmployeeRange.ToList();
+                IList<employee_range> emras = _context.EmployeeRanges.ToList();
                 IList<TypeRange> tyra = new List<TypeRange>();
                 if (emras.Count > 0 )
                 {
@@ -41,7 +41,7 @@ namespace Incidences.Data
         {
             try
             {
-                employee_range emra = _context.EmployeeRange
+                employee_range emra = _context.EmployeeRanges
                     .Where(er => er.id == id)
                     .FirstOrDefault();
                 return new TypeRange(id, emra.name);
@@ -53,7 +53,7 @@ namespace Incidences.Data
         }
         public int GetEmployeeRangeIdByName(string typeName)
         {
-            return _context.EmployeeRange
+            return _context.EmployeeRanges
                 .Where(er => er.name == typeName)
                 .Select(er => er.id)
                 .FirstOrDefault();

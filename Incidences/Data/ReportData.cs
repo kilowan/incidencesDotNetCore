@@ -55,19 +55,19 @@ namespace Incidences.Data
             {
                 IList<ReportedPiece> reportedPieces = new List<ReportedPiece>();
                 IList<int> states = new List<int> { 3, 4 };
-                IList<int> incidenceIds = _context.Incidence
+                IList<int> incidenceIds = _context.Incidences
                     .Where(inc => states.Contains(inc.state))
                     .Select(inc => inc.id)
                     .ToList();
                 if (incidenceIds.Count >0)
                 {
-                    IList<int> pieceIds = _context.IncidencePieceLog
+                    IList<int> pieceIds = _context.IncidencePieceLogs
                         .Where(ipl => incidenceIds.Contains(ipl.incidenceId))
                         .Select(inc => inc.pieceId)
                         .ToList();
                     if (pieceIds.Count > 0)
                     {
-                        piece_class[] pieces = _context.PieceClass
+                        piece_class[] pieces = _context.PieceClasss
                             .Where(pie => pieceIds.Contains(pie.id))
                             .ToArray();
 
@@ -93,7 +93,7 @@ namespace Incidences.Data
         {
             try
             {
-                int incidences = _context.Incidence
+                int incidences = _context.Incidences
                     .Where(inc => inc.solverId != null)
                     .Select(inc => inc.id)
                     .Count();
@@ -101,17 +101,17 @@ namespace Incidences.Data
                 IList <Statistics> globalData = new List<Statistics>();
                 if (incidences > 0)
                 {
-                    IList<int> employeeId = _context.Incidence
+                    IList<int> employeeId = _context.Incidences
                         .Select(inc => (int)inc.solverId)
                         .ToList();
 
-                    employee[] employees = _context.Employee
+                    employee[] employees = _context.Employees
                         .Where(emp => employeeId.Contains(emp.id))
                         .ToArray();
                     foreach (employee emp in employees)
                     {
                         Statistics globalStatistics = new();
-                        incidence[] emp_inc = _context.Incidence
+                        incidence[] emp_inc = _context.Incidences
                             .Where(inc => inc.solverId == emp.id)
                             .ToArray();
                         double dtime = 0;
@@ -149,13 +149,13 @@ namespace Incidences.Data
         {
             try
             {
-                incidence[] incidences = _context.Incidence
+                incidence[] incidences = _context.Incidences
                     .Where(inc => inc.solverId == id)
                     .ToArray();
                 Statistics statistics = new();
                 if (incidences.Length > 0)
                 {
-                    employee emp = _context.Employee
+                    employee emp = _context.Employees
                         .Where(emp => emp.id == id)
                         .FirstOrDefault();
                     double dtime = 0;

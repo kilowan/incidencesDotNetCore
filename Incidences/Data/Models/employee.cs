@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Incidences.Data.Models
 {
@@ -11,10 +12,20 @@ namespace Incidences.Data.Models
         public int typeId { get; set; }
         public int state { get; set; }
 
-        [ForeignKey(nameof(typeId))]
+        [ForeignKey(nameof(employee.typeId))]
         public virtual employee_range EmployeeRange { get; set; }
 
-        [ForeignKey(nameof(typeId))]
+        [ForeignKey(nameof(employee.id))]
         public virtual Credentials Credentials { get; set; }
+
+        [InverseProperty("Employee")]
+        public virtual IList<Notes> Notes { get; set; }
+
+        [InverseProperty("owner")]
+        public virtual incidence emp_inc { get; set; }
+
+        [InverseProperty("solver")]
+        public virtual incidence solv_inc { get; set; }
+
     }
 }
