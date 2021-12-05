@@ -16,20 +16,20 @@ CREATE TABLE employee (
     REFERENCES employee_range (id)
 );
 
-INSERT INTO employee_range (name) VALUES
-	('Employee'),
-	('Technician'),
-	('Admin');
+INSERT INTO employee_range (id, name) VALUES
+	(1, 'Employee'),
+	(2, 'Technician'),
+	(3, 'Admin');
 
 CREATE TABLE state (
     id INT PRIMARY KEY NOT NULL IDENTITY,
     name VARCHAR(50) NOT NULL
 );
 
-INSERT INTO state (name) VALUES 
-	('Nuevo'),
-	('En curso'),
-	('Cerrado');
+INSERT INTO state (id, name) VALUES 
+	(1, 'Nuevo'),
+	(2, 'En curso'),
+	(3, 'Cerrado');
 
 CREATE TABLE incidence (
     id INT PRIMARY KEY IDENTITY,
@@ -61,10 +61,10 @@ CREATE TABLE piece_type (
 	description VARCHAR(500)
 );
 
-INSERT INTO piece_type (name, description) VALUES 
-	('Interno', 'Componentes relativos al interior de la torre (fuente, placa base, procesador memoria principal, memorias secundarias, etc.)'),
-	('Externo', 'Componentes periféricos (monitor, impresora, teclado, ratón, etc.)'),
-	('Otros', 'Componentes adicionales (pendrive, pincho wifi, cables eléctricos, regletas, pilas, etc.)');
+INSERT INTO piece_type (id, name, description) VALUES 
+	(1, 'Interno', 'Componentes relativos al interior de la torre (fuente, placa base, procesador memoria principal, memorias secundarias, etc.)'),
+	(2, 'Externo', 'Componentes periféricos (monitor, impresora, teclado, ratón, etc.)'),
+	(3, 'Otros', 'Componentes adicionales (pendrive, pincho wifi, cables eléctricos, regletas, pilas, etc.)');
 
 CREATE TABLE piece_class (
 	id INT PRIMARY KEY NOT NULL IDENTITY,
@@ -78,19 +78,19 @@ CREATE TABLE piece_class (
     ON UPDATE CASCADE
 );
 
-INSERT INTO piece_class (typeId, name) VALUES 
-	(1, 'RAM'),
-	(1, 'HDD o SSD'),
-	(1, 'Placa base'),
-	(1, 'Tarjeta Gráfica (GPU)'),
-	(2, 'Ratón'),
-	(2, 'Teclado'),
-	(2, 'Impresora'),
-	(2, 'Cámara'),
-	(1, 'Refrigeración (ventiladores, disipadores...)'),
-	(1, 'Procesador (CPU)'),
-	(2, 'Monitor'),
-	(3, 'Otros');
+INSERT INTO piece_class (id, typeId, name) VALUES 
+	(1, 1, 'RAM'),
+	(2, 1, 'HDD o SSD'),
+	(3, 1, 'Placa base'),
+	(4, 1, 'Tarjeta Gráfica (GPU)'),
+	(5, 2, 'Ratón'),
+	(6, 2, 'Teclado'),
+	(7, 2, 'Impresora'),
+	(8, 2, 'Cámara'),
+	(9, 1, 'Refrigeración (ventiladores, disipadores...)'),
+	(10, 1, 'Procesador (CPU)'),
+	(11, 2, 'Monitor'),
+	(12, 3, 'Otros');
 
 CREATE TABLE incidence_piece_log (
 	id INT PRIMARY KEY NOT NULL IDENTITY,
@@ -114,9 +114,9 @@ CREATE TABLE note_type (
     name VARCHAR(100) NOT NULL
 );
 
-INSERT INTO note_type (name) VALUES
-	('ownerNote'),
-	('solverNote');
+INSERT INTO note_type (id, name) VALUES
+	(1, 'ownerNote'),
+	(2, 'solverNote');
 
  CREATE TABLE Notes (
     Id INT PRIMARY KEY NOT NULL IDENTITY,
@@ -154,23 +154,23 @@ INSERT INTO note_type (name) VALUES
     ON DELETE CASCADE
  );
 
- INSERT INTO employee (dni, name, surname1, surname2, typeId) VALUES 
-	('12345678Z', 'Jose Javier', 'Valero', 'Fuentes', 2),
-	('12345679Z', 'Juan Francisco', 'Navarro', 'Ramiro', 2),
-	('11111111Z', 'Jose', 'admin', 'istrador', 3),
-	('12345678A', 'Jose', 'jackson', 'arzapalo', 1),
-	('12345678S', 'Jose Antonio', 'Lidon', 'Ferrer', 1),
-	('12345678C', 'Samuel', 'Garcia', 'Sanchez', 1),
-	('12345678B', 'jessie', 'deep', NULL, 1);
+ INSERT INTO employee (id, dni, name, surname1, surname2, typeId) VALUES 
+	(1, '12345678Z', 'Jose Javier', 'Valero', 'Fuentes', 2),
+	(2, '12345679Z', 'Juan Francisco', 'Navarro', 'Ramiro', 2),
+	(3, '11111111Z', 'Jose', 'admin', 'istrador', 3),
+	(4, '12345678A', 'Jose', 'jackson', 'arzapalo', 1),
+	(5, '12345678S', 'Jose Antonio', 'Lidon', 'Ferrer', 1),
+	(6, '12345678C', 'Samuel', 'Garcia', 'Sanchez', 1),
+	(7, '12345678B', 'jessie', 'deep', NULL, 1);
 
-INSERT INTO credentials (username, password, employeeId) VALUES 
-	('12345678Z', '81dc9bdb52d04dc20036dbd8313ed055', 1),
-	('12345679W', '81dc9bdb52d04dc20036dbd8313ed055', 2),
-	('11111111Z', '81dc9bdb52d04dc20036dbd8313ed055', 3),
-	('12345678A', '81dc9bdb52d04dc20036dbd8313ed055', 4),
-	('12345678S', '81dc9bdb52d04dc20036dbd8313ed055', 5),
-	('12345678C', '81dc9bdb52d04dc20036dbd8313ed055', 6),
-	('12345678B', '81dc9bdb52d04dc20036dbd8313ed055', 7);
+INSERT INTO credentials (id, username, password, employeeId) VALUES 
+	(1, '12345678Z', '81dc9bdb52d04dc20036dbd8313ed055', 1),
+	(2, '12345679W', '81dc9bdb52d04dc20036dbd8313ed055', 2),
+	(3, '11111111Z', '81dc9bdb52d04dc20036dbd8313ed055', 3),
+	(4, '12345678A', '81dc9bdb52d04dc20036dbd8313ed055', 4),
+	(5, '12345678S', '81dc9bdb52d04dc20036dbd8313ed055', 5),
+	(6, '12345678C', '81dc9bdb52d04dc20036dbd8313ed055', 6),
+	(7, '12345678B', '81dc9bdb52d04dc20036dbd8313ed055', 7);
 
 CREATE LOGIN Ad WITH PASSWORD = 'p@$$w0rd';
 GRANT ALL PRIVILEGES ON Incidences to Ad;

@@ -123,6 +123,11 @@ namespace Incidences.Data
         {
             try
             {
+                int? old = _context.Employees
+                    .Select(incidence => incidence.id)
+                    .Max();
+                if (old == null) old = 1;
+                else old += 1;
                 employee emp = new()
                 {
                     dni = employee.dni,
@@ -130,12 +135,10 @@ namespace Incidences.Data
                     surname1 = employee.surname1,
                     surname2 = employee.surname2,
                     state = 0,
-                    typeId = (int)employee.typeId
+                    typeId = (int)employee.typeId,
+                    id = (int)old
                 };
                 _context.Employees.Add(emp);
-                emp = _context.Employees
-                    .Where(em => em.dni == employee.dni)
-                    .FirstOrDefault();
                 if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
                 bool result = credentialsData.InsertCredentials(
                     new CredentialsDto()

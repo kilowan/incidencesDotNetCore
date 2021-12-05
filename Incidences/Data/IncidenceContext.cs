@@ -25,55 +25,59 @@ namespace Incidences.Data
             modelBuilder.Entity<Credentials>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
             });
             modelBuilder.Entity<Credentials>().ToTable("Credentials");
             modelBuilder.Entity<employee>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
                 entity.HasOne(emp => emp.EmployeeRange)
                 .WithOne(er => er.Employee);
                 entity.HasOne(emp => emp.Credentials)
                 .WithOne(cred => cred.Employee);
+                entity.Property(b => b.state)
+                    .HasDefaultValue(0);
             });
             modelBuilder.Entity<employee>().ToTable("employee");
             modelBuilder.Entity<employee_range>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
             });
             modelBuilder.Entity<employee_range>().ToTable("employee_range");
             modelBuilder.Entity<incidence>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
                 entity.HasOne(inc => inc.owner)
                 .WithOne(own => own.emp_inc);
                 entity.HasOne(d => d.solver)
                 .WithOne(solv => solv.solv_inc);
-                entity.HasOne(inc => inc.State)
-                .WithOne(st => st.Incidence);
+                entity.Property(b => b.state)
+                    .HasDefaultValue(1);
             });
             modelBuilder.Entity<incidence>().ToTable("incidence");
             modelBuilder.Entity<incidence_piece_log>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
                 entity.HasOne(d => d.Piece)
                 .WithOne(pi => pi.ipl);
+                entity.Property(b => b.status)
+                    .HasDefaultValue(0);
             });
             modelBuilder.Entity<incidence_piece_log>().ToTable("incidence_piece_log");
             modelBuilder.Entity<note_type>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
             });
             modelBuilder.Entity<note_type>().ToTable("note_type");
             modelBuilder.Entity<Notes>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
                 entity.HasOne(note => note.NoteType)
                 .WithOne(noteType => noteType.Notes);
                 entity.HasOne(emp => emp.Employee)
@@ -82,27 +86,29 @@ namespace Incidences.Data
                 entity.HasOne(note => note.Incidence)
                 .WithMany(inc => inc.notes)
                 .HasForeignKey(note => note.incidenceId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
             });
             modelBuilder.Entity<Notes>().ToTable("Notes");
             modelBuilder.Entity<piece_class>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
                 entity.HasOne(pc => pc.PieceType)
                 .WithOne(pt => pt.Piece);
+                entity.Property(b => b.deleted)
+                    .HasDefaultValue(0);
             });
             modelBuilder.Entity<piece_class>().ToTable("piece_class");
             modelBuilder.Entity<piece_type>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
             });
             modelBuilder.Entity<piece_type>().ToTable("piece_type");
             modelBuilder.Entity<state>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.Property(e => e.id).ValueGeneratedOnAdd();
+                entity.Property(e => e.id).ValueGeneratedNever();
             });
             modelBuilder.Entity<state>().ToTable("state");
         }

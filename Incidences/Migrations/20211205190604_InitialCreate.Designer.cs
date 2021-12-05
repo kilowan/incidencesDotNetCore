@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Incidences.Migrations
 {
     [DbContext(typeof(IncidenceContext))]
-    [Migration("20211205143509_InitialCreate")]
+    [Migration("20211205190604_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,9 +23,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.Credentials", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("employeeId")
                         .HasColumnType("int");
@@ -45,9 +42,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.Notes", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("date")
                         .HasColumnType("datetime2");
@@ -70,8 +65,7 @@ namespace Incidences.Migrations
 
                     b.HasIndex("incidenceId");
 
-                    b.HasIndex("noteTypeId")
-                        .IsUnique();
+                    b.HasIndex("noteTypeId");
 
                     b.ToTable("Notes");
                 });
@@ -79,7 +73,6 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.employee", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("dni")
@@ -89,7 +82,9 @@ namespace Incidences.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("state")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("surname1")
                         .HasColumnType("nvarchar(max)");
@@ -102,8 +97,7 @@ namespace Incidences.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("typeId")
-                        .IsUnique();
+                    b.HasIndex("typeId");
 
                     b.ToTable("employee");
                 });
@@ -111,9 +105,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.employee_range", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
@@ -126,9 +118,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.incidence", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("close_dateTime")
                         .HasColumnType("datetime2");
@@ -143,19 +133,18 @@ namespace Incidences.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("state")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.HasKey("id");
 
-                    b.HasIndex("ownerId")
-                        .IsUnique();
+                    b.HasIndex("ownerId");
 
                     b.HasIndex("solverId")
-                        .IsUnique()
                         .HasFilter("[solverId] IS NOT NULL");
 
-                    b.HasIndex("state")
-                        .IsUnique();
+                    b.HasIndex("state");
 
                     b.ToTable("incidence");
                 });
@@ -163,9 +152,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.incidence_piece_log", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("incidenceId")
                         .HasColumnType("int");
@@ -174,12 +161,15 @@ namespace Incidences.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("id");
 
-                    b.HasIndex("pieceId")
-                        .IsUnique();
+                    b.HasIndex("incidenceId");
+
+                    b.HasIndex("pieceId");
 
                     b.ToTable("incidence_piece_log");
                 });
@@ -187,9 +177,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.note_type", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
@@ -202,12 +190,12 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.piece_class", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<byte>("deleted")
-                        .HasColumnType("tinyint");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
 
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
@@ -217,18 +205,13 @@ namespace Incidences.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("typeId")
-                        .IsUnique();
-
                     b.ToTable("piece_class");
                 });
 
             modelBuilder.Entity("Incidences.Data.Models.piece_type", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("description")
                         .HasColumnType("nvarchar(max)");
@@ -244,9 +227,7 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.state", b =>
                 {
                     b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
@@ -329,9 +310,9 @@ namespace Incidences.Migrations
 
             modelBuilder.Entity("Incidences.Data.Models.incidence_piece_log", b =>
                 {
-                    b.HasOne("Incidences.Data.Models.incidence", "Incidence")
+                    b.HasOne("Incidences.Data.Models.incidence", null)
                         .WithMany("pieces")
-                        .HasForeignKey("pieceId")
+                        .HasForeignKey("incidenceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -340,8 +321,6 @@ namespace Incidences.Migrations
                         .HasForeignKey("Incidences.Data.Models.incidence_piece_log", "pieceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Incidence");
 
                     b.Navigation("Piece");
                 });
