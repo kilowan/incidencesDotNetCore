@@ -7,8 +7,5 @@ namespace Incidences.Data.Models
         public string username { get; set; }
         public string password { get; set; }
         public int employeeId { get; set; }
-
-        [InverseProperty("Credentials")]
-        public virtual employee Employee { get; set; }
     }
 }

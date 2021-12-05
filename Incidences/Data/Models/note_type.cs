@@ -9,8 +9,5 @@ namespace Incidences.Data.Models
     public partial class note_type : baseClass
     {
         public string name { get; set; }
-
-        [InverseProperty("NoteType")]
-        public virtual Notes Notes { get; set; }
     }
 }

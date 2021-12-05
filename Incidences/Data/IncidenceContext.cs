@@ -32,10 +32,8 @@ namespace Incidences.Data
             {
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.id).ValueGeneratedNever();
-                entity.HasOne(emp => emp.EmployeeRange)
-                .WithOne(er => er.Employee);
-                entity.HasOne(emp => emp.Credentials)
-                .WithOne(cred => cred.Employee);
+                entity.HasOne(emp => emp.EmployeeRange);
+                entity.HasOne(emp => emp.Credentials);
                 entity.Property(b => b.state)
                     .HasDefaultValue(0);
             });
@@ -50,20 +48,18 @@ namespace Incidences.Data
             {
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.id).ValueGeneratedNever();
-                entity.HasOne(inc => inc.owner)
-                .WithOne(own => own.emp_inc);
-                entity.HasOne(d => d.solver)
-                .WithOne(solv => solv.solv_inc);
+                entity.HasOne(inc => inc.owner);
+                entity.HasOne(d => d.solver);
                 entity.Property(b => b.state)
                     .HasDefaultValue(1);
+                entity.HasOne(inc => inc.State);
             });
             modelBuilder.Entity<incidence>().ToTable("incidence");
             modelBuilder.Entity<incidence_piece_log>(entity =>
             {
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.id).ValueGeneratedNever();
-                entity.HasOne(d => d.Piece)
-                .WithOne(pi => pi.ipl);
+                entity.HasOne(d => d.Piece);
                 entity.Property(b => b.status)
                     .HasDefaultValue(0);
             });
@@ -78,8 +74,7 @@ namespace Incidences.Data
             {
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.id).ValueGeneratedNever();
-                entity.HasOne(note => note.NoteType)
-                .WithOne(noteType => noteType.Notes);
+                entity.HasOne(note => note.NoteType);
                 entity.HasOne(emp => emp.Employee)
                 .WithMany(notes => notes.Notes)
                 .HasForeignKey(note => note.employeeId);
@@ -93,8 +88,7 @@ namespace Incidences.Data
             {
                 entity.HasKey(e => e.id);
                 entity.Property(e => e.id).ValueGeneratedNever();
-                entity.HasOne(pc => pc.PieceType)
-                .WithOne(pt => pt.Piece);
+                entity.HasOne(pc => pc.PieceType);
                 entity.Property(b => b.deleted)
                     .HasDefaultValue(0);
             });

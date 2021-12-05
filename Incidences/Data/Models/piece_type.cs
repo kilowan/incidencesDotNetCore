@@ -6,8 +6,5 @@ namespace Incidences.Data.Models
     {
         public string name { get; set; }
         public string description { get; set; }
-
-        [InverseProperty("PieceType")]
-        public virtual piece_class Piece { get; set; }
     }
 }
