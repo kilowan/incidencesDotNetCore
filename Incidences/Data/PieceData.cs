@@ -21,7 +21,7 @@ namespace Incidences.Data
         {
             try
             {
-                piece_class picla = _context.PieceClass
+                piece_class picla = _context.PieceClasss
                     .Include(a => a.PieceType)
                     .Where(pi => pi.id == pieceId)
                     .FirstOrDefault();
@@ -50,10 +50,14 @@ namespace Incidences.Data
         {
             try
             {
-                _context.PieceClass.Add(new()
+                int id = _context.PieceClasss
+                    .Select(pie => pie.id)
+                    .Max()+1;
+                _context.PieceClasss.Add(new()
                 {
                     name = piece.name,
-                    typeId = (int)piece.typeId
+                    typeId = (int)piece.typeId,
+                    id = id
                 });
 
                 if (_context.SaveChanges() != 1) throw new Exception("Pieza no insertada");
@@ -77,7 +81,7 @@ namespace Incidences.Data
                         incidenceId = incidenceId
                     });
                 }
-                _context.IncidencePieceLog.AddRange(ipls);
+                _context.IncidencePieceLogs.AddRange(ipls);
                 if (_context.SaveChanges() != 1) throw new Exception("Piezas no insertadas");
 
                 return true;
@@ -91,10 +95,10 @@ namespace Incidences.Data
         {
             try
             {
-                IList<piece_class> piece_classes = _context.PieceClass
+                IList<piece_class> piece_classes = _context.PieceClasss
                     .Where(pc => pieces.Contains(pc.id))
                     .ToList();
-                _context.PieceClass.UpdateRange(piece_classes);
+                _context.PieceClasss.UpdateRange(piece_classes);
                 if (_context.SaveChanges() != 1) throw new Exception("Piezas no eliminadas");
                 return true;
             }
@@ -107,13 +111,13 @@ namespace Incidences.Data
         {
             try
             {
-                piece_class picla = _context.PieceClass
+                piece_class picla = _context.PieceClasss
                     .Where(pi => pi.id == id)
                     .FirstOrDefault();
                 if (picla != null)
                 {
                     picla.deleted = 1;
-                    _context.PieceClass.Update(picla);
+                    _context.PieceClasss.Update(picla);
                     if (_context.SaveChanges() != 1) throw new Exception("Pieza no eliminada");
                     return true;
                 }
@@ -128,7 +132,7 @@ namespace Incidences.Data
         {
             try
             {
-                piece_class pi = _context.PieceClass
+                piece_class pi = _context.PieceClasss
                     .Where(piece => piece.id == id)
                     .FirstOrDefault();
                 if (pi != null)
@@ -136,7 +140,7 @@ namespace Incidences.Data
                     if (piece.deleted != null) pi.deleted = (byte)piece.deleted;
                     if (piece.name != null) pi.name = piece.name;
                     if (piece.typeId != null) pi.typeId = (int)piece.typeId;
-                    _context.PieceClass.Update(pi);
+                    _context.PieceClasss.Update(pi);
                     if (_context.SaveChanges() != 1) throw new Exception("Pieza no actualizada");
                     return true;
                 }
@@ -151,13 +155,13 @@ namespace Incidences.Data
         {
             try
             {
-                piece_class pi = _context.PieceClass
+                piece_class pi = _context.PieceClasss
                     .Where(piece => piece.id == id)
                     .FirstOrDefault();
                 if (pi != null)
                 {
                     pi.deleted = deleted;
-                    _context.PieceClass.Update(pi);
+                    _context.PieceClasss.Update(pi);
                     if (_context.SaveChanges() != 1) throw new Exception("Pieza no actualizada");
                     return true;
                 }
@@ -172,34 +176,30 @@ namespace Incidences.Data
         {
             try
             {
-
                 IList<piece_class> piece_classes;
                 if (piece != null)
                 {
-                    piece_classes = _context.PieceClass
-                        .Include(pi => pi.PieceType)
+                    piece_classes = _context.PieceClasss
                         .Where(pi => pi.id == piece)
                         .ToList();
                 }
                 else
                 {
-                    piece_classes = _context.PieceClass
+                    piece_classes = _context.PieceClasss
+                        .Include(pi => pi.PieceType)
                         .ToList();
                 }
 
                 IList<Piece> pieces = new List<Piece>();
                 foreach (piece_class piece_class in piece_classes)
                 {
+                    piece_type pity = _context.PieceTypes
+                        .Find(piece_class.typeId);
                     pieces.Add(
                         new(
                             piece_class.id, 
                             piece_class.name, 
-                            new PieceType() 
-                            { 
-                                Id = piece_class.PieceType.id, 
-                                Name = piece_class.PieceType.name, 
-                                Description = piece_class.PieceType.description 
-                            }, 
+                            new PieceType(pity), 
                             piece_class.deleted
                         )
                     );
@@ -214,12 +214,12 @@ namespace Incidences.Data
         }
         public IList<Piece> GetPiecesByIncidenceId(int incidenceId) 
         {
-            IList<int> ipls = _context.IncidencePieceLog
+            IList<int> ipls = _context.IncidencePieceLogs
                 .Where(ipl => ipl.incidenceId == incidenceId)
                 .Select(ipl => ipl.id)
                 .ToList();
 
-            IList<piece_class> cleanPieces = _context.PieceClass
+            IList<piece_class> cleanPieces = _context.PieceClasss
                 .Include(ipl => ipl.PieceType)
                 .Where(pie => ipls.Contains(pie.id))
                 .ToList();

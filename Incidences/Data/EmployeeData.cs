@@ -23,7 +23,7 @@ namespace Incidences.Data
         {
             try
             {
-                employee emp = _context.Employee
+                employee emp = _context.Employees
                     .Include(em => em.EmployeeRange)
                     .Where(em => em.dni == dni)
                     .FirstOrDefault();
@@ -46,7 +46,7 @@ namespace Incidences.Data
         {
             try
             {
-                employee emp = _context.Employee
+                employee emp = _context.Employees
                     .Include(em => em.EmployeeRange)
                     .Where(em => em.id == id)
                     .FirstOrDefault();
@@ -68,20 +68,21 @@ namespace Incidences.Data
         {
             try
             {
-                IList<employee> emps = _context.Employee
-                    .Include(em => em.EmployeeRange)
+                IList<employee> emps = _context.Employees
                     .Where(em => em.state != 1)
                     .ToList();
                 IList<Employee> result = new List<Employee>(); 
                 foreach (employee employee in emps)
                 {
+                    employee_range emra = _context.EmployeeRanges
+                        .Find(employee.typeId);
                     result.Add(
                         new Employee(
                             employee.dni, 
                             employee.name, 
                             employee.surname1, 
                             employee.surname2,
-                            new TypeRange(employee.EmployeeRange.id, employee.EmployeeRange.name),
+                            new TypeRange(emra),
                             employee.id, employee.state)
                         );
                 }
@@ -97,7 +98,7 @@ namespace Incidences.Data
             try
             {
                 bool result = false;
-                employee emp = _context.Employee
+                employee emp = _context.Employees
                     .Where(em => em.id == id)
                     .FirstOrDefault();
                 if (emp != null)
@@ -131,8 +132,8 @@ namespace Incidences.Data
                     state = 0,
                     typeId = (int)employee.typeId
                 };
-                _context.Employee.Add(emp);
-                emp = _context.Employee
+                _context.Employees.Add(emp);
+                emp = _context.Employees
                     .Where(em => em.dni == employee.dni)
                     .FirstOrDefault();
                 if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
@@ -157,7 +158,7 @@ namespace Incidences.Data
         public bool UpdateEmployee(int id)
         {
             bool result = false;
-            employee emp = _context.Employee
+            employee emp = _context.Employees
                 .Where(em => em.id == id)
                 .FirstOrDefault();
             if (emp != null)

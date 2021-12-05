@@ -9,7 +9,7 @@ namespace Incidences.Models.Incidence
         public int ownerId { get; set; }
         public string solver { get; set; }
         public int? solverId { get; set; }
-        public DateTime initDateTime { get; set; }
+        public DateTime? initDateTime { get; set; }
         public DateTime? finishDateTime { get; set; }
         public IList<int> piecesAdded { get; set; }
         public IList<int> piecesDeleted { get; set; }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Incidences.Data.Models
 {
@@ -12,7 +8,10 @@ namespace Incidences.Data.Models
         public int typeId { get; set; }
         public byte deleted { get; set; }
 
-        [ForeignKey(nameof(typeId))]
+        [ForeignKey(nameof(piece_class.typeId))]
         public virtual piece_type PieceType { get; set; }
+
+        [InverseProperty("Piece")]
+        public virtual incidence_piece_log ipl { get; set; }
     }
 }

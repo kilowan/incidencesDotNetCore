@@ -1,6 +1,6 @@
 ﻿using Incidences.Data.Models;
-using Incidences.Models.Employee;
 using Incidences.Models.Incidence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,28 +11,22 @@ namespace Incidences.Data
     public class IncidenceData : IIncidenceData
     {
         private readonly IncidenceContext _context;
-        private readonly INoteData noteData;
-        private readonly IPieceData pieceData;
-        private readonly IEmployeeData employeeData;
 
-        public IncidenceData(
-            IncidenceContext context, 
-            INoteData noteData, 
-            IPieceData pieceData,
-            IEmployeeData employeeData
-            )
+        public IncidenceData(IncidenceContext context)
         {
             _context = context;
-            this.noteData = noteData;
-            this.pieceData = pieceData;
-            this.employeeData = employeeData;
         }
-
+        public int Count(int state, int userId) 
+        {
+            return _context.Incidences
+                .Where(inc => inc.state == state && inc.solverId == userId)
+                .Count();
+        }
         public int LastIncidence()
         {
             try
             {
-                return _context.Incidence
+                return _context.Incidences
                     .Select(inc => inc.id)
                     .Max();
             }
@@ -65,17 +59,13 @@ namespace Incidences.Data
                 //Technician or Admin
                 for (int i = 1; i <= 3; i++)
                 {
-                    counters[names[i]] += _context.Incidence
-                        .Where(inc => inc.state == i && inc.solverId == userId)
-                        .Count();
+                    counters[names[i]] += Count(i, userId);
                 }
             }
 
             for (int i = 1; i <= 4; i++)
             {
-                counters[names[i]] += _context.Incidence
-                    .Where(inc => inc.state == i && inc.solverId == userId)
-                    .Count();
+                counters[names[i]] += Count(i, userId);
             }
 
             return counters;
@@ -85,12 +75,12 @@ namespace Incidences.Data
             try
             {
 
-                incidence inc = _context.Incidence
+                incidence inc = _context.Incidences
                     .Where(inc => inc.id == incidenceId && inc.ownerId == userId)
                     .FirstOrDefault();
                 inc.state = 5;
 
-                _context.Incidence.Update(inc);
+                _context.Incidences.Update(inc);
                 if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
                 return true;
             }
@@ -103,7 +93,7 @@ namespace Incidences.Data
         {
             try
             {
-                _context.Incidence.Add(new()
+                _context.Incidences.Add(new()
                 {
                     ownerId = ownerId,
                 });
@@ -118,17 +108,62 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
+        public bool AddIncidence(IncidenceDto incidence) 
+        {
+            try
+            {
+                _context.Database.BeginTransaction();
+                incidence inc = new()
+                {
+                    ownerId = incidence.ownerId,
+                    open_dateTime = DateTime.Now
+                };
+                _context.Incidences.Add(inc);
+
+                if (_context.SaveChanges() != 1) throw new Exception("Incidencia no insertada");
+                _context.Notess.Add(new Notes()
+                {
+                    noteStr = incidence.note,
+                    noteTypeId = 1,
+                    employeeId = incidence.ownerId,
+                    incidenceId = inc.id
+                });
+
+                if (_context.SaveChanges() != 1) throw new Exception("Incidencia no insertada");
+                IList<incidence_piece_log> pieces = new List<incidence_piece_log>();
+                foreach (int piece in incidence.piecesAdded)
+                {
+                    pieces.Add(new incidence_piece_log()
+                    {
+                        pieceId = piece,
+                        incidenceId = inc.id
+                    });
+                }
+
+                _context.IncidencePieceLogs.AddRange(pieces);
+                if (_context.SaveChanges() != 1) throw new Exception("Incidencia no insertada");
+
+                _context.Database.CommitTransaction();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                _context.Database.RollbackTransaction();
+                throw new Exception(e.Message);
+            }
+        }
         //changeState 1-2
         public bool AttendIncidence(IncidenceDto incidence, int incidenceId, int solverID)
         {
             try
             {
-                incidence inc = _context.Incidence
+                incidence inc = _context.Incidences
                     .Where(inc => inc.id == incidenceId)
                     .FirstOrDefault();
                 inc.solverId = solverID;
                 inc.state = 2;
-                _context.Incidence.Update(inc);
+                _context.Incidences.Update(inc);
                 if (_context.SaveChanges() != 1) throw new Exception("Incidencia no atendida");
 
                 return true;
@@ -143,11 +178,11 @@ namespace Incidences.Data
         {
             try
             {
-                incidence inc = _context.Incidence
+                incidence inc = _context.Incidences
                     .Where(inc => inc.id == incidenceId)
                     .FirstOrDefault();
                 inc.state = 3;
-                _context.Incidence.Update(inc);
+                _context.Incidences.Update(inc);
                 if (_context.SaveChanges() != 1) throw new Exception("Incidencia no atendida");
 
                 return true;
@@ -161,7 +196,7 @@ namespace Incidences.Data
         {
             try
             {
-                incidence inc = _context.Incidence
+                incidence inc = _context.Incidences
                     .Where(inc => inc.id == incidenceId)
                     .FirstOrDefault();
 
@@ -174,7 +209,7 @@ namespace Incidences.Data
 
                 if (close) inc.close_dateTime = DateTime.Now;
 
-                _context.Incidence.Update(inc);
+                _context.Incidences.Update(inc);
                 if (_context.SaveChanges() != 1) throw new Exception("Incidencia no actualizada");
                 return true;
             }
@@ -187,12 +222,22 @@ namespace Incidences.Data
         {
             try
             {
-                incidence inc = _context.Incidence
+                incidence inc = _context.Incidences
+                    .Include(inc => inc.notes)
+                    .ThenInclude(noty => noty.NoteType)
+                    .Include(inc => inc.solver)
+                    .ThenInclude(solty => solty.EmployeeRange)
+                    .Include(inc => inc.owner)
+                    .ThenInclude(ownty => ownty.EmployeeRange)
+                    .Include(inc => inc.pieces)
+                    .ThenInclude(ipl => ipl.Piece)
+                    .ThenInclude(pie => pie.PieceType)
                     .Where(inc => inc.id == id)
                     .FirstOrDefault();
+
                 if (inc != null)
                 {
-                    return ConvertIncidence(inc);
+                    return new Incidence(inc);
                 }
                 else return new Incidence();
             }
@@ -205,13 +250,13 @@ namespace Incidences.Data
         {
             try
             {
-                incidence inc = _context.Incidence
+                incidence inc = _context.Incidences
                     .Where(inc => inc.id == incidenceId)
                     .FirstOrDefault();
 
                 if (incidence.state != null) inc.state = (int)incidence.state;
 
-                _context.Incidence.Update(inc);
+                _context.Incidences.Update(inc);
                 if (_context.SaveChanges() != 1) throw new Exception("Incidencia no actualizada");
                 return true;
             }
@@ -224,7 +269,16 @@ namespace Incidences.Data
         {
             try
             {
-                IList<incidence> incidencesOwn = _context.Incidence
+                IList<incidence> incidencesOwn = _context.Incidences
+                    .Include(inc => inc.notes)
+                    .ThenInclude(noty => noty.NoteType)
+                    .Include(inc => inc.solver)
+                    .ThenInclude(solty => solty.EmployeeRange)
+                    .Include(inc => inc.owner)
+                    .ThenInclude(ownty => ownty.EmployeeRange)
+                    .Include(inc => inc.pieces)
+                    .ThenInclude(ipl => ipl.Piece)
+                    .ThenInclude(pie => pie.PieceType)
                     .Where(inc => inc.state == state && inc.ownerId == userId)
                     .ToList();
 
@@ -237,7 +291,16 @@ namespace Incidences.Data
 
                 if (list.Contains(type) && state != 4)
                 {
-                    IList<incidence> incidencesOther = _context.Incidence
+                    IList<incidence> incidencesOther = _context.Incidences
+                        .Include(inc => inc.notes)
+                        .ThenInclude(noty => noty.NoteType)
+                        .Include(inc => inc.solver)
+                        .ThenInclude(solty => solty.EmployeeRange)
+                        .Include(inc => inc.owner)
+                        .ThenInclude(ownty => ownty.EmployeeRange)
+                        .Include(inc => inc.pieces)
+                        .ThenInclude(ipl => ipl.Piece)
+                        .ThenInclude(pie => pie.PieceType)
                         .Where(inc => inc.state == state && inc.solverId == userId)
                         .ToList();
 
@@ -252,48 +315,14 @@ namespace Incidences.Data
             }
         }
 
-        private IList<Incidence> ConvertIncidences(IList<incidence> incidences) 
+        private static IList<Incidence> ConvertIncidences(IList<incidence> incidences) 
         {
             IList<Incidence> incidencesOut = new List<Incidence>();
             foreach (incidence inc in incidences)
             {
-                incidencesOut.Add(ConvertIncidence(inc));
+                incidencesOut.Add(new Incidence(inc));
             }
             return incidencesOut;
-        }
-        private Incidence ConvertIncidence(incidence incidence) 
-        {
-            Note employeeNote = noteData.SelectEmployeeNoteByIncidenceId(incidence.id);
-            IList<Piece> pieces = pieceData.GetPiecesByIncidenceId(incidence.id);
-            Employee owner = employeeData.SelectEmployeeById(incidence.ownerId);
-            if (incidence.state == 2)
-            {
-                IList<Note> notes = noteData.SelectNotesByIncidenceId(incidence.id);
-                Employee solver = employeeData.SelectEmployeeById((int)incidence.solverId);
-                return new Incidence(
-                    incidence.id,
-                    incidence.state,
-                    owner.FullName,
-                    incidence.ownerId,
-                    incidence.open_dateTime,
-                    employeeNote.NoteStr,
-                    pieces,
-                    notes,
-                    solver.FullName,
-                    incidence.solverId,
-                    (DateTime)incidence.close_dateTime
-                );
-            }
-            
-            return new Incidence(
-                incidence.id,
-                incidence.state,
-                owner.FullName,
-                incidence.ownerId,
-                incidence.open_dateTime,
-                employeeNote.NoteStr,
-                pieces
-            );
         }
     }
 }

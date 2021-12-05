@@ -10,7 +10,7 @@ namespace Incidences.Data
             context.Database.EnsureCreated();
 
             // Look for any Credentials.
-            if (context.Credentials.Any())
+            if (context.Credentialss.Any())
             {
                 return;   // DB has been seeded
             }
@@ -28,7 +28,7 @@ namespace Incidences.Data
 
             foreach (Credentials c in credentials)
             {
-                context.Credentials.Add(c);
+                context.Credentialss.Add(c);
             }
 
             context.SaveChanges();
@@ -42,7 +42,7 @@ namespace Incidences.Data
 
             foreach (employee_range er in employeeType)
             {
-                context.EmployeeRange.Add(er);
+                context.EmployeeRanges.Add(er);
             }
 
             var employees = new employee[]
@@ -57,7 +57,7 @@ namespace Incidences.Data
             };
             foreach (employee e in employees)
             {
-                context.Employee.Add(e);
+                context.Employees.Add(e);
             }
 
             context.SaveChanges();
@@ -70,7 +70,7 @@ namespace Incidences.Data
             };
             foreach (piece_type pt in PieceTypes)
             {
-                context.PieceType.Add(pt);
+                context.PieceTypes.Add(pt);
             }
 
             context.SaveChanges();
@@ -90,7 +90,7 @@ namespace Incidences.Data
 
             foreach (piece_class pc in Pieces)
             {
-                context.PieceClass.Add(pc);
+                context.PieceClasss.Add(pc);
             }
 
             context.SaveChanges();
@@ -103,7 +103,7 @@ namespace Incidences.Data
 
             foreach (note_type nt in NoteTypes)
             {
-                context.NoteType.Add(nt);
+                context.NoteTypes.Add(nt);
             }
 
             context.SaveChanges();
@@ -117,7 +117,7 @@ namespace Incidences.Data
 
             foreach (state st in States)
             {
-                context.State.Add(st);
+                context.States.Add(st);
             }
 
             context.SaveChanges();

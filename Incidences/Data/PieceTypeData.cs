@@ -20,7 +20,7 @@ namespace Incidences.Data
         {
             try
             {
-                IList<piece_type> pitys = _context.PieceType.ToList();
+                IList<piece_type> pitys = _context.PieceTypes.ToList();
                 IList<PieceType> pieceTypes = new List<PieceType>();
                 foreach (piece_type pity in pitys)
                 {
@@ -44,7 +44,7 @@ namespace Incidences.Data
         {
             try
             {
-                piece_type pity = _context.PieceType
+                piece_type pity = _context.PieceTypes
                     .Where(pity => pity.id == pieceTypeId)
                     .FirstOrDefault();
 

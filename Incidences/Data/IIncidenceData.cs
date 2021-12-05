@@ -16,5 +16,6 @@ namespace Incidences.Data
         public Incidence GetIncidenceById(int id);
         public bool NewUpdateIncidence(IncidenceDto incidence, int incidenceId);
         public IncidenceList GetIncidencesByStateType(int state, int userId, string type);
+        public bool AddIncidence(IncidenceDto incidence);
     }
 }
