@@ -10,8 +10,5 @@ namespace Incidences.Data.Models
 
         [ForeignKey(nameof(piece_class.typeId))]
         public virtual piece_type PieceType { get; set; }
-
-        [InverseProperty("Piece")]
-        public virtual incidence_piece_log ipl { get; set; }
     }
 }

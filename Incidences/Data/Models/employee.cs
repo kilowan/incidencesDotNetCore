@@ -21,11 +21,5 @@ namespace Incidences.Data.Models
         [InverseProperty("Employee")]
         public virtual IList<Notes> Notes { get; set; }
 
-        [InverseProperty("owner")]
-        public virtual incidence emp_inc { get; set; }
-
-        [InverseProperty("solver")]
-        public virtual incidence solv_inc { get; set; }
-
     }
 }

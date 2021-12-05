@@ -277,6 +277,7 @@ namespace Incidences.Data
             try
             {
                 incidence inc = _context.Incidences
+                    .Include(inc => inc.State)
                     .Include(inc => inc.notes)
                     .ThenInclude(noty => noty.NoteType)
                     .Include(inc => inc.solver)
@@ -324,6 +325,7 @@ namespace Incidences.Data
             try
             {
                 IList<incidence> incidencesOwn = _context.Incidences
+                    .Include(inc => inc.State)
                     .Include(inc => inc.notes)
                     .ThenInclude(noty => noty.NoteType)
                     .Include(inc => inc.solver)
@@ -336,26 +338,7 @@ namespace Incidences.Data
                     .Where(inc => inc.state == state && inc.ownerId == userId)
                     .ToList();
 
-                foreach (incidence inc in incidencesOwn)
-                {
-                    inc.owner = _context.Employees
-                        .Find(inc.ownerId);
-                    if (inc.solverId != null)
-                    {
-                        inc.solver = _context.Employees
-                            .Find(inc.solverId);
-                    }
-                    foreach (incidence_piece_log ipl in inc.pieces)
-                    {
-                        ipl.Piece = _context.PieceClasss
-                            .Include(x => x.PieceType)
-                            .Where(x => x.id == ipl.pieceId)
-                            .FirstOrDefault();
-                    }
-                }
-                state st = _context.States
-                    .Find(state);
-                IList <Incidence> own = ConvertIncidences(incidencesOwn, st);
+                IList <Incidence> own = ConvertIncidences(incidencesOwn);
                 IncidenceList incidences = new(own);
                 IList<string> list = new List<string>{
                     "Technician",
@@ -365,36 +348,20 @@ namespace Incidences.Data
                 if (list.Contains(type) && state != 4)
                 {
                     IList<incidence> incidencesOther = _context.Incidences
+                        .Include(inc => inc.State)
                         .Include(inc => inc.notes)
                         .ThenInclude(noty => noty.NoteType)
-                        //.Include(inc => inc.solver)
-                        //.ThenInclude(solty => solty.EmployeeRange)
-                        //.Include(inc => inc.owner)
-                        //.ThenInclude(ownty => ownty.EmployeeRange)
+                        .Include(inc => inc.solver)
+                        .ThenInclude(solty => solty.EmployeeRange)
+                        .Include(inc => inc.owner)
+                        .ThenInclude(ownty => ownty.EmployeeRange)
                         .Include(inc => inc.pieces)
-                        //.ThenInclude(ipl => ipl.Piece)
-                        //.ThenInclude(pie => pie.PieceType)
+                        .ThenInclude(ipl => ipl.Piece)
+                        .ThenInclude(pie => pie.PieceType)
                         .Where(inc => inc.state == state && inc.solverId == userId)
                         .ToList();
-                    foreach (incidence inc in incidencesOther)
-                    {
-                        inc.owner = _context.Employees
-                            .Find(inc.ownerId);
-                        if (inc.solverId != null)
-                        {
-                            inc.solver = _context.Employees
-                                .Find(inc.solverId);
-                        }
-                        foreach (incidence_piece_log ipl in inc.pieces)
-                        {
-                            ipl.Piece = _context.PieceClasss
-                                .Include(x => x.PieceType)
-                                .Where(x => x.id == ipl.pieceId)
-                                .FirstOrDefault();
-                        }
-                    }
 
-                    incidences.Other = ConvertIncidences(incidencesOther, st);
+                    incidences.Other = ConvertIncidences(incidencesOther);
                 }
 
                 return incidences;
@@ -405,14 +372,14 @@ namespace Incidences.Data
             }
         }
 
-        private static IList<Incidence> ConvertIncidences(IList<incidence> incidences, state state) 
+        private static IList<Incidence> ConvertIncidences(IList<incidence> incidences) 
         {
             IList<Incidence> incidencesOut = new List<Incidence>();
             foreach (incidence inc in incidences)
             {
-                inc.State = state;
                 incidencesOut.Add(new Incidence(inc));
             }
+
             return incidencesOut;
         }
     }
