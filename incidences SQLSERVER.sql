@@ -122,7 +122,7 @@ INSERT INTO note_type (name) VALUES
     Id INT PRIMARY KEY NOT NULL IDENTITY,
     employeeId INT NOT NULL,
     incidenceId INT NOT NULL,
-    noteType INT NOT NULL,
+    noteTypeId INT NOT NULL,
     noteStr VARCHAR(200) NOT NULL,
     date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT notes_employee
@@ -136,7 +136,7 @@ INSERT INTO note_type (name) VALUES
     ON UPDATE CASCADE
     ON DELETE CASCADE,
     CONSTRAINT notes_type
-    FOREIGN KEY (noteType)
+    FOREIGN KEY (noteTypeId)
     REFERENCES note_type (id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
@@ -164,13 +164,13 @@ INSERT INTO note_type (name) VALUES
 	('12345678B', 'jessie', 'deep', NULL, 1);
 
 INSERT INTO credentials (username, password, employeeId) VALUES 
-	('12345678Z', HASHBYTES('MD5', '1234'), 1),
-	('12345679W', HASHBYTES('MD5', '1234'), 2),
-	('11111111Z', HASHBYTES('MD5', '1234'), 3),
-	('12345678A', HASHBYTES('MD5', '1234'), 4),
-	('12345678S', HASHBYTES('MD5', '1234'), 5),
-	('12345678C', HASHBYTES('MD5', '1234'), 6),
-	('12345678B', HASHBYTES('MD5', '1234'), 7);
+	('12345678Z', '81dc9bdb52d04dc20036dbd8313ed055', 1),
+	('12345679W', '81dc9bdb52d04dc20036dbd8313ed055', 2),
+	('11111111Z', '81dc9bdb52d04dc20036dbd8313ed055', 3),
+	('12345678A', '81dc9bdb52d04dc20036dbd8313ed055', 4),
+	('12345678S', '81dc9bdb52d04dc20036dbd8313ed055', 5),
+	('12345678C', '81dc9bdb52d04dc20036dbd8313ed055', 6),
+	('12345678B', '81dc9bdb52d04dc20036dbd8313ed055', 7);
 
 CREATE LOGIN Ad WITH PASSWORD = 'p@$$w0rd';
 GRANT ALL PRIVILEGES ON Incidences to Ad;
@@ -191,148 +191,4 @@ SELECT ((((YEAR(inc.close_dateTime))-(YEAR(inc.open_dateTime)))*31536000)+
 	ON inc.solverId = e.id
 	WHERE inc.state IN (3, 4)
 	GROUP BY inc.id, inc.solverId, inc.close_dateTime, inc.open_dateTime, e.name, e.surname1, e.surname2;
-GO 
-
-CREATE VIEW Fullemployee AS
-	SELECT 
-	emp.id AS employeeId,
-	CONCAT(COALESCE(emp.name,''),' ',COALESCE(emp.surname1,''),' ',COALESCE(emp.surname2,'')) AS employeeName 
-	from employee emp 
-	INNER JOIN employee_range emra 
-	ON emp.typeId = emra.id 
-	WHERE emra.id <> 2
-
 GO
-
-CREATE VIEW technician AS
-	SELECT 
-	emp.id AS employeeId,
-	CONCAT(COALESCE(emp.name,''),' ',COALESCE(emp.surname1,''),' ',COALESCE(emp.surname2,'')) AS employeeName 
-	from employee emp 
-	INNER JOIN employee_range emra 
-	ON emp.typeId = emra.id 
-	WHERE emra.id <> 1
-
-GO
-
-CREATE VIEW FullIncidence AS
-	SELECT inc.id AS id, 
-	inc.ownerId AS employeeId, 
-	emp.employeeName AS employeeName, 
-	note.noteStr AS issueDesc, 
-	inc.solverId AS technicianId, 
-	tec.employeeName AS technicianName,
-	inc.open_dateTime AS issueDateTime, 
-	inc.close_dateTime AS resolutionDateTime,
-	inc.state AS state
-	FROM incidence inc 
-	INNER JOIN Fullemployee emp 
-	ON emp.employeeId = inc.ownerId 
-	LEFT JOIN technician tec 
-	ON inc.solverId = tec.employeeId
-	INNER JOIN notes note
-	ON note.incidenceId = inc.id AND note.noteTypeId = 1
-	WHERE inc.state <> 5
-
-GO
-
-CREATE VIEW FullPiece AS
-	SELECT pc.id,
-	pc.name,
-	pc.typeId AS pieceTypeId,
-	pt.name As pieceTypeName,
-	pt.description AS pieceTypeDescription,
-	pc.deleted
-	FROM piece_class pc
-	INNER JOIN piece_type pt
-	ON pc.typeId = pt.id;
-
-GO
-
-CREATE VIEW completeEmployee AS
-	SELECT 
-	emp.id, 
-	emp.dni, 
-	emp.name AS name,
-	emp.surname1 AS surname1,
-	emp.surname2 AS surname2,
-	CONCAT(COALESCE(emp.name, ''), ' ', COALESCE(emp.surname1, ''), ' ', COALESCE(emp.surname2, '')) as employeeName, 
-	emp.typeId AS typeId, 
-	emra.id AS typeRangeId,
-	emra.name AS typeRange,
-	emp.state AS deleted 
-	FROM employee emp
-	INNER JOIN employee_range emra
-	ON emp.typeId = emra.id
-
-GO
-
-CREATE VIEW incidence_pieces AS
-	SELECT 
-	ipl.incidenceId AS incidenceId, 
-	pc.id AS pieceId, 
-	pc.typeId AS typeId,
-	pt.name AS typeName, 
-	pt.description AS typeDescription,
-	pc.name AS name, 
-	pc.deleted AS deleted 
-	FROM piece_class pc 
-	INNER JOIN incidence_piece_log ipl 
-	ON pc.id = ipl.pieceId 
-	INNER JOIN piece_type pt
-	ON pc.typeId = pt.id
-	WHERE ipl.status = 0
-
-GO
-
-CREATE VIEW FullNote AS
-	SELECT nt.Id, 
-	nt.employeeId, 
-	nt.incidenceId, 
-	nt.noteTypeId, 
-	noty.name AS noteTypeName,
-	nt.noteStr, 
-	nt.date
-	FROM Notes nt
-	INNER JOIN note_type noty
-	ON nt.noteTypeId = noty.id
-
-GO
-
-CREATE VIEW incidence_notes AS
-	SELECT 
-	nt.incidenceId,
-	nt.noteStr AS noteStr,
-	nt.date as noteDate,
-	noty.name AS noteType
-	FROM Notes nt 
-	INNER JOIN incidence inc 
-	ON inc.id = nt.incidenceId
-	INNER JOIN note_type noty
-	ON nt.noteTypeId = noty.id
-
-GO
-
-CREATE VIEW reportedPieces AS
-	SELECT 
-	pc.name AS pieceName, 
-	count(ipl.pieceId) AS pieceNumber 
-	FROM incidence_piece_log ipl 
-	INNER JOIN piece_class pc 
-	ON ipl.pieceId = pc.id 
-	INNER JOIN incidence inc 
-	ON ipl.incidenceId = inc.id 
-	WHERE inc.state IN (3,4) 
-	AND ipl.status = 0 
-	GROUP BY ipl.pieceId, pc.name
-
-GO
-
-CREATE VIEW credentialsMatch AS 
-	SELECT C.*
-	FROM credentials C INNER JOIN employee E
-	ON E.id=C.employeeId
-	WHERE E.state=0
-
-GO
-
