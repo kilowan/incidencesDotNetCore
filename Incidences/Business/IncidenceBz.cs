@@ -121,12 +121,12 @@ namespace Incidences.Business
         {
             try
             {
-                //bool result = incidenceData.AddIncidence(incidence);
-                int id = incidenceData.InsertIncidence(incidence.ownerId);
+                bool result = incidenceData.AddIncidence(incidence);
+                /*int id = incidenceData.InsertIncidence(incidence.ownerId);
                 bool result = this.note.InsertNote(incidence.note, 1, incidence.ownerId, id);
                 if (!result) throw new Exception("Parte no insertado");
                 result = this.piece.InsertPiecesSql(incidence.piecesAdded, id);
-                if (!result) throw new Exception("Parte no insertado");
+                if (!result) throw new Exception("Parte no insertado");*/
                 return result;
             }
             catch (Exception e)

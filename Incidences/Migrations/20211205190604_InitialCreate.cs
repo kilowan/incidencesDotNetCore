@@ -11,8 +11,7 @@ namespace Incidences.Migrations
                 name: "Credentials",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     username = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     employeeId = table.Column<int>(type: "int", nullable: false)
@@ -26,8 +25,7 @@ namespace Incidences.Migrations
                 name: "employee_range",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -39,8 +37,7 @@ namespace Incidences.Migrations
                 name: "note_type",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -52,8 +49,7 @@ namespace Incidences.Migrations
                 name: "piece_type",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -66,8 +62,7 @@ namespace Incidences.Migrations
                 name: "state",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -85,7 +80,7 @@ namespace Incidences.Migrations
                     surname1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     surname2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     typeId = table.Column<int>(type: "int", nullable: false),
-                    state = table.Column<int>(type: "int", nullable: false)
+                    state = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -108,11 +103,10 @@ namespace Incidences.Migrations
                 name: "piece_class",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     typeId = table.Column<int>(type: "int", nullable: false),
-                    deleted = table.Column<byte>(type: "tinyint", nullable: false)
+                    deleted = table.Column<byte>(type: "tinyint", nullable: false, defaultValue: (byte)0)
                 },
                 constraints: table =>
                 {
@@ -129,13 +123,12 @@ namespace Incidences.Migrations
                 name: "incidence",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     ownerId = table.Column<int>(type: "int", nullable: false),
                     solverId = table.Column<int>(type: "int", nullable: true),
                     open_dateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     close_dateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    state = table.Column<int>(type: "int", nullable: false)
+                    state = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -164,18 +157,17 @@ namespace Incidences.Migrations
                 name: "incidence_piece_log",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     pieceId = table.Column<int>(type: "int", nullable: false),
                     incidenceId = table.Column<int>(type: "int", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: false)
+                    status = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_incidence_piece_log", x => x.id);
                     table.ForeignKey(
-                        name: "FK_incidence_piece_log_incidence_pieceId",
-                        column: x => x.pieceId,
+                        name: "FK_incidence_piece_log_incidence_incidenceId",
+                        column: x => x.incidenceId,
                         principalTable: "incidence",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -191,8 +183,7 @@ namespace Incidences.Migrations
                 name: "Notes",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    id = table.Column<int>(type: "int", nullable: false),
                     employeeId = table.Column<int>(type: "int", nullable: false),
                     incidenceId = table.Column<int>(type: "int", nullable: false),
                     noteTypeId = table.Column<int>(type: "int", nullable: false),
@@ -245,6 +236,11 @@ namespace Incidences.Migrations
                 table: "incidence",
                 column: "state",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_incidence_piece_log_incidenceId",
+                table: "incidence_piece_log",
+                column: "incidenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_incidence_piece_log_pieceId",

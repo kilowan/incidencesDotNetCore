@@ -156,10 +156,17 @@ namespace Incidences.Data
         }
         public bool InsertCredentials(CredentialsDto credentials, int? employeeId) 
         {
+            int? old = _context.Credentialss
+                .Select(incidence => incidence.id)
+                .Max();
+            if (old == null) old = 1;
+            else old += 1;
             Credentials cred = new()
             {
                 username = credentials.username,
-                password = credentials.password
+                password = credentials.password,
+                employeeId = (int)employeeId,
+                id = (int)old
             };
 
             _context.Credentialss.Add(cred);

@@ -96,12 +96,18 @@ namespace Incidences.Data
         {
             try
             {
+                int? old = _context.Notess
+                    .Select(incidence => incidence.id)
+                    .Max();
+                if (old == null) old = 1;
+                else old += 1;
                 _context.Notess.Add(new Notes()
                 {
                     noteStr = note,
                     noteTypeId = noteTypeId,
                     employeeId = (int)ownerId,
-                    incidenceId = (int)incidenceId
+                    incidenceId = (int)incidenceId,
+                    id = (int)old
                 });
                 if (_context.SaveChanges() != 1) throw new Exception("Nota no insertada");
 

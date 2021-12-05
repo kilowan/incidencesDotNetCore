@@ -75,10 +75,16 @@ namespace Incidences.Data
                 IList<incidence_piece_log> ipls = new List<incidence_piece_log>();
                 foreach (int pieceId in pieces)
                 {
+                    int? old = _context.IncidencePieceLogs
+                        .Select(incidence => incidence.id)
+                        .Max();
+                    if (old == null) old = 1;
+                    else old += 1;
                     ipls.Add(new incidence_piece_log()
                     {
                         pieceId = pieceId,
-                        incidenceId = incidenceId
+                        incidenceId = incidenceId,
+                        id = (int)old
                     });
                 }
                 _context.IncidencePieceLogs.AddRange(ipls);
