@@ -42,12 +42,19 @@ namespace Incidences.Data
                 Credentials cred = _context.Credentialss
                     .Where(a => a.username == username)
                     .FirstOrDefault();
-                return new()
+                if (cred != null)
                 {
-                    EmployeeId = cred.employeeId,
-                    Username = cred.username,
-                    Password = cred.password
-                };
+                    return new()
+                    {
+                        EmployeeId = cred.employeeId,
+                        Username = cred.username,
+                        Password = cred.password
+                    };
+                }
+                else
+                {
+                    return new Incidences.Models.Employee.Credentials();
+                }
             }
             catch (Exception e)
             {
