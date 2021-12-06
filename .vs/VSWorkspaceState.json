@@ -4,8 +4,9 @@
     "\\Incidences",
     "\\Incidences\\Business",
     "\\Incidences\\Controllers",
-    "\\Incidences\\Data"
+    "\\Incidences\\Data",
+    "\\Incidences\\Data\\Models"
   ],
-  "SelectedNode": "\\Incidences\\Controllers\\EmployeeController.cs",
+  "SelectedNode": "\\Incidences\\Data\\Models",
   "PreviewInSolutionExplorer": false
 }
