@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Incidences.Models.Employee;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Incidences.Controllers
 {
@@ -16,12 +17,14 @@ namespace Incidences.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IList<TypeRange> Index()
         {
             return this.employeeRange.GetEmployeeTypes();
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public TypeRange Details(int id)
         {
             return this.employeeRange.SelectRangeById(id);

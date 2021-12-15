@@ -1,6 +1,7 @@
 ﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
 using Incidences.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Incidences.Controllers
 {
@@ -13,8 +14,9 @@ namespace Incidences.Controllers
         {
             this.rep = report;
         }
-        // GET: ReportController/Details/5
+
         [HttpGet("{id}")]
+        [Authorize]
         public Report Details(int id)
         {
             return rep.GetReport(id);

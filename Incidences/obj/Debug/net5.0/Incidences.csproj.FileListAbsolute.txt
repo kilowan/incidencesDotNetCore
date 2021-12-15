@@ -283,3 +283,8 @@ G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\ref
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\Incidences.pdb
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\obj\Debug\net5.0\Incidences.genruntimeconfig.cache
 G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\MailKit.dll
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\MimeKit.dll
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\NETCore.MailKit.dll
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\BouncyCastle.Crypto.dll
+G:\Usuarios\Juan\Documentos\incidencesDotNetCore\Incidences\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

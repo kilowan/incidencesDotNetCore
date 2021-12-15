@@ -7,7 +7,7 @@ namespace Incidences.Business
         public Credentials SelectCredentialsByUsername(string username);
         public Credentials SelectCredentialsById(int id);
         public bool UpdateCredentials(CredentialsDto credentials, int employeeId);
-        public bool CheckCredentials(string username, string password);
         public bool CheckCredentials(string username);
+        public string Login(string username, string password);
     }
 }

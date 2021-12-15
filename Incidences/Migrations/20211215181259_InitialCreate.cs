@@ -22,6 +22,23 @@ namespace Incidences.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmailConfig",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false),
+                    username = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    host = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    port = table.Column<int>(type: "int", nullable: false),
+                    ssl = table.Column<bool>(type: "bit", nullable: false),
+                    defaultCredentials = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailConfig", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "employee_range",
                 columns: table => new
                 {
@@ -120,6 +137,26 @@ namespace Incidences.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Email",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    domain = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    employeeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Email", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Email_employee_employeeId",
+                        column: x => x.employeeId,
+                        principalTable: "employee",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "incidence",
                 columns: table => new
                 {
@@ -149,6 +186,27 @@ namespace Incidences.Migrations
                         name: "FK_incidence_state_state",
                         column: x => x.state,
                         principalTable: "state",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RecoverLog",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false),
+                    code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    employeeIdId = table.Column<int>(type: "int", nullable: false),
+                    date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    active = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecoverLog", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_RecoverLog_employee_employeeIdId",
+                        column: x => x.employeeIdId,
+                        principalTable: "employee",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -203,7 +261,8 @@ namespace Incidences.Migrations
                         name: "FK_Notes_incidence_incidenceId",
                         column: x => x.incidenceId,
                         principalTable: "incidence",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Notes_note_type_noteTypeId",
                         column: x => x.noteTypeId,
@@ -213,29 +272,30 @@ namespace Incidences.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Email_employeeId",
+                table: "Email",
+                column: "employeeId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_employee_typeId",
                 table: "employee",
-                column: "typeId",
-                unique: true);
+                column: "typeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_incidence_ownerId",
                 table: "incidence",
-                column: "ownerId",
-                unique: true);
+                column: "ownerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_incidence_solverId",
                 table: "incidence",
-                column: "solverId",
-                unique: true,
-                filter: "[solverId] IS NOT NULL");
+                column: "solverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_incidence_state",
                 table: "incidence",
-                column: "state",
-                unique: true);
+                column: "state");
 
             migrationBuilder.CreateIndex(
                 name: "IX_incidence_piece_log_incidenceId",
@@ -245,8 +305,7 @@ namespace Incidences.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_incidence_piece_log_pieceId",
                 table: "incidence_piece_log",
-                column: "pieceId",
-                unique: true);
+                column: "pieceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notes_employeeId",
@@ -261,23 +320,35 @@ namespace Incidences.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Notes_noteTypeId",
                 table: "Notes",
-                column: "noteTypeId",
-                unique: true);
+                column: "noteTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_piece_class_typeId",
                 table: "piece_class",
-                column: "typeId",
-                unique: true);
+                column: "typeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RecoverLog_employeeIdId",
+                table: "RecoverLog",
+                column: "employeeIdId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Email");
+
+            migrationBuilder.DropTable(
+                name: "EmailConfig");
+
+            migrationBuilder.DropTable(
                 name: "incidence_piece_log");
 
             migrationBuilder.DropTable(
                 name: "Notes");
+
+            migrationBuilder.DropTable(
+                name: "RecoverLog");
 
             migrationBuilder.DropTable(
                 name: "piece_class");

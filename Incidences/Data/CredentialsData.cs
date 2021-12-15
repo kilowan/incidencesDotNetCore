@@ -1,4 +1,6 @@
-﻿using Incidences.Models.Employee;
+﻿using Incidences.Data.Models;
+using Incidences.Models.Employee;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data;
 using System.Linq;
@@ -99,15 +101,20 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
-        public bool CheckCredentials(string username, string password)
+        public employee CheckCredentials(string username, string password)
         {
             try
             {
+                Incidences.Models.Employee.Credentials cred = new Incidences.Models.Employee.Credentials(username, password);
                 Credentials old = _context.Credentialss
-                    .Where(emp => emp.username == username && emp.password == password)
+                    .Where(emp => emp.username == cred.Username && emp.password == cred.Password)
                     .FirstOrDefault();
-                if (old != null) return true;
-                else return false;
+                if (old != null) 
+                    return _context.Employees
+                        .Include(emp => emp.Email)
+                        .Where(emp => emp.id == old.id)
+                        .FirstOrDefault();
+                else return new employee();
             }
             catch (Exception e)
             {

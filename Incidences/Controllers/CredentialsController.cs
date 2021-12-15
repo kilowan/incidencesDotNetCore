@@ -1,6 +1,7 @@
 ﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
 using Incidences.Models.Employee;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Incidences.Controllers
 {
@@ -15,9 +16,9 @@ namespace Incidences.Controllers
         }
 
         [HttpGet("{username}/{password}")]
-        public bool Details(string username, string password)
+        public string Login(string username, string password)
         {
-            return this.cred.CheckCredentials(username, password);
+            return this.cred.Login(username, password);
         }
 
         [HttpGet("{username}")]
@@ -27,6 +28,7 @@ namespace Incidences.Controllers
         }
 
         [HttpPut("{employeeId}")]
+        [Authorize]
         public bool Update(CredentialsDto credentials, int employeeId)
         {
             return this.cred.UpdateCredentials(credentials, employeeId);

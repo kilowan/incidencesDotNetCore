@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Incidences.Data;
 using Incidences.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Incidences.Controllers
 {
@@ -21,15 +22,15 @@ namespace Incidences.Controllers
             _context = context;
         }
 
-        // GET: api/piece_classs
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<piece_class>>> GetPieceClass()
         {
             return await _context.PieceClasss.ToListAsync();
         }
 
-        // GET: api/piece_classs/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<piece_class>> Getpiece_classs(int id)
         {
             var piece_classs = await _context.PieceClasss.FindAsync(id);
@@ -42,9 +43,8 @@ namespace Incidences.Controllers
             return piece_classs;
         }
 
-        // PUT: api/piece_classs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Putpiece_classs(int id, piece_class piece_classs)
         {
             if (id != piece_classs.id)
@@ -73,9 +73,8 @@ namespace Incidences.Controllers
             return NoContent();
         }
 
-        // POST: api/piece_classs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<piece_class>> Postpiece_classs(piece_class piece_classs)
         {
             _context.PieceClasss.Add(piece_classs);
@@ -98,8 +97,8 @@ namespace Incidences.Controllers
             return CreatedAtAction("Getpiece_classs", new { id = piece_classs.id }, piece_classs);
         }
 
-        // DELETE: api/piece_classs/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Deletepiece_classs(int id)
         {
             var piece_classs = await _context.PieceClasss.FindAsync(id);

@@ -38,6 +38,56 @@ namespace Incidences.Migrations
                     b.ToTable("Credentials");
                 });
 
+            modelBuilder.Entity("Incidences.Data.Models.Email", b =>
+                {
+                    b.Property<int>("id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("domain")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("employeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("employeeId")
+                        .IsUnique();
+
+                    b.ToTable("Email");
+                });
+
+            modelBuilder.Entity("Incidences.Data.Models.EmailConfig", b =>
+                {
+                    b.Property<int>("id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("defaultCredentials")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("host")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("port")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ssl")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("EmailConfig");
+                });
+
             modelBuilder.Entity("Incidences.Data.Models.Notes", b =>
                 {
                     b.Property<int>("id")
@@ -64,10 +114,33 @@ namespace Incidences.Migrations
 
                     b.HasIndex("incidenceId");
 
-                    b.HasIndex("noteTypeId")
-                        .IsUnique();
+                    b.HasIndex("noteTypeId");
 
                     b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("Incidences.Data.Models.RecoverLog", b =>
+                {
+                    b.Property<int>("id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("employeeIdId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("employeeIdId");
+
+                    b.ToTable("RecoverLog");
                 });
 
             modelBuilder.Entity("Incidences.Data.Models.employee", b =>
@@ -97,8 +170,7 @@ namespace Incidences.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("typeId")
-                        .IsUnique();
+                    b.HasIndex("typeId");
 
                     b.ToTable("employee");
                 });
@@ -140,15 +212,11 @@ namespace Incidences.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("ownerId")
-                        .IsUnique();
+                    b.HasIndex("ownerId");
 
-                    b.HasIndex("solverId")
-                        .IsUnique()
-                        .HasFilter("[solverId] IS NOT NULL");
+                    b.HasIndex("solverId");
 
-                    b.HasIndex("state")
-                        .IsUnique();
+                    b.HasIndex("state");
 
                     b.ToTable("incidence");
                 });
@@ -173,8 +241,7 @@ namespace Incidences.Migrations
 
                     b.HasIndex("incidenceId");
 
-                    b.HasIndex("pieceId")
-                        .IsUnique();
+                    b.HasIndex("pieceId");
 
                     b.ToTable("incidence_piece_log");
                 });
@@ -210,8 +277,7 @@ namespace Incidences.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("typeId")
-                        .IsUnique();
+                    b.HasIndex("typeId");
 
                     b.ToTable("piece_class");
                 });
@@ -245,6 +311,17 @@ namespace Incidences.Migrations
                     b.ToTable("state");
                 });
 
+            modelBuilder.Entity("Incidences.Data.Models.Email", b =>
+                {
+                    b.HasOne("Incidences.Data.Models.employee", "Employee")
+                        .WithOne("Email")
+                        .HasForeignKey("Incidences.Data.Models.Email", "employeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("Incidences.Data.Models.Notes", b =>
                 {
                     b.HasOne("Incidences.Data.Models.employee", "Employee")
@@ -256,12 +333,12 @@ namespace Incidences.Migrations
                     b.HasOne("Incidences.Data.Models.incidence", "Incidence")
                         .WithMany("notes")
                         .HasForeignKey("incidenceId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Incidences.Data.Models.note_type", "NoteType")
-                        .WithOne("Notes")
-                        .HasForeignKey("Incidences.Data.Models.Notes", "noteTypeId")
+                        .WithMany()
+                        .HasForeignKey("noteTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -272,17 +349,28 @@ namespace Incidences.Migrations
                     b.Navigation("NoteType");
                 });
 
+            modelBuilder.Entity("Incidences.Data.Models.RecoverLog", b =>
+                {
+                    b.HasOne("Incidences.Data.Models.employee", "Employee")
+                        .WithMany("logs")
+                        .HasForeignKey("employeeIdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("Incidences.Data.Models.employee", b =>
                 {
                     b.HasOne("Incidences.Data.Models.Credentials", "Credentials")
-                        .WithOne("Employee")
-                        .HasForeignKey("Incidences.Data.Models.employee", "id")
+                        .WithMany()
+                        .HasForeignKey("id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Incidences.Data.Models.employee_range", "EmployeeRange")
-                        .WithOne("Employee")
-                        .HasForeignKey("Incidences.Data.Models.employee", "typeId")
+                        .WithMany()
+                        .HasForeignKey("typeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -294,18 +382,18 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.incidence", b =>
                 {
                     b.HasOne("Incidences.Data.Models.employee", "owner")
-                        .WithOne("emp_inc")
-                        .HasForeignKey("Incidences.Data.Models.incidence", "ownerId")
+                        .WithMany()
+                        .HasForeignKey("ownerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Incidences.Data.Models.employee", "solver")
-                        .WithOne("solv_inc")
-                        .HasForeignKey("Incidences.Data.Models.incidence", "solverId");
+                        .WithMany()
+                        .HasForeignKey("solverId");
 
                     b.HasOne("Incidences.Data.Models.state", "State")
-                        .WithOne("Incidence")
-                        .HasForeignKey("Incidences.Data.Models.incidence", "state")
+                        .WithMany()
+                        .HasForeignKey("state")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -325,8 +413,8 @@ namespace Incidences.Migrations
                         .IsRequired();
 
                     b.HasOne("Incidences.Data.Models.piece_class", "Piece")
-                        .WithOne("ipl")
-                        .HasForeignKey("Incidences.Data.Models.incidence_piece_log", "pieceId")
+                        .WithMany()
+                        .HasForeignKey("pieceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -336,31 +424,21 @@ namespace Incidences.Migrations
             modelBuilder.Entity("Incidences.Data.Models.piece_class", b =>
                 {
                     b.HasOne("Incidences.Data.Models.piece_type", "PieceType")
-                        .WithOne("Piece")
-                        .HasForeignKey("Incidences.Data.Models.piece_class", "typeId")
+                        .WithMany()
+                        .HasForeignKey("typeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("PieceType");
                 });
 
-            modelBuilder.Entity("Incidences.Data.Models.Credentials", b =>
-                {
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("Incidences.Data.Models.employee", b =>
                 {
-                    b.Navigation("emp_inc");
+                    b.Navigation("Email");
+
+                    b.Navigation("logs");
 
                     b.Navigation("Notes");
-
-                    b.Navigation("solv_inc");
-                });
-
-            modelBuilder.Entity("Incidences.Data.Models.employee_range", b =>
-                {
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Incidences.Data.Models.incidence", b =>
@@ -368,26 +446,6 @@ namespace Incidences.Migrations
                     b.Navigation("notes");
 
                     b.Navigation("pieces");
-                });
-
-            modelBuilder.Entity("Incidences.Data.Models.note_type", b =>
-                {
-                    b.Navigation("Notes");
-                });
-
-            modelBuilder.Entity("Incidences.Data.Models.piece_class", b =>
-                {
-                    b.Navigation("ipl");
-                });
-
-            modelBuilder.Entity("Incidences.Data.Models.piece_type", b =>
-                {
-                    b.Navigation("Piece");
-                });
-
-            modelBuilder.Entity("Incidences.Data.Models.state", b =>
-                {
-                    b.Navigation("Incidence");
                 });
 #pragma warning restore 612, 618
         }

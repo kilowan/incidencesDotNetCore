@@ -2,11 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\Incidences",
-    "\\Incidences\\Business",
-    "\\Incidences\\Controllers",
     "\\Incidences\\Data",
-    "\\Incidences\\Data\\Models"
+    "\\Incidences\\Data\\Models",
+    "\\Incidences\\Models",
+    "\\Incidences\\Models\\Employee"
   ],
-  "SelectedNode": "\\Incidences\\Data\\Models",
+  "SelectedNode": "\\Incidences\\Data\\IncidenceContext.cs",
   "PreviewInSolutionExplorer": false
 }

@@ -19,6 +19,9 @@ namespace Incidences.Data
         public DbSet<piece_class> PieceClasss { get; set; }
         public DbSet<piece_type> PieceTypes { get; set; }
         public DbSet<state> States { get; set; }
+        public DbSet<Email> Emails { get; set; }
+        public DbSet<RecoverLog> RecoverLogs { get; set; }
+        public DbSet<EmailConfig> EmailConfigs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +39,9 @@ namespace Incidences.Data
                 entity.HasOne(emp => emp.Credentials);
                 entity.Property(b => b.state)
                     .HasDefaultValue(0);
+                entity.HasMany(emp => emp.logs)
+                .WithOne(rl => rl.Employee)
+                .HasForeignKey(rl => rl.employeeIdId);
             });
             modelBuilder.Entity<employee>().ToTable("employee");
             modelBuilder.Entity<employee_range>(entity =>
@@ -105,6 +111,29 @@ namespace Incidences.Data
                 entity.Property(e => e.id).ValueGeneratedNever();
             });
             modelBuilder.Entity<state>().ToTable("state");
+            modelBuilder.Entity<Email>(entity =>
+            {
+                entity.HasKey(email => email.id);
+                entity.Property(email => email.id).ValueGeneratedNever();
+                //entity.HasOne(email => email.Employee)
+                //.WithOne(ar => ar.Email);
+            });
+            modelBuilder.Entity<Email>().ToTable("Email");
+            modelBuilder.Entity<RecoverLog>(entity =>
+            {
+                entity.HasKey(rl => rl.id);
+                entity.Property(rl => rl.id).ValueGeneratedNever();
+                entity.HasOne(rl => rl.Employee)
+                .WithMany(emp =>emp.logs)
+                .HasForeignKey(rl => rl.employeeIdId);
+            });
+            modelBuilder.Entity<RecoverLog>().ToTable("RecoverLog");
+            modelBuilder.Entity<EmailConfig>(entity =>
+            {
+                entity.HasKey(ec => ec.id);
+                entity.Property(ec => ec.id).ValueGeneratedNever();
+            });
+            modelBuilder.Entity<EmailConfig>().ToTable("EmailConfig");
         }
     }
 }

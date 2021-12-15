@@ -21,5 +21,11 @@ namespace Incidences.Data.Models
         [InverseProperty("Employee")]
         public virtual IList<Notes> Notes { get; set; }
 
+        //[InverseProperty("Employee")]
+        //[ForeignKey(nameof(employee.id))]
+        public virtual Email Email { get; set; }
+        [InverseProperty("Employee")]
+        public virtual IList<RecoverLog> logs { get; set; }
+
     }
 }

@@ -9,6 +9,7 @@ namespace Incidences.Models.Employee
         private string surname2;
         private string fullName;
         private string dni;
+        private Email email;
         private TypeRange type;
         private int? id;
         private int state;
@@ -95,6 +96,17 @@ namespace Incidences.Models.Employee
             set
             {
                 state = value;
+            }
+        }
+        public Email Email
+        {
+            get
+            {
+                return email;
+            }
+            set
+            {
+                email = value;
             }
         }
 
