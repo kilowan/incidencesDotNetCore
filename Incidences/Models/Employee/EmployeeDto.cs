@@ -11,5 +11,6 @@
         public int? typeId { get; set; }
         public bool? deleted { get; set; }
         public int? id { get; set; }
+        public EmailDto email { get; set; }
     }
 }
