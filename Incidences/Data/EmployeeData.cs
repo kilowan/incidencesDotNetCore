@@ -5,18 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Credentials = Incidences.Data.Models.Credentials;
+using Email = Incidences.Data.Models.Email;
 
 namespace Incidences.Data
 {
     public class EmployeeData : IEmployeeData
     {
-        private readonly ICredentialsData credentialsData;
         private readonly IncidenceContext _context;
 
-        public EmployeeData(ICredentialsData credentialsData, IncidenceContext context)
+        public EmployeeData(IncidenceContext context)
         {
             this._context = context;
-            this.credentialsData = credentialsData;
         }
 
         public Employee SelectEmployeeByDni(string dni)
@@ -112,6 +112,18 @@ namespace Incidences.Data
                     result = true;
                 } else throw new Exception("Empleado no actualizado");
 
+                if (emp.Email != null && !string.IsNullOrEmpty(emp.Email.domain))
+                {
+                    Email em = _context.Emails
+                        .Where(em => em.id == emp.Email.id)
+                        .FirstOrDefault();
+                    em.name = emp.Email.name;
+                    em.domain = emp.Email.domain;
+
+                    _context.Emails.Update(em);
+                    if (_context.SaveChanges() != 1) throw new Exception("Empleado no actualizado");
+                }
+
                 return result;
             }
             catch (Exception e)
@@ -123,6 +135,7 @@ namespace Incidences.Data
         {
             try
             {
+                _context.Database.BeginTransaction();
                 int? old = _context.Employees
                     .Select(incidence => incidence.id)
                     .Max();
@@ -140,21 +153,43 @@ namespace Incidences.Data
                 };
                 _context.Employees.Add(emp);
                 if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
-                bool result = credentialsData.InsertCredentials(
-                    new CredentialsDto()
-                    { 
-                        username = employee.credentials.username,
-                        password = employee.credentials.password,
-                    },
-                    emp.id
-                );
 
-                if (result) throw new Exception("Empleado no insertado");
+                Credentials cred = _context.Credentialss
+                    .OrderBy(cred => cred.id)
+                    .LastOrDefault();
 
+                int id = cred.id + 1;
+                _context.Credentialss.Add(new Credentials()
+                {
+                    username = employee.credentials.username,
+                    password = employee.credentials.password,
+                    id = id
+                });
+
+                if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
+
+                if (employee.email != null && !string.IsNullOrEmpty(employee.email.mailName)) 
+                {
+                    Email em = _context.Emails
+                        .OrderBy(em => em.id)
+                        .LastOrDefault();
+                    id = em.id + 1;
+                    _context.Emails.Add(new Email()
+                    {
+                        name = employee.email.mailName,
+                        domain = employee.email.domain,
+                        id = id
+                    });
+
+                    if (_context.SaveChanges() != 1) throw new Exception("Empleado no insertado");
+                }
+
+                _context.Database.CommitTransaction();
                 return true;
             }
             catch (Exception e)
             {
+                _context.Database.RollbackTransaction();
                 throw new Exception(e.Message);
             }
         }
