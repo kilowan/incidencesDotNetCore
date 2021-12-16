@@ -121,7 +121,8 @@ namespace Incidences.Models.Employee
             this.surname1 = emp.surname1;
             this.surname2 = emp.surname2;
             this.fullName = $"{ name } { surname1 } { surname2 }";
-            this.type = new TypeRange(emp.EmployeeRange);
+            if(emp.EmployeeRange != null) this.type = new TypeRange(emp.EmployeeRange);
+            if (emp.Email != null) this.Email = new Email(emp.Email);
             this.id = emp.id;
             this.state = emp.state;
         }

@@ -42,6 +42,7 @@ namespace Incidences
             services.AddTransient<INoteBz, NoteBz>();
             services.AddTransient<IPasswordRecoveryData, PasswordRecoveryData>();
             services.AddTransient<IPasswordRecoveryBz, PasswordRecoveryBz>();
+            // CONFIGURACIÓN DEL SERVICIO DE AUTENTICACIÓN JWT
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -76,10 +77,11 @@ namespace Incidences
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseAuthorization();
             // AÑADIMOS EL MIDDLEWARE DE AUTENTICACIÓN
             // DE USUARIOS AL PIPELINE DE ASP.NET CORE
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

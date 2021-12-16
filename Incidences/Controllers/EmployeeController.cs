@@ -38,14 +38,14 @@ namespace Incidences.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        //[Authorize]
         public bool Update(EmployeeDto employee, int id)
         {
             return emp.UpdateEmployee(employee, id);
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        //[Authorize]
         public bool Delete(int id)
         {
             return emp.UpdateEmployee(id);
