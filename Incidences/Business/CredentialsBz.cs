@@ -113,6 +113,17 @@ namespace Incidences.Business
                 throw new Exception(e.Message);
             }
         }
+        public bool UpdatePassword(CredentialsDto creds, string code)
+        {
+            try
+            {
+                return credentialsData.UpdatePassword(creds, code);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         private string MakeTokenJWT(Employee usuarioInfo)
         {
             // CREAMOS EL HEADER //

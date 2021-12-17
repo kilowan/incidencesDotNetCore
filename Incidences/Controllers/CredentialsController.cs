@@ -1,7 +1,7 @@
 ﻿using Incidences.Business;
 using Microsoft.AspNetCore.Mvc;
 using Incidences.Models.Employee;
-using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace Incidences.Controllers
 {
@@ -27,11 +27,17 @@ namespace Incidences.Controllers
             return this.cred.SelectCredentialsByUsername(username);
         }
 
-        [HttpPut("{employeeId}")]
-        [Authorize]
-        public bool Update(CredentialsDto credentials, int employeeId)
+        [HttpPut("{code}")]
+        public bool UpdatePassword(CredentialsDto credentials, string code)
         {
-            return this.cred.UpdateCredentials(credentials, employeeId);
+            try
+            {
+                return cred.UpdatePassword(credentials, code);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }
