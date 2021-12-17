@@ -24,6 +24,7 @@ namespace Incidences.Data
             try
             {
                 employee emp = _context.Employees
+                    .Include(em => em.Email)
                     .Include(em => em.EmployeeRange)
                     .Where(em => em.dni == dni)
                     .FirstOrDefault();
@@ -34,7 +35,8 @@ namespace Incidences.Data
                     emp.surname1,
                     emp.surname2,
                     new TypeRange(emp.EmployeeRange.id, emp.EmployeeRange.name),
-                    emp.id, emp.state
+                    emp.id, emp.state,
+                    new Incidences.Models.Employee.Email(emp.Email)
                 );
             }
             catch (Exception e)
@@ -47,16 +49,19 @@ namespace Incidences.Data
             try
             {
                 employee emp = _context.Employees
+                    .Include(em =>em.Email)
                     .Include(em => em.EmployeeRange)
                     .Where(em => em.id == id)
                     .FirstOrDefault();
+
                 return new Employee(
                     emp.dni, 
                     emp.name, 
                     emp.surname1, 
                     emp.surname2,
                     new TypeRange(emp.EmployeeRange.id, emp.EmployeeRange.name),
-                    emp.id, emp.state
+                    emp.id, emp.state,
+                    new Incidences.Models.Employee.Email(emp.Email)
                 );
             }
             catch (Exception e)
@@ -76,6 +81,10 @@ namespace Incidences.Data
                 {
                     employee_range emra = _context.EmployeeRanges
                         .Find(employee.typeId);
+
+                    Email email = _context.Emails
+                        .Where(em => em.employeeId == employee.id)
+                        .FirstOrDefault();
                     result.Add(
                         new Employee(
                             employee.dni, 
@@ -83,8 +92,11 @@ namespace Incidences.Data
                             employee.surname1, 
                             employee.surname2,
                             new TypeRange(emra),
-                            employee.id, employee.state)
-                        );
+                            employee.id, 
+                            employee.state,
+                            new Incidences.Models.Employee.Email(email)
+                        )
+                    );
                 }
                 return result;
             }

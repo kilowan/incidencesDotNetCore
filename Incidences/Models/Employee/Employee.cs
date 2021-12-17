@@ -141,7 +141,7 @@ namespace Incidences.Models.Employee
             this.surname2 = surname2;
             this.fullName = $"{ name } { surname1 } { surname2 }";
         }
-        public Employee(string dni, string name, string surname1, string surname2, TypeRange type, int id, int state)
+        public Employee(string dni, string name, string surname1, string surname2, TypeRange type, int id, int state, Email email)
         {
             this.dni = dni;
             this.name = name;
@@ -151,6 +151,7 @@ namespace Incidences.Models.Employee
             this.type = type;
             this.id = id;
             this.state = state;
+            this.email = email;
         }
         public void SetType(int id, string name)
         {
