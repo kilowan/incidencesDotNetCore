@@ -12,6 +12,7 @@ namespace Incidences.Data
         public bool UpdateCredentials(CredentialsDto credentials, int employeeId);
         public bool UpdateUsername(string username, int employeeId);
         public bool UpdatePassword(string password, int employeeId);
+        public bool UpdatePassword(CredentialsDto creds, string code);
         public bool InsertCredentials(CredentialsDto credentials, int? employeeId);
     }
 }

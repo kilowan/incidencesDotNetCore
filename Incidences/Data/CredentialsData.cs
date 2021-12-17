@@ -86,6 +86,39 @@ namespace Incidences.Data
                 throw new Exception(e.Message);
             }
         }
+        public bool UpdatePassword(CredentialsDto creds, string code)
+        {
+            try
+            {
+                bool codeExist = _context.RecoverLogs
+                    .Where(log => log.code == code)
+                    .FirstOrDefault()
+                    != null ? true : false;
+                bool result = false;
+
+                if (codeExist)
+                {
+                    Incidences.Models.Employee.Credentials credenti = new Incidences.Models.Employee.Credentials(creds.username, creds.password);
+                    Credentials credential = _context.Credentialss
+                        .Where(credentials => credentials.username == creds.username)
+                        .FirstOrDefault();
+
+                    if (credential != null)
+                    {
+                        credential.password = credenti.Password;
+                        _context.Credentialss.Update(credential);
+                        if (_context.SaveChanges() == 1) result = true;
+                    }
+                }
+
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public bool CheckCredentials(string username)
         {
             try
